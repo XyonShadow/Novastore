@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'aeonik-medium';
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(183, 224, 254, .8);
+}
+
+.container{
+    width: 96%;
+    height: 96%;
+    background: #fff;
+    padding: 2%;
+}
