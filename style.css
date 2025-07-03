@@ -12,6 +12,11 @@ body{
     width: 100vw;
     height: 100vh;
     background: rgb(183, 224, 254, .8);
+    color: rgb(31, 31, 59);
+}
+
+a{
+    text-decoration: none;
 }
 
 .container{
@@ -19,4 +24,102 @@ body{
     height: 96%;
     background: #fff;
     padding: 2%;
+}
+
+/* --------------------------== Header section ==-------------------------- */
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo{
+    font-family: sans-serif 'poppins';
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -.2rem;
+}
+
+.search-box{
+    width: 50%;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    gap: .3rem;
+}
+
+.search-box .search-bar{
+    background: rgba(102, 117, 172, 0.1);
+    padding: .6rem;
+    width: 100%;
+    border-radius: 12rem;
+    font-size: 1.2rem;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    color: rgba(40, 40, 71, 0.7);
+    gap: 0.6rem;
+    box-shadow: 3px 3px 10px #00000022;
+}
+
+.search-bar .ri-search-line{
+    color: rgba(40, 40, 71, 0.7);
+    transition: all .3s ease;
+}
+.search-bar .ri-search-line.active{
+    color: blue;
+    transform: scale(1.1);
+}
+
+.search-bar .ri-close-circle-line{
+    cursor: pointer;
+}
+
+.search-box .search-bar input{
+    outline: none;
+    border: none;
+    background: transparent;
+    width: 100%;
+}
+.search-box .search-bar input::placeholder{
+    color: rgba(40, 40, 71, 0.7);
+}
+
+.search-box .search-btn{
+    padding: .6rem;
+    border: none;
+    width: 20%;
+    border-radius: 20rem;
+    background: rgb(31, 31, 59);
+    color: #ccc;
+    box-shadow: 3px 3px 10px #000000;
+    transition: background .1s ease, transform .1s ease;
+}
+.search-box .search-btn:hover{
+    cursor: pointer;
+    background: rgba(40, 40, 71);
+    transform: scale(1.05);    
+}
+
+.head-icons{
+    display: flex;
+    gap: .7rem;
+}
+.head-icons a{
+    display: inline-flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 200;
+    background: rgba(102, 117, 172, 0.1);
+    color: rgba(40, 40, 71, 0.7);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    padding: .2rem;
+    overflow: hidden;
+}
+.head-icons a:nth-child(3){
+    font-size: 2.1rem;
 }
