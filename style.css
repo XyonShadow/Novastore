@@ -31,6 +31,7 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2rem;
 }
 
 .logo{
@@ -97,7 +98,7 @@ header{
 }
 .search-box .search-btn:hover{
     cursor: pointer;
-    background: rgba(40, 40, 71);
+    background: rgb(60, 60, 105);
     transform: scale(1.05);    
 }
 
@@ -119,7 +120,49 @@ header{
     border-radius: 50%;
     padding: .2rem;
     overflow: hidden;
+    transition: all .3s ease;
 }
 .head-icons a:nth-child(3){
     font-size: 2.1rem;
+}
+
+.head-icons a:hover{
+    background: rgba(25, 29, 45, 0.3);
+    color: rgba(63, 63, 104, 0.7);
+    transform: scale(1.05);
+}
+
+/* --------------------------== Info section ==-------------------------- */
+.info{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
+    height: 80%;
+    border-radius: 1rem;
+    border: 1px solid #00000011;
+    padding: 8rem 8rem 0 6rem;
+}
+
+.info .info-text h2{
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    margin-bottom: 1rem;
+}
+.info .info-text p{
+    color: rgba(40, 40, 71, 0.7);
+    margin-bottom: 2rem;
+}
+.info .info-text a{
+    display: inline-block;
+    text-align: center;
+    background: rgb(255, 166, 0);
+    padding: .8rem;
+    border-radius: 1.2rem;
+    color: #fff;
+    transition: all .3s ease;
+}
+.info .info-text a:hover{
+    background: rgb(113, 75, 6);
+    transform: scale(1.05);
 }
