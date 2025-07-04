@@ -11,6 +11,7 @@ body{
     justify-content: center;
     width: 100%;
     min-height: 100vh;
+    padding: 1% 2% 5% 2%;
     background: rgb(183, 224, 254, .8);
     color: rgb(31, 31, 59);
 }
@@ -20,10 +21,10 @@ a{
 }
 
 .container{
-    width: 96%;
-    min-height: 96%;
+    width: 100%;
+    min-height: 100%;
     background: #fff;
-    padding: 2%;
+    padding: 2% 2% 2% 2%;
 }
 
 /* --------------------------== Header section ==-------------------------- */
@@ -135,7 +136,7 @@ header{
 /* --------------------------== Info section ==-------------------------- */
 .info{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     grid-template-rows: 70vh;
     background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
     border-radius: 1rem;
@@ -356,7 +357,7 @@ header{
     display: flex;
     width: 100%;
     justify-content: center;
-    padding-top: 3rem;
+    margin: 3rem;
 }
 
 .load-more{
@@ -386,4 +387,167 @@ header{
     to{
         transform: rotate(360deg);
     }
+}
+
+/* --------------------------== Inquiry section ==-------------------------- */
+.inquiry-section{
+    height: fit-content;
+    background: linear-gradient(0deg, rgba(100, 100, 100, 0.1), transparent);
+    border-radius: 1rem;
+    padding-bottom: 3rem;
+}
+
+.inquiry-section .inquiry-text{
+    padding: 4rem;
+    color: #e98409;
+    font-weight: normal;
+}
+.inquiry-section .inquiry-text span{
+    font-family: sans-serif 'poppins';
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -.2rem;
+    color: rgb(31, 31, 59);
+}
+
+.inquiry-section .inquiry-items{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    background: #fff;
+    align-items: center;
+    justify-items: center;
+    margin: 0 4rem;
+}
+
+.inquiry-section .inquiry-items .info1{
+    background: #fff;
+    width: 21.6rem;
+    height: 20rem;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    box-shadow: 3px 3px 10px #00000022;
+    position: relative;
+}
+
+.inquiry-section .inquiry-items .info1 img{
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+}
+.inquiry-section .inquiry-items .info1 p{
+    color : rgb(31, 31, 59, 0.5);
+    padding-inline: 1rem;
+}
+.inquiry-section .inquiry-items .info1 a{
+    color: rgb(31, 31, 59);  
+    position: relative;  
+}
+.inquiry-section .inquiry-items .info1 a::after{
+    position: absolute;
+    content: '';
+    width: 0;
+    height: 2px;
+    border-radius: .3rem;
+    background: rgb(31, 31, 59);  
+    left: 0;
+    bottom: 0;
+    transition: width .3s linear;
+}
+.inquiry-section .inquiry-items .info1 a:hover::after{
+    width: 100%;
+}
+
+.footer{
+    padding: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: rgb(31, 31, 59, 0.6);
+}
+
+.footer div{
+    display: flex;
+    text-align: left;
+    gap: 2rem;
+    width: 300px;
+    flex-direction: column;
+}
+.footer div h2{
+    font-family: sans-serif 'poppins';
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -.2rem;
+    color: rgb(31, 31, 59);
+}
+
+.footer li{
+    display: flex;
+    text-align: left;
+    gap: 1.8rem;
+    width: 200px;
+    flex-direction: column;
+}
+.footer li span{
+    color: rgb(46, 46, 82);
+    font-size: 1.2rem;
+    font-weight: 550;
+    margin-bottom: 1.5rem;
+}
+
+.footer li a{
+    display: flex;
+    align-items: center;
+    padding: .5rem;
+    width: 80%;
+    gap: .8rem;
+    border-radius: 2rem;
+    justify-content: center;
+    border: 1px solid #c97106;
+    color: rgb(35, 35, 63);
+    font-size: 1rem;
+   transition: transform .3s linear, background .3s ease;
+}
+.footer li a:HOVER{
+    transform: scale(1.1);
+    background: #c971062e;
+}
+footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #00000011;
+    border-radius: 2rem;
+    padding: .5rem .8rem;
+    color: rgb(35, 35, 63, 0.7);
+}
+footer p span{
+    font-size: 1.1rem;
+    letter-spacing: -.08rem;
+    color: rgb(35, 35, 63);
+}
+
+footer .footer-icons{
+    display: flex;
+    gap: 10px;
+}
+
+footer .footer-icons a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .4rem;
+    border-radius: 50%;
+    border: 1px solid #00000033;
+    background: #fff;
+    font-size: .8rem;
+    color: rgb(31, 31, 59, 0.8);
+    transition: transform .3s linear, background .3s ease;
+}
+footer .footer-icons a:hover{
+    transform: scale(1.1);
+    background: #00000033;
 }
