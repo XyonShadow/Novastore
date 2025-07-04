@@ -9,8 +9,8 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     background: rgb(183, 224, 254, .8);
     color: rgb(31, 31, 59);
 }
@@ -21,7 +21,7 @@ a{
 
 .container{
     width: 96%;
-    height: 96%;
+    min-height: 96%;
     background: #fff;
     padding: 2%;
 }
@@ -135,9 +135,9 @@ header{
 /* --------------------------== Info section ==-------------------------- */
 .info{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
-    height: 80%;
+    height: 80vh;
     border-radius: 1rem;
     border: 1px solid #00000011;
     padding: 8rem 8rem 0 6rem;
@@ -165,4 +165,86 @@ header{
 .info .info-text a:hover{
     background: rgb(113, 75, 6);
     transform: scale(1.05);
+}
+
+.sub-title{
+    padding: 4rem 1rem 1.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sub-title h3{
+    font-size: 1.7rem;
+    font-weight: bold;
+}
+.sub-title a{
+    color: rgb(255, 166, 0);
+    position: relative;
+}
+.sub-title a::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.25rem;
+    right: 0;
+    border-radius: 0.5rem;
+    height: .2rem;
+    background-color: #dac522;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+.sub-title a:hover::after{
+    width: 100%;
+}
+
+.categories{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1rem;
+}
+
+.category{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: rgba(200, 200, 200, 0.1);
+    border-radius: 1.5rem;
+    box-shadow: 1px 1px 10px #00000011;
+    width: 170px;
+    height: 170px;
+    transition: all .3s ease;
+}
+.category:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.card::before{
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 1.5rem;
+    border: none;
+    transition: width .3s ease, height .3s ease, top .3s ease, left .3s ease;
+}
+.card:hover::before{
+    top: -7px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 14px);
+    border: 1px solid #dac522;
+}
+
+.category h4{
+    font-size: 1rem;
+    font-weight: 500;
+}
+.category img{
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
 }
