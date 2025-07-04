@@ -135,12 +135,16 @@ header{
 /* --------------------------== Info section ==-------------------------- */
 .info{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 70vh;
     background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
-    height: 80vh;
     border-radius: 1rem;
     border: 1px solid #00000011;
-    padding: 8rem 8rem 0 6rem;
+    padding: 3rem 0 2rem 2rem;
+}
+
+.info .info-text{
+    padding: 5rem 4rem 0 2rem;
 }
 
 .info .info-text h2{
@@ -165,6 +169,13 @@ header{
 .info .info-text a:hover{
     background: rgb(113, 75, 6);
     transform: scale(1.05);
+}
+
+.info img{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
 }
 
 .sub-title{
@@ -213,8 +224,7 @@ header{
     background: rgba(200, 200, 200, 0.1);
     border-radius: 1.5rem;
     box-shadow: 1px 1px 10px #00000011;
-    width: 170px;
-    height: 170px;
+    padding: 2rem;
     transition: all .3s ease;
 }
 .category:hover{
@@ -244,7 +254,73 @@ header{
     font-weight: 500;
 }
 .category img{
+    object-fit: cover;
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
+}
+
+.mobile-categories{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.mobile-category{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: rgba(200, 200, 200, 0.1);
+    border-radius: 1.5rem;
+    padding: 1rem;
+    box-shadow: 1px 1px 10px #00000011;
+    transition: all .3s ease;
+    border: .5px solid #e98409;
+}
+
+.mobile-category h4{
+    padding-top: 1rem;
+    font-size: 1.2rem;
+}
+
+.mobile-category img{
+    width: 100%;
+    height: 15rem;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+
+.mobile-category .mobile-info{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.mobile-category .mobile-info p{
+    color: rgba(40, 40, 71, 0.7);
+}
+.mobile-category .mobile-info a{
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: #e98409;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    transition: transform .4s ease;
+}
+
+.mobile-category h3{
+    font-size: 1.2rem;
+    color: #ff8c00;
+}
+
+.mobile-category:hover{
+    cursor: pointer;
+    border: none;
+}
+.mobile-category:hover a{
+    transform: scale(1.3);
 }
