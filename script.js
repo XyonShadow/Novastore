@@ -38,3 +38,19 @@ searchInput.addEventListener('blur', () => {
     searchIcon.classList.remove('active');
     checkInput();
 });
+
+// switch categories
+function switchCategory(category, button){
+    const group = button.closest('.category-selector'); // Get the group the button belongs to
+    const buttons = group.querySelectorAll('button'); // Only buttons in that group
+
+    buttons.forEach(btn => btn.classList.remove("active")); // Remove active class from all buttons in this group
+    button.classList.add('active'); // Add active class to clicked button
+}
+
+// spin icon on click
+function spinIcon(element){
+    element.classList.remove('spin');
+    void element.offsetWidth; // force reflow to restart animation
+    element.classList.add('spin');
+}
