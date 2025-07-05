@@ -107,7 +107,8 @@ header{
     display: flex;
     gap: .7rem;
 }
-.head-icons a{
+.head-icons a, .head-icons button{
+    border: none;
     display: inline-flex;
     text-align: center;
     align-items: center;
@@ -127,7 +128,8 @@ header{
     font-size: 2.1rem;
 }
 
-.head-icons a:hover{
+.head-icons a:hover, .head-icons button:hover{
+    cursor: pointer;
     background: rgba(25, 29, 45, 0.3);
     color: rgba(63, 63, 104, 0.7);
     transform: scale(1.05);
@@ -550,4 +552,108 @@ footer .footer-icons a{
 footer .footer-icons a:hover{
     transform: scale(1.1);
     background: #00000033;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.filtered-products {
+    background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
+    padding: 2rem;
+    border-radius: 2rem;
+    /* display: none; */
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.category-buttons {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 1rem;
+    background-color: white;
+    border-bottom: 1px solid #eee;
+}
+
+.category-buttons::-webkit-scrollbar {
+    display: none;
+}
+
+.category-btn {
+    flex: 0 0 auto;
+    padding: 0.5rem 1.2rem;
+    background-color: #f3f3f3;
+    border: none;
+    border-radius: 999px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.category-btn:hover, .category-btn.active {
+    background-color: #c97106;
+    color: white;
+}
+
+.product-list {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.category-block h2 {
+    color: #c97106;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.product-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.product-card {
+    position: relative;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+.product-card:hover {
+    transform: translateY(-3px);
+}
+
+.product-card h3 {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    color: #333;
+}
+.product-card p {
+    font-weight: bold;
+    color: #c97106;
+    margin: 0;
+}
+
+.product-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
 }
