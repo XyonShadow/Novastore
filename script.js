@@ -51,14 +51,45 @@ if(searchInput){
     });
 }
 
+function changeCategoryContent (category, containerID){
+    const top = shuffleArray(
+        products.filter(p => p.category.toLowerCase() === category.toLowerCase())
+    ).slice(0, 4);
+
+    const container = document.getElementById(containerID);
+
+    container.innerHTML = top.map(product => `
+        <div class="mobile-category card" onclick="goTo('${product.category}', '${product.name}')">
+                <img src="Assets/car1.jpg" alt="">
+                <h4>${product.name}</h4>
+                <div class="mobile-info">
+                    <p>Discover the latest electronic</p>
+                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                </div>
+                <h3><i class="ri-money-dollar-circle-fill"></i>${product.price}</h3>
+            </div>
+    `).join('');
+}
+
 // switch categories
-function switchCategory(category, button){
+function switchCategory(category, button, containerID){
+    if(button){
     const group = button.closest('.category-selector'); // Get the group the button belongs to
     const buttons = group.querySelectorAll('button'); // Only buttons in that group
 
     buttons.forEach(btn => btn.classList.remove("active")); // Remove active class from all buttons in this group
     button.classList.add('active'); // Add active class to clicked button
+    }
+
+    // set container to switched category
+    changeCategoryContent(category, containerID);
 }
+
+// Refresh category content on load
+window.addEventListener('DOMContentLoaded', () => {
+    changeCategoryContent('Cars', 'vehicles');
+    changeCategoryContent('Printers', 'electronics');
+});
 
 // spin icon on click
 function spinIcon(element){

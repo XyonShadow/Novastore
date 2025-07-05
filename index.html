@@ -160,102 +160,28 @@
         <!--------------------------== Private Transport Section ==-------------------------->
         <div class="sub-title">
             <div style="display: flex; align-items: center; gap: 2rem;">
-                <h3>Private Transport</h3>
+                <h3>Vehicles</h3>
                 <div class="category-selector">
-                    <button class="active" onClick="switchCategory('car', this)">Car</button>
-                    <button onClick="switchCategory('car', this)">Bike</button>
-                    <button onClick="switchCategory('car', this)">Bus</button>
+                    <button class="active" onClick="switchCategory('cars', this, 'vehicles')">Cars</button>
+                    <button onClick="switchCategory('bikes', this, 'vehicles')">Bikes</button>
+                    <button onClick="switchCategory('buses', this, 'vehicles')">Buses</button>
                 </div>
             </div>
         </div>
-         <div class="mobile-categories">
-            <div class="mobile-category card" onclick="goTo('Cars', 'Toyota Camry 2019')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Toyota Camry 2019</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>825,000</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Cars', 'Honda CR-V 2021')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Honda CR-V 2021</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>106,000</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Cars', 'Ford Explorer 2018')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Ford Explorer 2018</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>128,000</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Cars', 'Hyundai Elantra 2020')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Hyundai Elantra 2020</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>144,000</h3>
-            </div>
-        </div>
+         <div id="vehicles" class="mobile-categories"></div>
 
         <!--------------------------== Printer Section ==-------------------------->
         <div class="sub-title">
             <div style="display: flex; align-items: center; gap: 2rem;">
-                <h3>Print & Scan</h3>
+                <h3>Electronics</h3>
                 <div class="category-selector">
-                    <button class="active" onClick="switchCategory('car', this)">Printer</button>
-                    <button onClick="switchCategory('car', this)">Scanner</button>
-                    <button onClick="switchCategory('car', this)">Copier</button>
+                    <button class="active" onClick="switchCategory('Printers', this, 'electronics')">Printers</button>
+                    <button onClick="switchCategory('Computers', this, 'electronics')">Computers</button>
+                    <button onClick="switchCategory('Drones', this, 'electronics')">Drones</button>
                 </div>
             </div>
         </div>
-         <div class="mobile-categories">
-            <div class="mobile-category card" onclick="goTo('Printers', 'Epson EcoTank L3150')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Epson EcoTank L3150</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>2,960</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Printers', 'HP DeskJet 2720')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>HP DeskJet 2720</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>1,796</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Printers', 'Canon Pixma G3411')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Canon Pixma G3411</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>6,600</h3>
-            </div>
-            <div class="mobile-category card" onclick="goTo('Printers', 'Brother DCP-L2540DW')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>Brother DCP-L2540DW</h4>
-                <div class="mobile-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>4,350</h3>
-            </div>
-        </div>
+         <div id="electronics" class="mobile-categories"></div>
 
         <!--------------------------== Load More Button ==-------------------------->
         <div class="load-section">
