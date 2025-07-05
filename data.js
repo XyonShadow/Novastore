@@ -19,7 +19,7 @@ const products = [
 
   // Electronics
   { id: 13, name: "Bluetooth Speaker", price: 25000, category: "Electronics", image: "images/electronics/speaker.jpg" },
-  { id: 14, name: "Smart LED TV 50\"", price: 360000, category: "Electronics", image: "images/electronics/tv.jpg" },
+  { id: 14, name: "Smart LED TV 50", price: 360000, category: "Electronics", image: "images/electronics/tv.jpg" },
   { id: 15, name: "Wireless Charger", price: 15000, category: "Electronics", image: "images/electronics/charger.jpg" },
   { id: 16, name: "Noise Cancelling Headphones", price: 68000, category: "Electronics", image: "images/electronics/headphones.jpg" },
 
@@ -51,5 +51,17 @@ const products = [
   { id: 33, name: "Toyota Hiace Bus", price: 8500000, category: "Buses", image: "images/buses/hiace.jpg" },
   { id: 34, name: "Ford Transit", price: 9200000, category: "Buses", image: "images/buses/transit.jpg" },
   { id: 35, name: "Mercedes Sprinter", price: 11000000, category: "Buses", image: "images/buses/sprinter.jpg" },
-  { id: 36, name: "Hyundai County", price: 8900000, category: "Buses", image: "images/buses/county.jpg" }
+  { id: 36, name: "Hyundai County", price: 8900000, category: "Buses", image: "images/buses/county.jpg" },
+
+  // Printers
+  { id: 25, name: "HP DeskJet 2720", price: 48000, category: "Printers", image: "images/printers/hp-deskjet.jpg" },
+  { id: 26, name: "Canon Pixma G3411", price: 73000, category: "Printers", image: "images/printers/canon-pixma.jpg" },
+  { id: 27, name: "Epson EcoTank L3150", price: 87000, category: "Printers", image: "images/printers/epson-ecotank.jpg" },
+  { id: 28, name: "Brother DCP-L2540DW", price: 96000, category: "Printers", image: "images/printers/brother-dcp.jpg" },
+
+  // Bikes
+  { id: 29, name: "Mountain Bike XT 21-Speed", price: 150000, category: "Bikes", image: "images/bikes/mountain-bike.jpg" },
+  { id: 30, name: "BMX Freestyle Bike", price: 105000, category: "Bikes", image: "images/bikes/bmx-freestyle.jpg" },
+  { id: 31, name: "Road Bike 700c Racer", price: 185000, category: "Bikes", image: "images/bikes/road-bike.jpg" },
+  { id: 32, name: "Foldable Commuter Bike", price: 98000, category: "Bikes", image: "images/bikes/foldable-bike.jpg" }
 ];
