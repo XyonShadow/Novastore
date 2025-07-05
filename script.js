@@ -59,10 +59,10 @@ function changeCategoryContent (category, containerID){
     const container = document.getElementById(containerID);
 
     container.innerHTML = top.map(product => `
-        <div class="mobile-category card" onclick="goTo('${product.category}', '${product.name}')">
+        <div class="product-card card" onclick="goTo('${product.category}', '${product.name}')">
                 <img src="Assets/car1.jpg" alt="">
                 <h4>${product.name}</h4>
-                <div class="mobile-info">
+                <div class="card-info">
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
@@ -265,10 +265,10 @@ function renderProduct(items, parent, mode = 'full') {
         // load searched products and set to link to cart
         if(mode === 'filtered'){
             card.innerHTML =  `
-                <div class='mobile-category card' onclick="goTo('${product.category}', '${product.name}')">
+                <div class='product-card card' onclick="goTo('${product.category}', '${product.name}')">
                 <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
-                <div class="mobile-info">
+                <div class="card-info">
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
@@ -280,7 +280,7 @@ function renderProduct(items, parent, mode = 'full') {
         
         // Load products in card.html and set 'Add to cart'
         if (mode !== 'filtered') {
-            card.classList.add('product-card','mobile-category','card');
+            card.classList.add('product-card','product-card','card');
             card.innerHTML = `
                 <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
                 <h3>${product.name}</h3>
