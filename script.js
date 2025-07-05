@@ -109,9 +109,16 @@ function switchCategory(category, button, containerID){
 
 // Refresh category content on load
 window.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('vehicles'))
     changeCategoryContent('Cars', 'vehicles');
+
+  if (document.getElementById('electronics'))
     changeCategoryContent('Printers', 'electronics');
+
+  if (document.getElementById('recommended'))
     changeCategoryContent('random', 'recommended');
+
+  if (document.getElementById('hot'))
     changeCategoryContent('random', 'hot');
 });
 
@@ -199,12 +206,15 @@ function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
 }
 
 const moreButton = document.querySelector('.load-more');
-
-moreButton.addEventListener('click', () => {
-    spinIcon(moreButton.querySelector('i'));
-
-    loadMoreCategory({excluded:['Cars', 'Buses', 'Bikes', 'Printers', 'Computers', 'Drones']});
-})
+    
+if (moreButton) {
+    moreButton.addEventListener('click', () => {
+        spinIcon(moreButton.querySelector('i'));
+        loadMoreCategory({
+        excluded: ['Cars', 'Buses', 'Bikes', 'Printers', 'Computers', 'Drones']
+        });
+    });
+}
 
 // spin icon on click
 function spinIcon(element){
@@ -309,7 +319,8 @@ function createCategoryButtons(){
         const shuffled = shuffleArray(products);
         renderCategoryBlock('All Products', shuffled, productContainer);
     };
-    categoryContainer.appendChild(allBtn);
+    
+    if(categoryContainer) categoryContainer.appendChild(allBtn);
 
     categories.forEach(category => {
         const btn = document.createElement('button');
@@ -319,7 +330,7 @@ function createCategoryButtons(){
             setActiveButton(this);
             filterByCategory(category, productContainer, productContainer);
         };
-        categoryContainer.appendChild(btn);
+        if(categoryContainer) categoryContainer.appendChild(btn);
     });
 }
 
@@ -366,7 +377,7 @@ function renderCategoryBlock(labelText, items, parent, mode) {
     block.appendChild(label);
 
     renderProduct(items, block, mode);
-    parent.appendChild(block);
+    if(parent) parent.appendChild(block);
 }
 
 // Render product cards inside a given container
@@ -406,7 +417,7 @@ function renderProduct(items, parent, mode = 'full') {
         group.appendChild(card);
     });
 
-    parent.appendChild(group);
+    if(parent) parent.appendChild(group);
 }
 
 // function to go to cart.html with selected category and product
