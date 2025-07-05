@@ -61,11 +61,11 @@ function trackProducts(productsArray){
 
 // change content of a category section
 function changeCategoryContent (category, containerID, append = null, count = 4){
-    let top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, count);
+    let top;
 
     if(category === 'random'){
-        top = products.filter(p => !shownProductIds.has(p.id)).slice(0, count);
-    }
+        top = shuffleArray(products.filter(p => !shownProductIds.has(p.id))).slice(0, count);
+    }else{ top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, count);}
 
     trackProducts(top);
 
