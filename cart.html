@@ -5,9 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart | NovaStore</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
 </head>
 <body>
+    <div class="container">
+        <!--------------------------== Header Section ==-------------------------->
+        <header>
+            <div class="logo">NovaStore</div>
+            <div class="search-box">
+                <div class="search-bar">
+                    <i class="ri-search-line"></i>
+                    <input name="itemSearch" type="text" placeholder="Search items">
+                </div>
+                <button onclick="searchAndActivateTab(filteredProducts)" class="search-btn">Search</button>
+            </div>
+            <div class="head-icons">
+                <button><i class="ri-currency-line"></i></button>
+                <a href="index.html"><i class="ri-shopping-cart-2-line"></i></a>
+                <a href="#"><i class="ri-account-circle-fill"></i></a>
+            </div>
+        </header>
+        <div class="category-buttons">
+            <!-- Buttons are rendered here -->
+        </div>
+        
+        <div class="filtered-products">
+
+        </div>
+
+        <div class="product-list mobile-categories">
+            <!-- Products are rendered here -->
+        </div>
+
+        <!--------------------------== Footer Section ==-------------------------->
+        <div class="footer">
+            <div>
+                <h2>NovaStore</h2>
+                <p>Discover the latest electronics, powerful computers, cutting-edge mobiles, security gadgets, accessories and more -- all from trusted sellers and at unbeatable prices.</p>
+            </div>
+            <li>
+                <span>Shopping</span>
+                <ul>Stall list</ul>
+                <ul>Shopping mall</ul>
+                <ul>Brand</ul>
+            </li>
+            <li>
+                <span>Knowledge Base</span>
+                <ul>Blogs</ul>
+                <ul>Shopping mall</ul>
+                <ul>Brand</ul>
+            </li>
+            <li>
+                <span>Download app</span>
+                <a href="#"><i class="ri-google-play-line"></i>Google Play</a>
+            </li>
+        </div>
+        
+        <!--------------------------== Copyright Section ==-------------------------->
+        <footer>
+            <p>Copyright &copy; NovaStore & design by <span>XyonShadow</span></p>
+            <div class="footer-icons">
+                <a href="#"><i class="ri-facebook-circle-fill"></i></a>
+                <a href="#"><i class="ri-instagram-line"></i></a>
+                <a href="#"><i class="ri-linkedin-box-fill"></i></a>
+                <a href="#"><i class="ri-whatsapp-line"></i></a>
+            </div>
+        </footer=>
     
+    </div>
+        
+
+   
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
