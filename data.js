@@ -54,14 +54,38 @@ const products = [
   { id: 36, name: "Hyundai County", price: 8900000, category: "Buses", image: "images/buses/county.jpg" },
 
   // Printers
-  { id: 25, name: "HP DeskJet 2720", price: 48000, category: "Printers", image: "images/printers/hp-deskjet.jpg" },
-  { id: 26, name: "Canon Pixma G3411", price: 73000, category: "Printers", image: "images/printers/canon-pixma.jpg" },
-  { id: 27, name: "Epson EcoTank L3150", price: 87000, category: "Printers", image: "images/printers/epson-ecotank.jpg" },
-  { id: 28, name: "Brother DCP-L2540DW", price: 96000, category: "Printers", image: "images/printers/brother-dcp.jpg" },
+  { id: 37, name: "HP DeskJet 2720", price: 48000, category: "Printers", image: "images/printers/hp-deskjet.jpg" },
+  { id: 38, name: "Canon Pixma G3411", price: 73000, category: "Printers", image: "images/printers/canon-pixma.jpg" },
+  { id: 39, name: "Epson EcoTank L3150", price: 87000, category: "Printers", image: "images/printers/epson-ecotank.jpg" },
+  { id: 40, name: "Brother DCP-L2540DW", price: 96000, category: "Printers", image: "images/printers/brother-dcp.jpg" },
 
   // Bikes
-  { id: 29, name: "Mountain Bike XT 21-Speed", price: 150000, category: "Bikes", image: "images/bikes/mountain-bike.jpg" },
-  { id: 30, name: "BMX Freestyle Bike", price: 105000, category: "Bikes", image: "images/bikes/bmx-freestyle.jpg" },
-  { id: 31, name: "Road Bike 700c Racer", price: 185000, category: "Bikes", image: "images/bikes/road-bike.jpg" },
-  { id: 32, name: "Foldable Commuter Bike", price: 98000, category: "Bikes", image: "images/bikes/foldable-bike.jpg" }
+  { id: 41, name: "Mountain Bike XT 21-Speed", price: 150000, category: "Bikes", image: "images/bikes/mountain-bike.jpg" },
+  { id: 42, name: "BMX Freestyle Bike", price: 105000, category: "Bikes", image: "images/bikes/bmx-freestyle.jpg" },
+  { id: 43, name: "Road Bike 700c Racer", price: 185000, category: "Bikes", image: "images/bikes/road-bike.jpg" },
+  { id: 44, name: "Foldable Commuter Bike", price: 98000, category: "Bikes", image: "images/bikes/foldable-bike.jpg" },
+
+  // Smart Home
+  { id: 45, name: "Smart Light Bulb", price: 8000, category: "Smart Home", image: "images/smart-home/lightbulb.jpg" },
+  { id: 46, name: "WiFi Smart Plug", price: 9500, category: "Smart Home", image: "images/smart-home/smart-plug.jpg" },
+  { id: 47, name: "Smart Thermostat", price: 52000, category: "Smart Home", image: "images/smart-home/thermostat.jpg" },
+  { id: 48, name: "Voice Assistant Speaker", price: 32000, category: "Smart Home", image: "images/smart-home/speaker.jpg" },
+
+  // Wearables
+  { id: 49, name: "Apple Watch Series 9", price: 320000, category: "Wearables", image: "images/wearables/apple-watch.jpg" },
+  { id: 50, name: "Samsung Galaxy Watch 6", price: 270000, category: "Wearables", image: "images/wearables/galaxy-watch.jpg" },
+  { id: 51, name: "Xiaomi Mi Band 8", price: 28000, category: "Wearables", image: "images/wearables/mi-band.jpg" },
+  { id: 52, name: "Fitbit Charge 6", price: 90000, category: "Wearables", image: "images/wearables/fitbit.jpg" },
+
+  // Kids
+  { id: 53, name: "Electric Toy Car", price: 65000, category: "Kids", image: "images/kids/electric-car.jpg" },
+  { id: 54, name: "Educational Tablet", price: 45000, category: "Kids", image: "images/kids/edu-tablet.jpg" },
+  { id: 55, name: "Remote Control Helicopter", price: 38000, category: "Kids", image: "images/kids/rc-heli.jpg" },
+  { id: 56, name: "Smart Drawing Board", price: 25000, category: "Kids", image: "images/kids/drawing-board.jpg" },
+
+  // Power
+  { id: 57, name: "1.5kVA Inverter", price: 185000, category: "Power", image: "images/power/inverter.jpg" },
+  { id: 58, name: "Solar Panel 200W", price: 72000, category: "Power", image: "images/power/solar-panel.jpg" },
+  { id: 59, name: "Power Bank 20000mAh", price: 18000, category: "Power", image: "images/power/powerbank.jpg" },
+  { id: 60, name: "Generator 3.5KVA", price: 230000, category: "Power", image: "images/power/generator.jpg" }
 ];
