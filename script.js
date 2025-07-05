@@ -86,16 +86,8 @@ function searchAndRenderProducts(parent) {
     }
 
     Parent = parent;
-    filterByCategory(query, parent);
+    filterByCategory(query, parent, null, 'filtered');
     parent.style.display = 'grid';
-
-    // Smooth scroll to first matching product if available
-    setTimeout(() => {
-        const firstProduct = parent.querySelector('.product-card');
-        if (firstProduct) {
-            firstProduct.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, 150);
 }
 
 // Handles tab activation and scrolls to category if matched
@@ -186,7 +178,7 @@ function createCategoryButtons(){
 }
 
 // Filter and render products based on selected category
-function filterByCategory(selectedCategory, parent, otherParent) {
+function filterByCategory(selectedCategory, parent, otherParent, mode) {
     parent.innerHTML = '';
 
     const top = shuffleArray(
@@ -195,7 +187,7 @@ function filterByCategory(selectedCategory, parent, otherParent) {
 
     if (top.length > 0) {
         const categoryLabel = top.length > 0 ? top[0].category : selectedCategory;
-        renderCategoryBlock(categoryLabel, top, parent); // Show selected category first
+        renderCategoryBlock(mode === 'filtered'?`Search results for ${categoryLabel}`:categoryLabel, top, parent, mode); // Show selected category first
     } else {
         const validCategories = [...new Set(products.map(p => p.category))];
         const suggestions = validCategories.join(', ');
@@ -219,7 +211,7 @@ function filterByCategory(selectedCategory, parent, otherParent) {
 }
 
 // Render a labeled block of products under a given heading
-function renderCategoryBlock(labelText, items, parent) {
+function renderCategoryBlock(labelText, items, parent, mode) {
     const block = document.createElement('div');
     block.classList.add('category-block');
 
@@ -227,29 +219,55 @@ function renderCategoryBlock(labelText, items, parent) {
     label.textContent = labelText;
     block.appendChild(label);
 
-    renderProduct(items, block);
+    renderProduct(items, block, mode);
     parent.appendChild(block);
 }
 
 // Render product cards inside a given container
-function renderProduct(items, parent){
+function renderProduct(items, parent, mode = 'full') {
     const group = document.createElement('div');
     group.classList.add('product-group');
 
     items.forEach(product => {
         const card = document.createElement('div');
-        card.classList.add('product-card','mobile-category','card');
-
-        card.innerHTML = `
-            <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
-            <h3>${product.name}</h3>
-            <p>₦${product.price.toLocaleString()}</p>
-        `;
+      
+        // load searched products and set to link to cart
+        if(mode === 'filtered'){
+            card.innerHTML =  `
+                <div class='mobile-category card' onclick="goTo('${product.category}', '${product.name}')">
+                <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
+                <h4>${product.name}</h4>
+                <div class="mobile-info">
+                    <p>Discover the latest electronic</p>
+                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                </div>
+               
+                <h3>₦${product.price.toLocaleString()}</h3>
+                </div
+            `;
+        }
+        
+        // Load products in card.html and set 'Add to cart'
+        if (mode !== 'filtered') {
+            card.classList.add('product-card','mobile-category','card');
+            card.innerHTML = `
+                <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
+                <h3>${product.name}</h3>
+                <p>₦${product.price.toLocaleString()}</p>
+            `;
+        }
 
         group.appendChild(card);
     });
 
     parent.appendChild(group);
+}
+
+// function to go to cart.html with selected category and product
+function goTo(category, product) {
+  const timestamp = Date.now(); // force unique URL
+  const url = `./cart.html?category=${encodeURIComponent(category)}${product?`&product=${encodeURIComponent(product)}`:''}&t=${timestamp}`;
+  window.location.href = url;
 }
 
 const categoryButtons = document.querySelectorAll('.category-btn');
@@ -258,3 +276,33 @@ const categoryButtons = document.querySelectorAll('.category-btn');
 createCategoryButtons();
 const shuffledInitial = shuffleArray(products);
 renderCategoryBlock('All Products', shuffledInitial, productContainer);
+
+// to read url Query Parameters
+const params = new URLSearchParams(window.location.search);
+const selectedCategory = params.get('category');
+const selectedProduct = params.get('product');
+
+// if category exists, trigger that category’s filter
+if (selectedCategory) {
+    const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(
+        btn => btn.textContent.toLowerCase() === selectedCategory.toLowerCase()
+    );
+
+    if (matchingBtn) {
+        matchingBtn.click(); // this triggers the product rendering
+        matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    }
+}
+
+// Scroll to the spectific product after rendering
+if (selectedProduct) {
+    setTimeout(() => {
+        const match = [...document.querySelectorAll('.product-card')].find(card =>
+            card.querySelector('h3')?.textContent === selectedProduct
+        );
+        if (match) {
+            match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            match.classList.add('highlighted');
+        }
+    }, 100); // delay to ensure rendering is done
+}
