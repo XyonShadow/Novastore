@@ -51,26 +51,46 @@ if(searchInput){
     });
 }
 
-function changeCategoryContent (category, containerID){
-    let top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, 4);
+const shownProductIds = new Set(); // Global tracker
+
+// track products already shown
+function trackProducts(productsArray){
+    let available = products.filter(p => !shownProductIds.has(p.id));
+    productsArray.forEach(p => shownProductIds.add(p.id));
+}
+
+// change content of a category section
+function changeCategoryContent (category, containerID, append = null, count = 4){
+    let top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, count);
 
     if(category === 'random'){
-        top = shuffleArray(products).slice(0, 4);
+        top = products.filter(p => !shownProductIds.has(p.id)).slice(0, count);
     }
+
+    trackProducts(top);
 
     const container = document.getElementById(containerID);
 
-    container.innerHTML = top.map(product => `
-        <div class="product-card card" onclick="goTo('${product.category}', '${product.name}')">
-                <img src="Assets/car1.jpg" alt="">
-                <h4>${product.name}</h4>
-                <div class="card-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>${product.price}</h3>
-            </div>
-    `).join('');
+    const message = top.map(product => `
+                    <div class="product-card card" onclick="goTo('${product.category}', '${product.name}')">
+                            <img src="Assets/car1.jpg" alt="">
+                            <h4>${product.name}</h4>
+                            <div class="card-info">
+                                <p>Discover the latest electronic</p>
+                                <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                            </div>
+                            <h3><i class="ri-money-dollar-circle-fill"></i>${product.price}</h3>
+                        </div>
+                    `).join('');
+
+    const loadContainer = document.createElement('div');
+    loadContainer.className = 'card-container';
+    loadContainer.innerHTML = message;
+    if(append){
+        container.appendChild(loadContainer);
+    }else{
+        container.innerHTML = message;
+    }
 }
 
 // switch categories
@@ -94,6 +114,97 @@ window.addEventListener('DOMContentLoaded', () => {
     changeCategoryContent('random', 'recommended');
     changeCategoryContent('random', 'hot');
 });
+
+let noMoreToLoad = false; // Global flag
+const count = 4;
+
+function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
+    if (noMoreToLoad) return;
+
+    // Get unused products
+    const unused = products.filter(p => !shownProductIds.has(p.id));
+
+    // If nothing left, exit
+    if (unused.length === 0) {
+        noMoreToLoad = true;
+        return;
+    }
+
+    // Group unused products by category
+    const categoryMap = {};
+    unused.forEach(p => {
+            if (!categoryMap[p.category]) categoryMap[p.category] = [];
+            categoryMap[p.category].push(p);
+        });
+
+    // Turns thecategoryMap into an array of pairs    
+    const valid = Object.entries(categoryMap).filter(([category, productsArray]) => {
+                // filters only the categories that have at least 'count' number of products and the ones not contained in excluded array
+                return productsArray.length >= count && !excluded.includes(category)}); 
+
+    let selectedProducts = [];
+    let selectedCategory = '';
+
+    if (valid.length > 0) {
+    // Pick random entry from valid categories
+        const [cat, list] = valid[Math.floor(Math.random() * valid.length)];
+        selectedCategory = cat;
+        selectedProducts = shuffleArray(list).slice(0, count);
+    } else {
+        // Final load: grab whatever is left from any one category
+        const [cat, list] = Object.entries(categoryMap)[0]; // pick any category
+        selectedCategory = cat;
+        selectedProducts = list; // maybe < count
+        noMoreToLoad = true;
+    }
+
+    // Track them as shown
+    trackProducts(selectedProducts);
+
+    // Build and append section
+    const cardsHTML = selectedProducts.map(p => `
+                    <div class="product-card card" onclick="goTo('${p.category}', '${p.name}')">
+                        <img src="Assets/car1.jpg" alt="">
+                        <h4>${p.name}</h4>
+                        <div class="card-info">
+                        <p>Discover the latest in ${p.category}</p>
+                        <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                        </div>
+                        <h3><i class="ri-money-dollar-circle-fill"></i>${p.price}</h3>
+                    </div>
+                    `).join('');
+
+    const labelText = document.createElement('div');
+    labelText.className = 'sub-title';
+    labelText.innerHTML = `
+                    <h2>${selectedCategory}</h2>
+                    <a href="./cart.html">See All</a>   
+                    `;
+
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'card-container';
+    cardContainer.innerHTML = cardsHTML;
+
+
+    setTimeout(()=>{
+        document.getElementById(containerID).appendChild(labelText);
+        document.getElementById(containerID).appendChild(cardContainer);
+    }, Math.floor(Math.random() * 100) + 1000);
+    
+
+    // Hide the button immediately if last load
+    if (noMoreToLoad) {
+        document.querySelector('.load-section').innerHTML = '<p>You\'ve Reached the End, <a href="./cart.html">Go to Cart</a></p>';
+    }
+}
+
+const moreButton = document.querySelector('.load-more');
+
+moreButton.addEventListener('click', () => {
+    spinIcon(moreButton.querySelector('i'));
+
+    loadMoreCategory({excluded:['Cars', 'Buses', 'Bikes', 'Printers', 'Computers', 'Drones']});
+})
 
 // spin icon on click
 function spinIcon(element){
@@ -191,7 +302,7 @@ function setActiveButton(clickedButton) {
 function createCategoryButtons(){
     const allBtn = document.createElement('button');
     allBtn.textContent = 'All';
-    allBtn.classList.add('category-btn', 'active');
+    allBtn.className = 'category-btn active';
     allBtn.onclick = function () {
         setActiveButton(this);
         productContainer.innerHTML = '';
@@ -203,7 +314,7 @@ function createCategoryButtons(){
     categories.forEach(category => {
         const btn = document.createElement('button');
         btn.textContent = category;
-        btn.classList.add('category-btn');
+        btn.className = 'category-btn';
         btn.onclick = function () {
             setActiveButton(this);
             filterByCategory(category, productContainer, productContainer);
@@ -248,7 +359,7 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
 // Render a labeled block of products under a given heading
 function renderCategoryBlock(labelText, items, parent, mode) {
     const block = document.createElement('div');
-    block.classList.add('category-block');
+    block.className = 'category-block';
 
     const label = document.createElement('h2');
     label.textContent = labelText;
@@ -261,7 +372,7 @@ function renderCategoryBlock(labelText, items, parent, mode) {
 // Render product cards inside a given container
 function renderProduct(items, parent, mode = 'full') {
     const group = document.createElement('div');
-    group.classList.add('product-group');
+    group.className = 'product-group';
 
     items.forEach(product => {
         const card = document.createElement('div');
@@ -284,7 +395,7 @@ function renderProduct(items, parent, mode = 'full') {
         
         // Load products in card.html and set 'Add to cart'
         if (mode !== 'filtered') {
-            card.classList.add('product-card','product-card','card');
+            card.className = 'product-card card';
             card.innerHTML = `
                 <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
                 <h3>${product.name}</h3>

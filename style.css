@@ -395,7 +395,7 @@ header{
 }
 
 .spin{
-    animation: spin .4s linear 1;
+    animation: spin 1s linear 1;
 }
 @keyframes spin{
     from{
