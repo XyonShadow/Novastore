@@ -52,9 +52,11 @@ if(searchInput){
 }
 
 function changeCategoryContent (category, containerID){
-    const top = shuffleArray(
-        products.filter(p => p.category.toLowerCase() === category.toLowerCase())
-    ).slice(0, 4);
+    let top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, 4);
+
+    if(category === 'random'){
+        top = shuffleArray(products).slice(0, 4);
+    }
 
     const container = document.getElementById(containerID);
 
@@ -89,6 +91,8 @@ function switchCategory(category, button, containerID){
 window.addEventListener('DOMContentLoaded', () => {
     changeCategoryContent('Cars', 'vehicles');
     changeCategoryContent('Printers', 'electronics');
+    changeCategoryContent('random', 'recommended');
+    changeCategoryContent('random', 'hot');
 });
 
 // spin icon on click
