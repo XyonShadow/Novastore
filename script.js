@@ -112,18 +112,12 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     }
 }
 
+// will use the cached IDs to refresh content(used after changing currency)
 function updateCategoryContent(){
-    if (document.getElementById('vehicles'))
-        changeCategoryContent('Cars', 'vehicles');
-
-    if (document.getElementById('electronics'))
-        changeCategoryContent('Printers', 'electronics');
-
-    if (document.getElementById('recommended'))
-        changeCategoryContent('random', 'recommended');
-
-    if (document.getElementById('hot'))
-        changeCategoryContent('random', 'hot');
+    for (const containerId in shownProductIdsBySection) {
+        changeCategoryContent('cached', containerId);
+    }
+    refreshMoreSections();
 }
 
 function switchCategory(category, button, containerID){
@@ -141,17 +135,56 @@ function switchCategory(category, button, containerID){
     changeCategoryContent(category, containerID);
 }
 
-// Refresh category content on load
 window.addEventListener('DOMContentLoaded', async () => {
-    updateCategoryContent();
-    await fetchRates('USD');
+    // Refresh contents on load
+    if (document.getElementById('vehicles'))
+        changeCategoryContent('Cars', 'vehicles');
+
+    if (document.getElementById('electronics'))
+        changeCategoryContent('Printers', 'electronics');
+
+    if (document.getElementById('recommended'))
+        changeCategoryContent('random', 'recommended');
+
+    if (document.getElementById('hot'))
+        changeCategoryContent('random', 'hot');
+
+    // fetchRates from API
+    await fetchRates();
 });
 
-let noMoreToLoad = false; // Global flag
-const count = 4;
+let moreSections = []; // Stores each loaded section
+// used to rebuild loaded products with updated prices
+function refreshMoreSections() {
+    const container = document.getElementById('load-area');
+    container.innerHTML = ''; // clear all previously rendered more sections
 
+    moreSections.forEach(({ category, productIds }) => {
+        const productsToShow = productIds
+          .map(id => products.find(p => p.id === id))
+          .filter(Boolean);
+
+        const cardsHTML = setCardHtml(productsToShow);
+
+        const labelText = document.createElement('div');
+        labelText.className = 'sub-title';
+        labelText.innerHTML = `
+          <h2>${category}</h2>
+          <a href="./cart.html">See All</a>   
+        `;
+
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'card-container';
+        cardContainer.innerHTML = cardsHTML;
+
+        container.appendChild(labelText);
+        container.appendChild(cardContainer);
+    });
+}
+
+let noMoreToLoad = false; // Global flag
 // load more categories on homepage
-function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
+function loadMoreCategory({excluded = [], containerID = 'load-area', count = 4} = {}) {
     if (noMoreToLoad) return;
 
     // Get unused products
@@ -193,6 +226,12 @@ function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
 
     // Track them as shown
     trackProducts(selectedProducts);
+
+    // save this loaded section for future refresh
+    moreSections.push({
+        category: selectedCategory,
+        productIds: selectedProducts.map(p => p.id)
+    });
 
     // Build and append section
     const cardsHTML = setCardHtml(selectedProducts)
@@ -643,5 +682,5 @@ function handleCurrencyChange(selectedCurrency){
             p.price = convertPrice(p.originalPrice, selectedCurrency);
         });
     }
-    updateCategoryContent();
+    updateCategoryContent(); // rebuild sections
 }
