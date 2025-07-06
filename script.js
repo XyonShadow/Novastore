@@ -108,18 +108,19 @@ function switchCategory(category, button, containerID){
 }
 
 // Refresh category content on load
-window.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('vehicles'))
-    changeCategoryContent('Cars', 'vehicles');
+window.addEventListener('DOMContentLoaded', async () => {
+    await fetchRates('USD');
+    if (document.getElementById('vehicles'))
+        changeCategoryContent('Cars', 'vehicles');
 
-  if (document.getElementById('electronics'))
-    changeCategoryContent('Printers', 'electronics');
+    if (document.getElementById('electronics'))
+        changeCategoryContent('Printers', 'electronics');
 
-  if (document.getElementById('recommended'))
-    changeCategoryContent('random', 'recommended');
+    if (document.getElementById('recommended'))
+        changeCategoryContent('random', 'recommended');
 
-  if (document.getElementById('hot'))
-    changeCategoryContent('random', 'hot');
+    if (document.getElementById('hot'))
+        changeCategoryContent('random', 'hot');
 });
 
 let noMoreToLoad = false; // Global flag
@@ -464,32 +465,46 @@ if (selectedProduct) {
 }
 
 
-const customSelect = document.querySelector('.select-container');
-const trigger = customSelect.querySelector('.select-trigger');
-const option = customSelect.querySelectorAll('.option');
-const options = customSelect.querySelector('.options');
-const arrow = customSelect.querySelector('.ri-arrow-down-s-line');
+const Select = document.querySelector('.select-container');
+const trigger = Select.querySelector('.select-trigger');
+const option = Select.querySelectorAll('.option');
+const options = Select.querySelector('.options');
+const arrow = Select.querySelector('.ri-arrow-down-s-line');
 
 let isRotated = false;
-customSelect.addEventListener('click', (e) => {
+Select.addEventListener('click', (e) => {
     // Only toggle if clicking on the trigger (not on options)
     const isOption = options.contains(e.target);
 
     if (!isOption) {
-        customSelect.classList.toggle('open');
+        Select.classList.toggle('open');
         isRotated = !isRotated;
         arrow.style.transform = isRotated ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 });
 
+function selectCurrency(opt) {
+    const value = opt.dataset.value;
+    const label = opt.innerHTML;
+
+    // Update visible selected value
+    trigger.querySelector('span').innerHTML = label;
+
+    // Close dropdown
+    Select.classList.remove('open');
+
+    // Reset arrow rotation
+    isRotated = false;
+    arrow.style.transform = 'rotate(0deg)';
+
+    // Trigger currency logic
+    handleCurrencyChange(value);
+}
+
 option.forEach(opt => {
     opt.addEventListener('click', () => {
-        trigger.querySelector('span').innerHTML = opt.innerHTML;
-        // trigger.dataset.value = option.dataset.value;
-        customSelect.classList.remove('open');
-
-        // Trigger your currency change handler here using option.dataset.value
-        console.log('Selected currency:', opt.dataset.value);
+        // trigger currency change handler 
+        selectCurrency(opt);
     });
 });
 
@@ -507,12 +522,12 @@ function highlightOption(index) {
 let focusedIndex = -1; // Keeps track of which option is focused
 
 // keyboard event for when select container is selected
-customSelect.addEventListener('keydown', (e) => {
-    const isOpen = customSelect.classList.contains('open');
+Select.addEventListener('keydown', (e) => {
+    const isOpen = Select.classList.contains('open');
 
     if ((e.key === 'Enter' || e.key === ' ') && focusedIndex === -1) {
         e.preventDefault();
-        customSelect.classList.toggle('open');
+        Select.classList.toggle('open');
         return;
     }
 
@@ -520,7 +535,7 @@ customSelect.addEventListener('keydown', (e) => {
         e.preventDefault();
 
         if (!isOpen) {
-            customSelect.classList.add('open');
+            Select.classList.add('open');
         }
 
         focusedIndex = (focusedIndex + 1) % option.length;
@@ -531,7 +546,7 @@ customSelect.addEventListener('keydown', (e) => {
         e.preventDefault();
 
         if (!isOpen) {
-            customSelect.classList.add('open');
+            Select.classList.add('open');
         }
 
         focusedIndex = (focusedIndex - 1 + option.length) % option.length;
@@ -547,9 +562,65 @@ customSelect.addEventListener('keydown', (e) => {
 });
 
 // Close dropdown if focus is outside
-customSelect.addEventListener('blur', () => {
-    customSelect.classList.remove('open');
+Select.addEventListener('blur', () => {
+    Select.classList.remove('open');
     isRotated = false;
-    customSelect.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
+    Select.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
 });
 
+let conversionRates = {};
+
+// get rates from api
+async function fetchRates() {
+    try {
+        const res = await fetch(`https://v6.exchangerate-api.com/v6/ff0d7bb9188a0511930076eb/latest/NGN`);
+        const data = await res.json();
+        conversionRates = data.conversion_rates;
+        saveRatesToStorage(conversionRates);
+    } catch (err) {
+        console.error('Failed to fetch rates', err.message);
+    }
+}
+
+// save rates to local storage
+function saveRatesToStorage(rates) {
+    localStorage.setItem('exchangeRates', JSON.stringify(rates));
+    localStorage.setItem('ratesTimestamp', Date.now());
+}
+
+// get rates from local storage
+function getRatesFromStorage() {
+    const raw = localStorage.getItem('exchangeRates');
+    return raw ? JSON.parse(raw) : null;    
+}
+
+// convert based on rate from storage
+function convertPrice(basePrice, targetCurrency){
+    targetCurrency = targetCurrency.toUpperCase();
+    
+    const rates = getRatesFromStorage();
+    const ngnRate = rates['NGN'];
+    const targetRate = rates[targetCurrency];
+
+    if (!ngnRate || !targetRate) return basePrice;
+
+    // Step 1: base price -> NGN
+    const changedPrice = basePrice / ngnRate;
+
+    // Step 2: changed price in NGN -> Target Currency
+    const convertedPrice = +(changedPrice * targetRate).toFixed(2);
+    
+
+    return convertedPrice;
+}
+
+function handleCurrencyChange(selectedCurrency){
+    if (selectedCurrency === 'NGN') {
+        products.forEach(p => p.price = p.originalPrice);
+    } else {
+        products.forEach(p => {
+            if (!p.originalPrice) p.originalPrice = p.price;
+            p.price = convertPrice(p.originalPrice, selectedCurrency);
+        });
+    }
+}
