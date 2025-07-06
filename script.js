@@ -51,6 +51,21 @@ if(searchInput){
     });
 }
 
+// set html of a product card for a container
+function setCardHtml(container){
+    return container.map(p => `
+            <div class="product-card card" onclick="goTo('${p.category}', '${p.name}')">
+                <img src="Assets/car1.jpg" alt="">
+                <h4>${p.name}</h4>
+                <div class="card-info">
+                <p>Discover the latest in ${p.category}</p>
+                <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                </div>
+                <h3><i class="ri-money-dollar-circle-fill"></i>${p.price}</h3>
+            </div>
+            `).join('');
+}
+
 const shownProductIds = new Set(); // Global tracker
 
 // track products already shown
@@ -59,29 +74,33 @@ function trackProducts(productsArray){
     productsArray.forEach(p => shownProductIds.add(p.id));
 }
 
+const shownProductIdsBySection = {} // stores the ids of products already rendered in each category section
+
 // change content of a category section
 function changeCategoryContent (category, containerID, append = null, count = 4){
-    let top;
+    let selectedProducts = [];
 
-    if(category === 'random'){
-        top = shuffleArray(products.filter(p => !shownProductIds.has(p.id))).slice(0, count);
-    }else{ top = shuffleArray(products.filter(p => p.category.toLowerCase() === category.toLowerCase())).slice(0, count);}
+    if(shownProductIdsBySection[containerID]){
+        // use cached IDs to get original products in same order
+        const ids = shownProductIdsBySection[containerID];
+        selectedProducts = ids
+            .map(id => products.find(p => p.id === id)) // find the products already shown
+            .filter(Boolean); // In case a product no longer exists
+    }else {
+        // first time rendering — filter/shuffle normally
+        filtered = category === 'random'
+            ? shuffleArray(products.filter(p => !shownProductIds.has(p.id))) // randomly take products not shown before
+            : products.filter(p => p.category.toLowerCase() === category.toLowerCase()); // take products from a specific category
+        
+        selectedProducts = filtered.slice(0, count); // take only needed count
+        trackProducts(selectedProducts); // track shown products
 
-    trackProducts(top);
-
+        // cache the ids of products used in this section
+        shownProductIdsBySection[containerID] = selectedProducts.map(p => p.id);
+    }
+    
     const container = document.getElementById(containerID);
-
-    const message = top.map(product => `
-                    <div class="product-card card" onclick="goTo('${product.category}', '${product.name}')">
-                            <img src="Assets/car1.jpg" alt="">
-                            <h4>${product.name}</h4>
-                            <div class="card-info">
-                                <p>Discover the latest electronic</p>
-                                <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                            </div>
-                            <h3><i class="ri-money-dollar-circle-fill"></i>${product.price}</h3>
-                        </div>
-                    `).join('');
+    const message = setCardHtml(selectedProducts);
 
     const loadContainer = document.createElement('div');
     loadContainer.className = 'card-container';
@@ -93,23 +112,7 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     }
 }
 
-// switch categories
-function switchCategory(category, button, containerID){
-    if(button){
-    const group = button.closest('.category-selector'); // Get the group the button belongs to
-    const buttons = group.querySelectorAll('button'); // Only buttons in that group
-
-    buttons.forEach(btn => btn.classList.remove("active")); // Remove active class from all buttons in this group
-    button.classList.add('active'); // Add active class to clicked button
-    }
-
-    // set container to switched category
-    changeCategoryContent(category, containerID);
-}
-
-// Refresh category content on load
-window.addEventListener('DOMContentLoaded', async () => {
-    await fetchRates('USD');
+function updateCategoryContent(){
     if (document.getElementById('vehicles'))
         changeCategoryContent('Cars', 'vehicles');
 
@@ -121,6 +124,27 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (document.getElementById('hot'))
         changeCategoryContent('random', 'hot');
+}
+
+function switchCategory(category, button, containerID){
+    if(button){
+    const group = button.closest('.category-selector'); // Get the group the button belongs to
+    const buttons = group.querySelectorAll('button'); // Only buttons in that group
+
+    buttons.forEach(btn => btn.classList.remove("active")); // Remove active class from all buttons in this group
+    button.classList.add('active'); // Add active class to clicked button
+    }
+
+    // delete cache of products for the container 
+    delete shownProductIdsBySection[containerID]
+    // set container to switched category
+    changeCategoryContent(category, containerID);
+}
+
+// Refresh category content on load
+window.addEventListener('DOMContentLoaded', async () => {
+    updateCategoryContent();
+    await fetchRates('USD');
 });
 
 let noMoreToLoad = false; // Global flag
@@ -171,17 +195,7 @@ function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
     trackProducts(selectedProducts);
 
     // Build and append section
-    const cardsHTML = selectedProducts.map(p => `
-                    <div class="product-card card" onclick="goTo('${p.category}', '${p.name}')">
-                        <img src="Assets/car1.jpg" alt="">
-                        <h4>${p.name}</h4>
-                        <div class="card-info">
-                        <p>Discover the latest in ${p.category}</p>
-                        <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
-                        </div>
-                        <h3><i class="ri-money-dollar-circle-fill"></i>${p.price}</h3>
-                    </div>
-                    `).join('');
+    const cardsHTML = setCardHtml(selectedProducts)
 
     const labelText = document.createElement('div');
     labelText.className = 'sub-title';
@@ -629,4 +643,5 @@ function handleCurrencyChange(selectedCurrency){
             p.price = convertPrice(p.originalPrice, selectedCurrency);
         });
     }
+    updateCategoryContent();
 }
