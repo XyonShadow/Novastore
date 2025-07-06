@@ -505,6 +505,12 @@ option.forEach(opt => {
     opt.addEventListener('click', () => {
         // trigger currency change handler 
         selectCurrency(opt);
+        
+        // remove selcected class from all
+        option.forEach(opt => opt.classList.remove('selected'));
+
+        // add selected class to current
+        opt.classList.add('selected');
     });
 });
 

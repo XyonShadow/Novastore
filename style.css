@@ -165,7 +165,9 @@ justify-content: space-between;
     background: transparent;
     cursor: pointer;
 }
-
+.option.selected{
+    display: none;
+}
 .option.highlighted {
     border: 1.5px solid rgba(102, 117, 172);
 }
