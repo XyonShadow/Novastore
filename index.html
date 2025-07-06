@@ -6,6 +6,7 @@
     <title>NovaStore - Tech, Gadgets, Csrs and More</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -20,8 +21,21 @@
                 </div>
                 <button onclick="searchAndRenderProducts(filteredProducts)" class="search-btn">Search</button>
             </div>
+            <div title="Select Currency" class="select-container"  tabindex="0">
+                <div class="select-trigger"><span>NGN</span><i class="ri-arrow-down-s-line"></i></div>
+                <div class="options">
+                    <div class="option" data-value="usd">
+                        <i class="fa fa-dollar-sign"></i> USD
+                    </div>
+                    <div class="option" data-value="eur">
+                        <i class="fa fa-euro-sign"></i> EUR
+                    </div>
+                    <div class="option" data-value="ngn">
+                        <i class="fa fa-naira-sign"></i> NGN
+                    </div>
+                </div>
+            </div>
             <div class="head-icons">
-                <a href="#"><i class="ri-currency-line"></i></a>
                 <a href="cart.html"><i class="ri-shopping-cart-2-line"></i></a>
                 <a href="#"><i class="ri-account-circle-fill"></i></a>
             </div>
@@ -54,7 +68,7 @@
             <div class="category card" onclick="goTo('Electronics')">
                 <img src="Assets/car1.jpg" alt="">
                 <div class="card-info">
-                    <h4>Digital Devices</h4>
+                    <h4>Electronics</h4>
                     <a href="#"><i class="ri-external-link-line"></i></a>
                 </div>
             </div>
@@ -117,7 +131,7 @@
         <!--------------------------== Printer Section ==-------------------------->
         <div class="sub-title">
             <div style="display: flex; align-items: center; gap: 2rem;">
-                <h3>Electronics</h3>
+                <h3>Digital Devices</h3>
                 <div class="category-selector">
                     <button class="active" onClick="switchCategory('Printers', this, 'electronics')">Printers</button>
                     <button onClick="switchCategory('Computers', this, 'electronics')">Computers</button>

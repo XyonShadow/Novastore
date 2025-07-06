@@ -107,6 +107,73 @@ header{
     display: flex;
     gap: .7rem;
 }
+
+.select-container {
+    width: 20%;
+    font-family: 'Segoe UI', sans-serif;
+    border: 1.5px solid rgba(102, 117, 172, 0.4);
+    border-radius: 6px;
+    background: rgba(102, 117, 172, 0.1);
+    color: rgba(40, 40, 71, 0.7);
+    cursor: pointer;
+    padding: 0.6rem 1rem;
+    font-weight: 500;
+    position: relative;
+    display: flex;
+    align-items: center;
+justify-content: space-between;
+}
+
+.select-trigger {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.select-trigger i{
+    transition: transform 1s;
+}
+
+.options {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 1s ease;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1.5px solid rgba(102, 117, 172, 0.2);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    cursor: default;
+}
+
+.select-container.open .options {
+    max-height: 10rem;
+}
+
+.option {
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(40, 40, 71, 0.7);
+    background: transparent;
+    cursor: pointer;
+}
+
+.option.highlighted {
+    border: 1.5px solid rgba(102, 117, 172);
+}
+
+.option:hover {
+  background: rgba(102, 117, 172, 0.1);
+}
+
 .head-icons a, .head-icons button{
     border: none;
     display: inline-flex;
@@ -124,7 +191,7 @@ header{
     overflow: hidden;
     transition: all .3s ease;
 }
-.head-icons a:nth-child(3){
+.head-icons a:last-child{
     font-size: 2.1rem;
 }
 

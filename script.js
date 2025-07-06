@@ -125,6 +125,7 @@ window.addEventListener('DOMContentLoaded', () => {
 let noMoreToLoad = false; // Global flag
 const count = 4;
 
+// load more categories on homepage
 function loadMoreCategory({excluded = [], containerID = 'load-area'} = {}) {
     if (noMoreToLoad) return;
 
@@ -427,11 +428,9 @@ function goTo(category, product) {
   window.location.href = url;
 }
 
-const categoryButtons = document.querySelectorAll('.category-btn');
-
 // Initialize category buttons and show all products on load
 createCategoryButtons();
-const shuffledInitial = shuffleArray(products);
+const shuffledInitial = shuffleArray(products);// just got used to shuffling at this point
 renderCategoryBlock('All Products', shuffledInitial, productContainer);
 
 // to read url Query Parameters
@@ -463,3 +462,94 @@ if (selectedProduct) {
         }
     }, 100); // delay to ensure rendering is done
 }
+
+
+const customSelect = document.querySelector('.select-container');
+const trigger = customSelect.querySelector('.select-trigger');
+const option = customSelect.querySelectorAll('.option');
+const options = customSelect.querySelector('.options');
+const arrow = customSelect.querySelector('.ri-arrow-down-s-line');
+
+let isRotated = false;
+customSelect.addEventListener('click', (e) => {
+    // Only toggle if clicking on the trigger (not on options)
+    const isOption = options.contains(e.target);
+
+    if (!isOption) {
+        customSelect.classList.toggle('open');
+        isRotated = !isRotated;
+        arrow.style.transform = isRotated ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+});
+
+option.forEach(opt => {
+    opt.addEventListener('click', () => {
+        trigger.querySelector('span').innerHTML = opt.innerHTML;
+        // trigger.dataset.value = option.dataset.value;
+        customSelect.classList.remove('open');
+
+        // Trigger your currency change handler here using option.dataset.value
+        console.log('Selected currency:', opt.dataset.value);
+    });
+});
+
+// Add highlight to current option
+function highlightOption(index) {
+    // Remove any previous highlight
+    option.forEach(option => option.classList.remove('highlighted'));
+
+   
+    if (option[index]) {
+    option[index].classList.add('highlighted');
+    }
+}
+
+let focusedIndex = -1; // Keeps track of which option is focused
+
+// keyboard event for when select container is selected
+customSelect.addEventListener('keydown', (e) => {
+    const isOpen = customSelect.classList.contains('open');
+
+    if ((e.key === 'Enter' || e.key === ' ') && focusedIndex === -1) {
+        e.preventDefault();
+        customSelect.classList.toggle('open');
+        return;
+    }
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+
+        if (!isOpen) {
+            customSelect.classList.add('open');
+        }
+
+        focusedIndex = (focusedIndex + 1) % option.length;
+        highlightOption(focusedIndex);
+    }
+
+    else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+
+        if (!isOpen) {
+            customSelect.classList.add('open');
+        }
+
+        focusedIndex = (focusedIndex - 1 + option.length) % option.length;
+        highlightOption(focusedIndex);
+    }
+
+    // Select with Enter or Space if option is highlighted
+    else if ((e.key === 'Enter' || e.key === ' ') && isOpen && focusedIndex !== -1) {
+        e.preventDefault();
+        option[focusedIndex].click();
+        focusedIndex = -1;
+    }
+});
+
+// Close dropdown if focus is outside
+customSelect.addEventListener('blur', () => {
+    customSelect.classList.remove('open');
+    isRotated = false;
+    customSelect.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
+});
+
