@@ -118,6 +118,8 @@ function updateCategoryContent(){
         changeCategoryContent('cached', containerId);
     }
     refreshMoreSections();
+    refreshCategoryBlock('All Products', shuffledInitial, productContainer);
+    refreshFilteredCategory();
 }
 
 function switchCategory(category, button, containerID){
@@ -390,8 +392,23 @@ function createCategoryButtons(){
     });
 }
 
+let lastFilter = {
+    category: null,
+    parent: null,
+    otherParent: null,
+    mode: 'filtered'
+}; // to track the last searched results
+
 // Filter and render products based on selected category
 function filterByCategory(selectedCategory, parent, otherParent, mode) {
+    // Store the last filter state
+    lastFilter = {
+        category: selectedCategory,
+        parent: parent,
+        otherParent: otherParent,
+        mode: mode
+    };
+    
     parent.innerHTML = '';
 
     const top = shuffleArray(
@@ -402,13 +419,12 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
         const categoryLabel = top.length > 0 ? top[0].category : selectedCategory;
         renderCategoryBlock(mode === 'filtered'?`Search results for ${categoryLabel}`:categoryLabel, top, parent, mode); // Show selected category first
     } else {
-        const validCategories = [...new Set(products.map(p => p.category))];
+        const validCategories = [...new Set(products.map(p => p.category))];// creates a new array for just the selected categories
         const suggestions = validCategories.join(', ');
 
-        parent.style.display = 'none';
         parent.innerHTML = `<p>Please enter a valid category. Try one of - ${suggestions}.</p>`;
         setTimeout(() => {
-            parent.style.display = 'grid';
+            parent.style.display = 'none';
             parent.innerHTML = '';
         }, 2500);
     }
@@ -420,6 +436,13 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
 
     if (rest.length > 0 && otherParent) {
         renderCategoryBlock('Other Products', rest, otherParent);
+    }
+}
+
+function refreshFilteredCategory() {
+    const { category, parent, otherParent, mode } = lastFilter;
+    if (category && parent) {
+        filterByCategory(category, parent, otherParent, mode);
     }
 }
 
@@ -443,38 +466,46 @@ function renderProduct(items, parent, mode = 'full') {
 
     items.forEach(product => {
         const card = document.createElement('div');
-      
-        // load searched products and set to link to cart
-        if(mode === 'filtered'){
-            card.innerHTML =  `
-                <div class='product-card card' onclick="goTo('${product.category}', '${product.name}')">
-                <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
+        card.className = 'product-card card';
+
+        if (mode === 'filtered') {
+            card.setAttribute('onclick', `goTo('${product.category}', '${product.name}')`);
+            card.innerHTML = `
+                <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <div class="card-info">
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-               
-                <h3><i class="currency-icon fa fa-naira-sign"></i>₦${product.price.toLocaleString()}</h3>
-                </div
+                <h3><i class="currency-icon fa fa-naira-sign"></i>${product.price.toLocaleString()}</h3>
             `;
-        }
-        
-        // Load products in card.html and set 'Add to cart'
-        if (mode !== 'filtered') {
-            card.className = 'product-card card';
+        } else {
             card.innerHTML = `
-                <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
+                <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h3>${product.name}</h3>
-                <p><i class="currency-icon fa fa-naira-sign"></i>₦${product.price.toLocaleString()}</p>
+                <p><i class="currency-icon fa fa-naira-sign"></i>${product.price.toLocaleString()}</p>
             `;
         }
 
         group.appendChild(card);
     });
 
-    if(parent) parent.appendChild(group);
+    if (parent) parent.appendChild(group);
 }
+
+// Re-render with updated prices
+function refreshRenderedProducts(items, parent, mode = 'full') {
+    if (parent) parent.innerHTML = '';
+    renderProduct(items, parent, mode); 
+}
+function refreshCategoryBlock(labelText, items, parent, mode) {
+    // Remove all existing children
+    if (parent) parent.innerHTML = '';
+
+    // Re-render updated block with new currency values
+    renderCategoryBlock(labelText, items, parent, mode);
+}
+
 
 // function to go to cart.html with selected category and product
 function goTo(category, product) {
