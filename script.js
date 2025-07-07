@@ -61,7 +61,7 @@ function setCardHtml(container){
                 <p>Discover the latest in ${p.category}</p>
                 <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
+                <h3 class="product-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
             </div>
             `).join('');
 }
@@ -110,11 +110,60 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     }else{
         container.innerHTML = message;
     }
+    updateCurrencyIcons();
 }
 
 let currentCurrency = 'NGN'; // page default currency
 
-// will use the cached IDs to refresh content(used after changing currency)
+/*
+// used to refresh various categries
+
+function refreshFilteredCategory() {
+    const { category, parent, otherParent, mode } = lastFilter;
+    if (category && parent) {
+        filterByCategory(category, parent, otherParent, mode);
+    }
+}
+
+// used to rebuild loaded products with updated prices
+function refreshMoreSections() {
+    const container = document.getElementById('load-area');
+    if(container) container.innerHTML = ''; // clear all previously rendered more sections
+
+    moreSections.forEach(({ category, productIds }) => {
+        const productsToShow = productIds
+          .map(id => products.find(p => p.id === id))
+          .filter(Boolean);
+
+        const cardsHTML = setCardHtml(productsToShow);
+
+        const labelText = document.createElement('div');
+        labelText.className = 'sub-title';
+        labelText.innerHTML = `
+          <h2>${category}</h2>
+          <a href="./cart.html">See All</a>   
+        `;
+
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'card-container';
+        cardContainer.innerHTML = cardsHTML;
+
+        container.appendChild(labelText);
+        container.appendChild(cardContainer);
+    });
+}
+
+// Re-render with updated prices
+function refreshCategoryBlock(labelText, items, parent, mode) {
+    // Remove all existing children
+    if (parent) parent.innerHTML = '';
+
+    // Re-render updated block with new currency values
+    renderCategoryBlock(labelText, items, parent, mode);
+}
+
+
+// this uses the cached IDs to refresh content(used after changing currency) this is unreliable, it refreshes the category contents on the screen and needs tracking -- not ideal when adding html
 function updateCategoryContent(){
     for (const containerId in shownProductIdsBySection) {
         changeCategoryContent('cached', containerId);
@@ -123,6 +172,44 @@ function updateCategoryContent(){
     refreshCategoryBlock('All Products', shuffledInitial, productContainer);
     refreshFilteredCategory();
     updateCurrencyIcons(currentCurrency);
+}
+*/
+
+// convert prices of all products
+function applyCurrencyConversion() {
+    if (currentCurrency === 'NGN') {
+        products.forEach(p => {
+            if (!p.originalPrice) p.originalPrice = p.price;
+            p.price = p.originalPrice
+        });
+    } else {
+        products.forEach(p => {
+            if (!p.originalPrice) p.originalPrice = p.price;
+            p.price = convertPrice(p.originalPrice, currentCurrency);
+        });
+    }
+}
+
+// changes the prices of the product card html
+function updateCategoryContent() {
+    // convert all product prices
+    applyCurrencyConversion();
+
+    // update price text in the DOM
+    products.forEach(product => {
+        const card = [...document.querySelectorAll('.product-card')]
+            .find(c => c.innerText.includes(product.name));
+
+        if (card) {
+            const priceTag = card.querySelector('.product-price');
+            if (priceTag) {
+                priceTag.innerHTML = `
+                    <i class="currency-icon"></i>
+                    ${product.price.toLocaleString()}
+                `;
+            }
+        }
+    });
 }
 
 function switchCategory(category, button, containerID){
@@ -161,34 +248,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 let moreSections = []; // Stores each loaded section
-// used to rebuild loaded products with updated prices
-function refreshMoreSections() {
-    const container = document.getElementById('load-area');
-    if(container) container.innerHTML = ''; // clear all previously rendered more sections
-
-    moreSections.forEach(({ category, productIds }) => {
-        const productsToShow = productIds
-          .map(id => products.find(p => p.id === id))
-          .filter(Boolean);
-
-        const cardsHTML = setCardHtml(productsToShow);
-
-        const labelText = document.createElement('div');
-        labelText.className = 'sub-title';
-        labelText.innerHTML = `
-          <h2>${category}</h2>
-          <a href="./cart.html">See All</a>   
-        `;
-
-        const cardContainer = document.createElement('div');
-        cardContainer.className = 'card-container';
-        cardContainer.innerHTML = cardsHTML;
-
-        container.appendChild(labelText);
-        container.appendChild(cardContainer);
-    });
-}
-
 let noMoreToLoad = false; // Global flag
 // load more categories on homepage
 function loadMoreCategory({excluded = [], containerID = 'load-area', count = 4} = {}) {
@@ -258,6 +317,7 @@ function loadMoreCategory({excluded = [], containerID = 'load-area', count = 4} 
     setTimeout(()=>{
         document.getElementById(containerID).appendChild(labelText);
         document.getElementById(containerID).appendChild(cardContainer);
+        updateCurrencyIcons();
     }, Math.floor(Math.random() * 100) + 1000);
     
 
@@ -443,13 +503,6 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
     }
 }
 
-function refreshFilteredCategory() {
-    const { category, parent, otherParent, mode } = lastFilter;
-    if (category && parent) {
-        filterByCategory(category, parent, otherParent, mode);
-    }
-}
-
 // Render a labeled block of products under a given heading
 function renderCategoryBlock(labelText, items, parent, mode) {
     const block = document.createElement('div');
@@ -465,6 +518,9 @@ function renderCategoryBlock(labelText, items, parent, mode) {
 
 // Render product cards inside a given container
 function renderProduct(items, parent, mode = 'full') {
+    // Convert prices of all products
+    applyCurrencyConversion();
+
     const group = document.createElement('div');
     group.className = 'product-group';
 
@@ -481,13 +537,15 @@ function renderProduct(items, parent, mode = 'full') {
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
+                <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
+            // card.setAttribute('onclick', `addToCart('${product})'`);
             card.innerHTML = `
                 <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
-                <h3>${product.name}</h3>
-                <p><i class="currency-icon "></i>${product.price.toLocaleString()}</p>
+                <h4>${product.name}</h4>
+                <h3 class="product-price"><i class="currency-icon "></i>${product.price.toLocaleString()}</h3>
+                <button class="add-to-cart-btn">Add To Cart</button>
             `;
         }
 
@@ -495,21 +553,9 @@ function renderProduct(items, parent, mode = 'full') {
     });
 
     if (parent) parent.appendChild(group);
-}
 
-// Re-render with updated prices
-function refreshRenderedProducts(items, parent, mode = 'full') {
-    if (parent) parent.innerHTML = '';
-    renderProduct(items, parent, mode); 
+    updateCurrencyIcons();
 }
-function refreshCategoryBlock(labelText, items, parent, mode) {
-    // Remove all existing children
-    if (parent) parent.innerHTML = '';
-
-    // Re-render updated block with new currency values
-    renderCategoryBlock(labelText, items, parent, mode);
-}
-
 
 // function to go to cart.html with selected category and product
 function goTo(category, product) {
@@ -587,7 +633,8 @@ function selectCurrency(opt) {
     arrow.style.transform = 'rotate(0deg)';
 
     // Trigger currency logic
-    handleCurrencyChange(value);
+    currentCurrency = value;
+    handleCurrencyChange();
 }
 
 option.forEach(opt => {
@@ -694,7 +741,7 @@ function convertPrice(basePrice, targetCurrency){
     targetCurrency = targetCurrency.toUpperCase();
     
     const rates = getRatesFromStorage();
-    const baseRate = rates[currentCurrency]; // convert to default currency first
+    const baseRate = rates['NGN']; // convert to default currency first
     const targetRate = rates[targetCurrency];
 
     if (!baseRate || !targetRate) return basePrice;
@@ -709,9 +756,7 @@ function convertPrice(basePrice, targetCurrency){
     return convertedPrice;
 }
 
-function updateCurrencyIcons(currency) {
-    currency = currency.toLowerCase();
-
+function updateCurrencyIcons() {
     const Icons = {
         usd: 'fa-dollar-sign',
         eur: 'fa-euro-sign',
@@ -719,12 +764,14 @@ function updateCurrencyIcons(currency) {
         gbp: 'fa-pound-sign'
     };
 
-    const iconClass = Icons[currency] || 'fa-naira-sign';
+    const iconClass = Icons[currentCurrency] || 'fa-naira-sign';
     document.querySelectorAll('.currency-icon').forEach(icon => {
         icon.className = `currency-icon fa ${iconClass}`;
     });
 }
 
+/*
+// would work, but now there's different logic, so it needs change
 function handleCurrencyChange(selectedCurrency){
     if (selectedCurrency === currentCurrency) {
         products.forEach(p => {
@@ -736,7 +783,13 @@ function handleCurrencyChange(selectedCurrency){
         products.forEach(p => {
             if (!p.originalPrice) p.originalPrice = p.price;
             p.price = convertPrice(p.originalPrice, selectedCurrency);
-        });
-    }
-    updateCategoryContent(); // rebuild all visible sections
+    });
+    updateCategoryContent();
+    updateCurrencyIcons(currentCurrency);
+*/
+
+ // rebuild all visible sections and update icons
+function handleCurrencyChange(){
+    updateCategoryContent();
+    updateCurrencyIcons(currentCurrency);
 }
