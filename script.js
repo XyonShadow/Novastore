@@ -540,7 +540,7 @@ function renderProduct(items, parent, mode = 'full') {
                 <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
-            // card.setAttribute('onclick', `addToCart('${product})'`);
+            card.addEventListener('click', () => addToCart(product.id));
             card.innerHTML = `
                 <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
@@ -792,4 +792,34 @@ function handleCurrencyChange(selectedCurrency){
 function handleCurrencyChange(){
     updateCategoryContent();
     updateCurrencyIcons(currentCurrency);
+}
+
+let cart = []; // to track products added to cart
+function addToCart(id) {
+    const product = products.find(p => p.id === id); // find the product
+    
+    if (!product) return console.warn(`Product with ID ${id} not found`);
+
+    const existing = cart.find(p => p.id === id); // check if it's already in cart
+
+    if (!existing) {
+        cart.push(product);
+        updateCartStorage();
+        updateCartCount();
+        console.log(`Added ${product.name} to cart`);
+    } else {
+        console.log(`Product ${product.name} is already in the cart`);
+    }
+}
+
+function updateCartCount() {
+    const cartIcon = document.querySelector('.cart-count');
+    if (cartIcon) cartIcon.textContent = cart.length;
+}
+function updateCartStorage(){
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+const savedCart = localStorage.getItem('cart');
+if (savedCart) {
+    cart = JSON.parse(savedCart);
 }
