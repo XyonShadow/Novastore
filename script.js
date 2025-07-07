@@ -54,7 +54,7 @@ if(searchInput){
 // set html of a product card for a container
 function setCardHtml(container){
     return container.map(p => `
-            <div class="product-card card" onclick="goTo('${p.category}', '${p.name}')">
+            <div class="product-card card" data-id="${p.id}" onclick="goTo('${p.category}', '${p.id}')">
                 <img src="Assets/car1.jpg" alt="">
                 <h4>${p.name}</h4>
                 <div class="card-info">
@@ -197,9 +197,7 @@ function updateCategoryContent() {
 
     // update price text in the DOM
     products.forEach(product => {
-        const card = [...document.querySelectorAll('.product-card')]
-            .find(c => c.innerText.includes(product.name));
-
+        const card = document.querySelector(`[data-id="${product.id}"]`);
         if (card) {
             const priceTag = card.querySelector('.product-price');
             if (priceTag) {
@@ -527,9 +525,10 @@ function renderProduct(items, parent, mode = 'full') {
     items.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card card';
+        card.setAttribute('data-id', product.id); // tracking
 
         if (mode === 'filtered') {
-            card.setAttribute('onclick', `goTo('${product.category}', '${product.name}')`);
+            card.setAttribute('onclick', `goTo('${product.category}', '${product.id}')`);
             card.innerHTML = `
                 <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
@@ -589,9 +588,7 @@ if (selectedCategory) {
 // Scroll to the spectific product after rendering
 if (selectedProduct) {
     setTimeout(() => {
-        const match = [...document.querySelectorAll('.product-card')].find(card =>
-            card.querySelector('h3')?.textContent === selectedProduct
-        );
+        const match = document.querySelector(`[data-id="${selectedProduct}"]`);
         if (match) {
             match.scrollIntoView({ behavior: 'smooth', block: 'center' });
             match.classList.add('highlighted');
