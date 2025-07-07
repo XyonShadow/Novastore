@@ -160,7 +160,7 @@ let moreSections = []; // Stores each loaded section
 // used to rebuild loaded products with updated prices
 function refreshMoreSections() {
     const container = document.getElementById('load-area');
-    container.innerHTML = ''; // clear all previously rendered more sections
+    if(container) container.innerHTML = ''; // clear all previously rendered more sections
 
     moreSections.forEach(({ category, productIds }) => {
         const productsToShow = productIds
@@ -718,7 +718,6 @@ function updateCurrencyIcons(currency) {
     const iconClass = Icons[currency] || 'fa-naira-sign';
 
     document.querySelectorAll('.currency-icon').forEach(icon => {
-        console.log(icon.className)
         icon.className = `currency-icon fa ${iconClass}`;
     });
 }

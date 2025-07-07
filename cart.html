@@ -6,6 +6,7 @@
     <title>Your Cart | NovaStore</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -19,8 +20,24 @@
                 </div>
                 <button onclick="searchAndActivateTab(filteredProducts)" class="search-btn">Search</button>
             </div>
+            <div title="Select Currency" class="select-container"  tabindex="0">
+                <div class="select-trigger"><span style="display: flex; gap: .5rem;"><i class="fa fa-naira-sign"></i>NGN</span><i class="ri-arrow-down-s-line"></i></div>
+                <div class="options">
+                    <div class="option" data-value="usd">
+                        <i class="fa fa-dollar-sign"></i> USD
+                    </div>
+                    <div class="option" data-value="eur">
+                        <i class="fa fa-euro-sign"></i> EUR
+                    </div>
+                    <div class="option selected" data-value="ngn">
+                        <i class="fa fa-naira-sign"></i> NGN
+                    </div>
+                    <div class="option" data-value="gbp">
+                        <i class="fa fa-pound-sign"></i> GBP
+                    </div>
+                </div>
+            </div>
             <div class="head-icons">
-                <button><i class="ri-currency-line"></i></button>
                 <a href="index.html"><i class="ri-shopping-cart-2-line"></i></a>
                 <a href="#"><i class="ri-account-circle-fill"></i></a>
             </div>
