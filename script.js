@@ -61,7 +61,7 @@ function setCardHtml(container){
                 <p>Discover the latest in ${p.category}</p>
                 <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3><i class="currency-icon fa fa-naira-sign"></i>${p.price.toLocaleString()}</h3>
+                <h3><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
             </div>
             `).join('');
 }
@@ -112,6 +112,8 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     }
 }
 
+let currentCurrency = 'NGN'; // page default currency
+
 // will use the cached IDs to refresh content(used after changing currency)
 function updateCategoryContent(){
     for (const containerId in shownProductIdsBySection) {
@@ -120,6 +122,7 @@ function updateCategoryContent(){
     refreshMoreSections();
     refreshCategoryBlock('All Products', shuffledInitial, productContainer);
     refreshFilteredCategory();
+    updateCurrencyIcons(currentCurrency);
 }
 
 function switchCategory(category, button, containerID){
@@ -150,7 +153,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (document.getElementById('hot'))
         changeCategoryContent('random', 'hot');
-    // updateCurrencyIcons('NGN');
+
+    updateCurrencyIcons(currentCurrency);    
 
     // fetchRates from API
     await fetchRates();
@@ -477,13 +481,13 @@ function renderProduct(items, parent, mode = 'full') {
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3><i class="currency-icon fa fa-naira-sign"></i>${product.price.toLocaleString()}</h3>
+                <h3><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
             card.innerHTML = `
                 <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h3>${product.name}</h3>
-                <p><i class="currency-icon fa fa-naira-sign"></i>${product.price.toLocaleString()}</p>
+                <p><i class="currency-icon "></i>${product.price.toLocaleString()}</p>
             `;
         }
 
@@ -664,7 +668,7 @@ let conversionRates = {};
 // get rates from api
 async function fetchRates() {
     try {
-        const res = await fetch(`https://v6.exchangerate-api.com/v6/ff0d7bb9188a0511930076eb/latest/NGN`);
+        const res = await fetch(`https://v6.exchangerate-api.com/v6/ff0d7bb9188a0511930076eb/latest/${currentCurrency}`);
         const data = await res.json();
         conversionRates = data.conversion_rates;
         saveRatesToStorage(conversionRates);
@@ -690,13 +694,13 @@ function convertPrice(basePrice, targetCurrency){
     targetCurrency = targetCurrency.toUpperCase();
     
     const rates = getRatesFromStorage();
-    const ngnRate = rates['NGN'];
+    const baseRate = rates[currentCurrency]; // convert to default currency first
     const targetRate = rates[targetCurrency];
 
-    if (!ngnRate || !targetRate) return basePrice;
+    if (!baseRate || !targetRate) return basePrice;
 
     // Step 1: base price -> NGN
-    const changedPrice = basePrice / ngnRate;
+    const changedPrice = basePrice / baseRate;
 
     // Step 2: changed price in NGN -> Target Currency
     const convertedPrice = +(changedPrice * targetRate).toFixed(2);
@@ -716,21 +720,23 @@ function updateCurrencyIcons(currency) {
     };
 
     const iconClass = Icons[currency] || 'fa-naira-sign';
-
     document.querySelectorAll('.currency-icon').forEach(icon => {
         icon.className = `currency-icon fa ${iconClass}`;
     });
 }
 
 function handleCurrencyChange(selectedCurrency){
-    if (selectedCurrency === 'NGN') {
-        products.forEach(p => p.price = p.originalPrice);
+    if (selectedCurrency === currentCurrency) {
+        products.forEach(p => {
+            if (!p.originalPrice) p.originalPrice = p.price;
+            p.price = p.originalPrice
+        });
     } else {
+        currentCurrency = selectedCurrency;
         products.forEach(p => {
             if (!p.originalPrice) p.originalPrice = p.price;
             p.price = convertPrice(p.originalPrice, selectedCurrency);
         });
     }
     updateCategoryContent(); // rebuild all visible sections
-    updateCurrencyIcons(selectedCurrency);
 }
