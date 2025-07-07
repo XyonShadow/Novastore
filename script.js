@@ -61,7 +61,7 @@ function setCardHtml(container){
                 <p>Discover the latest in ${p.category}</p>
                 <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3><i class="ri-money-dollar-circle-fill"></i>${p.price}</h3>
+                <h3><i class="currency-icon fa fa-naira-sign"></i>${p.price.toLocaleString()}</h3>
             </div>
             `).join('');
 }
@@ -148,6 +148,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (document.getElementById('hot'))
         changeCategoryContent('random', 'hot');
+    // updateCurrencyIcons('NGN');
 
     // fetchRates from API
     await fetchRates();
@@ -454,7 +455,7 @@ function renderProduct(items, parent, mode = 'full') {
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
                
-                <h3>₦${product.price.toLocaleString()}</h3>
+                <h3><i class="currency-icon fa fa-naira-sign"></i>₦${product.price.toLocaleString()}</h3>
                 </div
             `;
         }
@@ -465,7 +466,7 @@ function renderProduct(items, parent, mode = 'full') {
             card.innerHTML = `
                 <img src="${'/Assets/car1.jpg'}" alt="${product.name}" class="product-image" />
                 <h3>${product.name}</h3>
-                <p>₦${product.price.toLocaleString()}</p>
+                <p><i class="currency-icon fa fa-naira-sign"></i>₦${product.price.toLocaleString()}</p>
             `;
         }
 
@@ -673,6 +674,24 @@ function convertPrice(basePrice, targetCurrency){
     return convertedPrice;
 }
 
+function updateCurrencyIcons(currency) {
+    currency = currency.toLowerCase();
+
+    const Icons = {
+        usd: 'fa-dollar-sign',
+        eur: 'fa-euro-sign',
+        ngn: 'fa-naira-sign',
+        gbp: 'fa-pound-sign'
+    };
+
+    const iconClass = Icons[currency] || 'fa-naira-sign';
+
+    document.querySelectorAll('.currency-icon').forEach(icon => {
+        console.log(icon.className)
+        icon.className = `currency-icon fa ${iconClass}`;
+    });
+}
+
 function handleCurrencyChange(selectedCurrency){
     if (selectedCurrency === 'NGN') {
         products.forEach(p => p.price = p.originalPrice);
@@ -682,5 +701,6 @@ function handleCurrencyChange(selectedCurrency){
             p.price = convertPrice(p.originalPrice, selectedCurrency);
         });
     }
-    updateCategoryContent(); // rebuild sections
+    updateCategoryContent(); // rebuild all visible sections
+    updateCurrencyIcons(selectedCurrency);
 }

@@ -121,7 +121,7 @@ header{
     position: relative;
     display: flex;
     align-items: center;
-justify-content: space-between;
+    justify-content: space-between;
 }
 
 .select-trigger {
@@ -381,14 +381,15 @@ justify-content: space-between;
     justify-content: space-between;
     align-items: center;
 }
+
 .product-card .card-info p{
     color: rgba(40, 40, 71, 0.7);
 }
 
 .card-info a{
     margin: .8rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
     border-radius: 50%;
     background: #e98409;
     color: #fff;
