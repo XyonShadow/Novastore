@@ -7,6 +7,9 @@ const productContainer = document.querySelector(".product-list");
 const filteredProducts = document.querySelector(".filtered-products");
 filteredProducts.style.display = 'none';
 
+let cart = []; // to track products added to cart
+loadCartFromStorage(); // load cart from local storage first
+
 // get unique categories
 const categories = [...new Set(products.map(p => p.category))];
 
@@ -539,14 +542,22 @@ function renderProduct(items, parent, mode = 'full') {
                 <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
-            card.addEventListener('click', () => addToCart(product.id));
-            card.innerHTML = `
+                card.className = 'product-card';
+                card.setAttribute('data-id', product.id);
+                card.innerHTML = `
                 <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <h3 class="product-price"><i class="currency-icon "></i>${product.price.toLocaleString()}</h3>
                 <button class="add-to-cart-btn">Add To Cart</button>
-            `;
-        }
+                `;
+                const btn = card.querySelector('.add-to-cart-btn');
+                btn.addEventListener('click', (e) => {
+                    updateCartBtn(product.id, btn);
+                });
+
+                // Reflect localStorage cart state
+                setCartButtonState(btn, product.id)
+            }
 
         group.appendChild(card);
     });
@@ -791,7 +802,6 @@ function handleCurrencyChange(){
     updateCurrencyIcons(currentCurrency);
 }
 
-let cart = []; // to track products added to cart
 function addToCart(id) {
     const product = products.find(p => p.id === id); // find the product
     
@@ -816,7 +826,61 @@ function updateCartCount() {
 function updateCartStorage(){
     localStorage.setItem('cart', JSON.stringify(cart));
 }
-const savedCart = localStorage.getItem('cart');
-if (savedCart) {
-    cart = JSON.parse(savedCart);
+
+function loadCartFromStorage() {
+    const saved = localStorage.getItem('cart');
+    cart = saved ? JSON.parse(saved) : [];
+    updateCartCount();
+}
+
+function isInCart(id) {
+    return cart.some(p => p.id === id);
+}
+
+function setCartButtonState(btn, id) {
+    if (isInCart(id)) {
+        btn.textContent = 'Remove From Cart';
+        btn.classList.add('remove-from-cart');
+    } else {
+        btn.textContent = 'Add To Cart';
+        btn.classList.remove('remove-from-cart');
+    }
+}
+
+function updateCartBtn(id, btn) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    btn.disabled = true;
+
+    if (!isInCart(id)) {
+        cart.push(product);
+        updateCartStorage();
+        updateCartCount();
+
+        btn.textContent = 'Added to Cart ✅';
+        btn.classList.remove('remove-from-cart');    
+        btn.classList.add('waiting-in-cart');
+
+        setTimeout(() => {
+            setCartButtonState(btn, id);
+            btn.classList.remove('waiting-in-cart');
+            btn.disabled = false;
+        }, 1000);
+
+    } else {
+        cart = cart.filter(p => p.id !== id);
+        updateCartStorage();
+        updateCartCount();
+
+        btn.textContent = 'Removed ❌';
+        btn.classList.remove('remove-from-cart');
+        btn.classList.add('waiting-in-cart');
+
+        setTimeout(() => {
+            setCartButtonState(btn, id);
+            btn.classList.remove('waiting-in-cart');
+            btn.disabled = false;
+        }, 1000);
+    }
 }

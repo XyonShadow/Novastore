@@ -707,10 +707,6 @@ footer .footer-icons a:hover{
     box-shadow: 0 1px 5px rgba(0,0,0,0.05);
     transition: transform 0.2s ease;
 }
-.product-card:hover .add-to-cart-btn{
-    transform: translateY(-3px) scale(1.1);
-    background-color: #064bb5;
-}
 
 .product-card.highlighted {
     border: 2px solid #0a74da;
@@ -747,6 +743,32 @@ footer .footer-icons a:hover{
     font-weight: 500;
     transition: background-color 0s, transform .5s ease ;
 }
+
+.add-to-cart-btn.waiting-in-cart {
+    background-color: grey;
+    color: #00000055;
+    cursor: default;
+}
+
+.add-to-cart-btn.remove-from-cart {
+    background-color: #c97106;
+    color: white;}
+
+.add-to-cart-btn:hover {
+    transform: translateY(-3px) scale(1.1);
+    background-color: #064bb5;
+}
+
+.add-to-cart-btn.remove-from-cart:hover {
+    transform: translateY(-3px) scale(1.1);
+    background-color: #aa6006;
+}
+
+.add-to-cart-btn.waiting-in-cart:hover {
+    transform: none;
+    background-color: grey;
+}
+
 
 .go-to-cart-link {
     margin-top: 0.5rem;
