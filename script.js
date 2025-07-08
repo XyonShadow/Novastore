@@ -542,7 +542,7 @@ function renderProduct(items, parent, mode = 'full') {
                 <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
-                card.className = 'product-card';
+                card.className = 'product-card cart-card';
                 card.setAttribute('data-id', product.id);
                 card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
@@ -596,18 +596,26 @@ if (selectedCategory) {
     }
 }
 
+// If a specific product is selected, scroll to it
+function scrollToProductById(id, matchClass = 'highlighted') {
+    const match = document.querySelector(`[data-id="${id}"]`);
+    if (match) {
+        match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        match.classList.add(matchClass);
+        setTimeout(() => {
+            match.classList.remove(matchClass);
+        }, 1000);
+    }
+}
+
 // Scroll to the spectific product after rendering
 if (selectedProduct) {
     setTimeout(() => {
-        const match = document.querySelector(`[data-id="${selectedProduct}"]`);
-        if (match) {
-            match.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            match.classList.add('highlighted');
-        }
+       scrollToProductById(selectedProduct);
     }, 100); // delay to ensure rendering is done
 }
 
-
+// Custom Select Dropdown Logic
 const Select = document.querySelector('.select-container');
 const trigger = Select.querySelector('.select-trigger');
 const option = Select.querySelectorAll('.option');
@@ -723,9 +731,9 @@ let conversionRates = {};
 // get rates from api
 async function fetchRates() {
     try {
-        const res = await fetch(`https://v6.exchangerate-api.com/v6/ff0d7bb9188a0511930076eb/latest/${currentCurrency}`);
+        const res = await fetch(`https://v6.exchangerate-api.com/v6/bb966c4d6129c5d3224cee33/latest/${currentCurrency}`);
         const data = await res.json();
-        conversionRates = data.conversion_rates;
+        conversionRates = data['conversion_rates'];
         saveRatesToStorage(conversionRates);
     } catch (err) {
         console.error('Failed to fetch rates', err.message);
@@ -745,21 +753,18 @@ function getRatesFromStorage() {
 }
 
 // convert based on rate from storage
-function convertPrice(basePrice, targetCurrency){
+function convertPrice(basePrice, targetCurrency) {
     targetCurrency = targetCurrency.toUpperCase();
-    
-    const rates = getRatesFromStorage();
-    const baseRate = rates['NGN']; // convert to default currency first
-    const targetRate = rates[targetCurrency];
 
-    if (!baseRate || !targetRate) return basePrice;
+    const quotes = getRatesFromStorage();
+    const targetRate = quotes[targetCurrency];
+        
+    if (!targetRate) {
+        console.warn(`No rate found for NGN to ${targetCurrency}`);
+        return basePrice;
+    }
 
-    // Step 1: base price -> NGN
-    const changedPrice = basePrice / baseRate;
-
-    // Step 2: changed price in NGN -> Target Currency
-    const convertedPrice = +(changedPrice * targetRate).toFixed(2);
-    
+    const convertedPrice = +(basePrice * targetRate).toFixed(2);
 
     return convertedPrice;
 }
@@ -943,10 +948,11 @@ function renderCartItems() {
     }
 
     cart.forEach(p => {
+        const converted = convertPrice(p.originalPrice, 'NGN');
         container.innerHTML += `
             <div class="cart-item">
             <p>${p.name}</p>
-            <p><i class="currency-icon"></i>${p.price.toLocaleString()}</p>
+            <p><i class="currency-icon"></i>${converted.toLocaleString()}</p>
             </div>
         `;
     });
