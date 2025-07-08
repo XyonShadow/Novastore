@@ -58,7 +58,7 @@ if(searchInput){
 function setCardHtml(container){
     return container.map(p => `
             <div class="product-card card" data-id="${p.id}" onclick="goTo('${p.category}', '${p.id}')">
-                <img src="Assets/car1.jpg" alt="">
+                <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
                 <h4>${p.name}</h4>
                 <div class="card-info">
                 <p>Discover the latest in ${p.category}</p>
@@ -73,7 +73,6 @@ const shownProductIds = new Set(); // Global tracker
 
 // track products already shown
 function trackProducts(productsArray){
-    let available = products.filter(p => !shownProductIds.has(p.id));
     productsArray.forEach(p => shownProductIds.add(p.id));
 }
 
@@ -502,6 +501,7 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
     if (rest.length > 0 && otherParent) {
         renderCategoryBlock('Other Products', rest, otherParent);
     }
+    updateCurrencyIcons();
 }
 
 // Render a labeled block of products under a given heading
@@ -533,7 +533,7 @@ function renderProduct(items, parent, mode = 'full') {
         if (mode === 'filtered') {
             card.setAttribute('onclick', `goTo('${product.category}', '${product.id}')`);
             card.innerHTML = `
-                <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
+                <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <div class="card-info">
                     <p>Discover the latest electronic</p>
@@ -545,7 +545,7 @@ function renderProduct(items, parent, mode = 'full') {
                 card.className = 'product-card';
                 card.setAttribute('data-id', product.id);
                 card.innerHTML = `
-                <img src="/Assets/car1.jpg" alt="${product.name}" class="product-image" />
+                <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <h3 class="product-price"><i class="currency-icon "></i>${product.price.toLocaleString()}</h3>
                 <button class="add-to-cart-btn">Add To Cart</button>
@@ -820,9 +820,10 @@ function addToCart(id) {
 }
 
 function updateCartCount() {
-    const cartIcon = document.querySelector('.cart-count');
-    if (cartIcon) cartIcon.textContent = cart.length;
+    const cartCounter = document.getElementById('cart-count');
+    if (cartCounter) cartCounter.textContent = cart.length;
 }
+
 function updateCartStorage(){
     localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -883,4 +884,70 @@ function updateCartBtn(id, btn) {
             btn.disabled = false;
         }, 1000);
     }
+}
+
+const cartToggleBtn = document.getElementById('cart-toggle');
+const cartPanel = document.querySelector('.cart-panel');
+const cartCloseBtn = document.querySelector('.cart-close');
+const cartOverlay = document.querySelector('.cart-overlay');
+
+// Open
+function openCart() {
+    cartPanel.classList.add('visible');
+    cartOverlay.classList.add('visible');
+    renderCartItems();
+}
+
+// Close
+function closeCart() {
+    cartPanel.classList.remove('visible');
+    cartOverlay.classList.remove('visible');
+}
+
+// Event Listeners
+if(cartToggleBtn) {
+    cartToggleBtn.addEventListener('click', (e) => {
+        if (cartPanel.classList.contains('visible')) {
+            closeCart();
+        } else {
+            openCart();
+        }
+    });
+}
+
+if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
+
+// Swipe to close (mobile)
+let startX = 0;
+
+if(cartPanel) {
+    cartPanel.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    cartPanel.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) {
+        closeCart();
+    }
+    });
+}
+
+function renderCartItems() {
+    const container = document.getElementById('cart-items');
+        container.innerHTML = '';
+
+    if (cart.length === 0) {
+        container.innerHTML = '<p>Your cart is empty 💤</p>';
+    return;
+    }
+
+    cart.forEach(p => {
+        container.innerHTML += `
+            <div class="cart-item">
+            <p>${p.name}</p>
+            <p><i class="currency-icon"></i>${p.price.toLocaleString()}</p>
+            </div>
+        `;
+    });
 }
