@@ -1016,3 +1016,17 @@ checkoutBtn.addEventListener('click', () => {
     }, 2000);
     });
 }
+
+const footer = document.querySelector('.footer');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      cartToggleBtn.classList.add('hide');
+    } else {
+      cartToggleBtn.classList.remove('hide');
+    }
+  });
+});
+
+observer.observe(footer);

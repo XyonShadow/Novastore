@@ -823,6 +823,12 @@ footer .footer-icons a:hover{
     z-index: 1100;
 }
 
+.cart-icon.hide{
+    position: absolute;
+    bottom: 0px;
+    right: -20px;
+}
+
 /* Overlay to cover panel */
 .cart-overlay {
     position: fixed;
