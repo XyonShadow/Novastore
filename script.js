@@ -900,6 +900,7 @@ const cartOverlay = document.querySelector('.cart-overlay');
 function openCart() {
     cartPanel.classList.add('visible');
     cartOverlay.classList.add('visible');
+    cartToggleBtn.classList.add('active');
     renderCartItems();
 }
 
@@ -907,6 +908,7 @@ function openCart() {
 function closeCart() {
     cartPanel.classList.remove('visible');
     cartOverlay.classList.remove('visible');
+    cartToggleBtn.classList.remove('active');
 }
 
 // Event Listeners
@@ -944,16 +946,73 @@ function renderCartItems() {
 
     if (cart.length === 0) {
         container.innerHTML = '<p>Your cart is empty 💤</p>';
-    return;
+        const totalContainer = document.getElementById('cart-total');
+        if (totalContainer) {
+            totalContainer.innerHTML = `<h3>Total: <i class="currency-icon"></i>0</h3>`;
+        }
+        updateCurrencyIcons(); // Update icons in cart as well
+        return;
     }
 
     cart.forEach(p => {
-        const converted = convertPrice(p.originalPrice, 'NGN');
-        container.innerHTML += `
-            <div class="cart-item">
+        const converted = convertPrice(p.originalPrice, currentCurrency);
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+
+        itemDiv.innerHTML = `
+            <img src="./Assets/car1.jpg" alt="${p.name}" class="cart-item-image" />
             <p>${p.name}</p>
             <p><i class="currency-icon"></i>${converted.toLocaleString()}</p>
-            </div>
+            <button class="remove-cart-item${isInCart(p.id) ? ' remove-from-cart' : ''}" data-id="${p.id}">
+            ${isInCart(p.id) ? 'Remove From Cart' : 'Add To Cart'}
+            </button>
         `;
+
+        const removeBtn = itemDiv.querySelector('.remove-cart-item');
+        removeBtn.addEventListener('click', () => {
+            updateCartBtn(p.id, removeBtn);
+            setTimeout(() => {
+                renderCartItems();
+                const btn = document.querySelector(`.add-to-cart-btn`);
+                // If there are multiple product lists, update all matching buttons for the affected id in the product list
+                document.querySelectorAll(`.product-card[data-id='${p.id}'] .add-to-cart-btn`).forEach(btn => {
+                    setCartButtonState(btn, p.id);
+                });
+            }, 1000);
+        });
+
+        container.appendChild(itemDiv);
+    });
+    
+    const total = cart.length === 0 ? 0 : cart.reduce((sum, p) => sum + convertPrice(p.originalPrice, currentCurrency), 0);
+    const totalContainer = document.getElementById('cart-total');
+    if (totalContainer) {
+        totalContainer.innerHTML = `<h3>Total: <i class="currency-icon"></i>${total.toLocaleString()}</h3>`;
+    }
+    
+    updateCurrencyIcons();
+}
+
+const checkoutBtn = document.getElementById('checkout-btn');
+if (checkoutBtn) {
+checkoutBtn.addEventListener('click', () => {
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+
+    checkoutBtn.textContent = 'Processing...';
+    checkoutBtn.disabled = true;
+
+    setTimeout(() => {
+        alert('Order placed successfully!');
+        cart = [];
+        updateCartStorage();
+        updateCartCount();
+        renderCartItems();
+
+        checkoutBtn.textContent = 'Checkout';
+        checkoutBtn.disabled = false;
+    }, 2000);
     });
 }
