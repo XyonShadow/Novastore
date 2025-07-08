@@ -382,20 +382,36 @@ function searchAndActivateTab(parent) {
         return;
     }
 
-    // Match category from list
-    const matchedCategory = categories.find(cat => cat.toLowerCase() === query.toLowerCase());
+    // Match by category
+    const matchedCategory = shuffleArray(products.filter(p =>
+        p.category.toLowerCase().includes(query.toLowerCase())
+    ));
 
-    if (matchedCategory) {
-        // Find corresponding button and trigger it
-        const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === matchedCategory.toLowerCase());
+    // Match by name
+    const matchedName = shuffleArray(products.filter(p =>
+        p.name.toLowerCase().includes(query.toLowerCase())
+    ));
+    
+    // Handle matching category
+    if (matchedCategory.length > 0) {
+        const categoryName = matchedCategory[0].category.toLowerCase();
+
+        const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
 
         if (matchingBtn) {
             matchingBtn.click();
-            matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center'});
+            matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
         }
+    }
+    // Handle matching product name
+    else if (matchedName.length > 0) {
+        Parent = parent;
+        filterByCategory(query, parent, null, 'filtered');
+        parent.style.display = 'grid';
     } else {
         // Handle invalid category input
-        const validCategories = [...new Set(products.map(p => p.category))];
+        const validCategories = shuffleArray(products.filter(p => p.category.toLowerCase().includes(query.toLowerCase()) || // search if it is contained in the category
+                                                p.name.toLowerCase().includes(query.toLowerCase()))); // search if it is contained in the name
         const suggestions = validCategories.join(', ');
 
         parent.style.display = 'grid';
@@ -472,25 +488,24 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
         otherParent: otherParent,
         mode: mode
     };
-    
+
     parent.innerHTML = '';
 
-    const top = shuffleArray(
-        products.filter(p => p.category.toLowerCase() === selectedCategory.toLowerCase())
-    );
+    const top = shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || // search if it is contained in the category
+                        p.name.toLowerCase().includes(selectedCategory.toLowerCase()))); // search if it is contained in the name
 
+    // Show results from the search
     if (top.length > 0) {
         const categoryLabel = top.length > 0 ? top[0].category : selectedCategory;
-        renderCategoryBlock(mode === 'filtered'?`Search results for ${categoryLabel}`:categoryLabel, top, parent, mode); // Show selected category first
+        renderCategoryBlock(mode === 'filtered'?`Search results for ${selectedCategory}`:categoryLabel, top, parent, mode); 
     } else {
-        const validCategories = [...new Set(products.map(p => p.category))];// creates a new array for just the selected categories
-        const suggestions = validCategories.join(', ');
-
-        parent.innerHTML = `<p>Please enter a valid category. Try one of - ${suggestions}.</p>`;
+        // No exact matches found, show suggestions
+        const suggestionNames = shuffleArray(products.map(p => p.name)).slice(0, 5).join(', ');
+        parent.innerHTML = `<p>No exact matches found. Try something like: ${suggestionNames}</p>`;
         setTimeout(() => {
             parent.style.display = 'none';
             parent.innerHTML = '';
-        }, 2500);
+        }, 4500);
     }
 
     // Show remaining products under "Other Products" section
