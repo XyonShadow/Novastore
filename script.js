@@ -911,7 +911,7 @@ function closeCart() {
     cartToggleBtn.classList.remove('active');
 }
 
-// Event Listeners
+// Click to open/close cart
 if(cartToggleBtn) {
     cartToggleBtn.addEventListener('click', (e) => {
         if (cartPanel.classList.contains('visible')) {
@@ -927,6 +927,7 @@ if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 // Swipe to close (mobile)
 let startX = 0;
 
+// Add touch event listeners to the cart panel
 if(cartPanel) {
     cartPanel.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
@@ -940,6 +941,7 @@ if(cartPanel) {
     });
 }
 
+// Render cart items in the cart panel
 function renderCartItems() {
     const container = document.getElementById('cart-items');
         container.innerHTML = '';
@@ -993,6 +995,7 @@ function renderCartItems() {
     updateCurrencyIcons();
 }
 
+// checkout button logic
 const checkoutBtn = document.getElementById('checkout-btn');
 if (checkoutBtn) {
 checkoutBtn.addEventListener('click', () => {
@@ -1017,16 +1020,33 @@ checkoutBtn.addEventListener('click', () => {
     });
 }
 
-const footer = document.querySelector('.footer');
 
+const footer = document.querySelector('.footer');
+// Hide cart toggle button when footer is in view
+if(cartToggleBtn && footer) {
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      cartToggleBtn.classList.add('hide');
+        cartToggleBtn.classList.add('hide');
     } else {
-      cartToggleBtn.classList.remove('hide');
+        cartToggleBtn.classList.remove('hide');
     }
   });
 });
-
 observer.observe(footer);
+}
+
+// Contact logic
+const contactBtn = document.querySelector('.contact-button');
+const overlay = document.querySelector('.contact-overlay');
+const modal = document.querySelector('.contact');
+
+contactBtn.addEventListener('click', () => {
+    overlay.classList.add('visible');
+    modal.classList.add('visible');
+});
+
+overlay.addEventListener('click', () => {
+    overlay.classList.remove('visible');
+    modal.classList.remove('visible');
+});

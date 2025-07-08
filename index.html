@@ -41,8 +41,8 @@
                 </div>
             </div>
             <div class="head-icons">
-                <a href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span id="cart-count"></span></a>
-                <a href="#"><i class="ri-account-circle-fill"></i></a>
+                <a title="Check Cart" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span id="cart-count"></span></a>
+                <button class="contact-button" style="font-size: 2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-account-circle-fill"></i></button>
             </div>
         </header>
         <div class="filtered-products"></div>
@@ -197,8 +197,8 @@
                 <ul>Brand</ul>
             </li>
             <li>
-                <span>Download app</span>
-                <a href="#"><i class="ri-google-play-line"></i>Google Play</a>
+                <span>Contact me</span>
+                <button class="contact-button"><i class="ri-mail-send-line"></i>Send a Message</button>
             </li>
         </div>
         
@@ -214,6 +214,33 @@
         </footer>
         
     </div>
+
+    <!--------------------------== Contact Section ==-------------------------->
+    <div class="contact-overlay"></div>
+    <div class="contact">
+        <div class="contact-box">
+            <form action="">
+                <div class="details">
+                    <div>
+                        <label for="fullName">Name<span>*</span></label>
+                        <input type="text" id="fullName" placeholder="Enter Name" required>
+                    </div>
+                    <div>
+                        <label for="yourEmail">Email<span>*</span></label>
+                        <input type="email" id="yourEmail" placeholder="Enter Email" required>   
+                    </div>
+                </div>
+                
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" placeholder="Enter Your Subject">
+                
+                <label for="yourMessage">Message<span>*</span></label>
+                <textarea name="" id="yourMessage" cols="10" rows="7" placeholder="How we can help you?" required></textarea>
+                <input type="submit" value="Submit" class="send">
+            </form>
+        </div>
+    </div>
+    
 
     <script src="data.js"></script>
     <script src="script.js"></script>
