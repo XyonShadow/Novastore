@@ -1133,16 +1133,26 @@ observer.observe(footer);
 }
 
 // Contact logic
-const contactBtn = document.querySelector('.contact-button');
+const contactBtn = document.querySelectorAll('.contact-button');
 const overlay = document.querySelector('.contact-overlay');
 const modal = document.querySelector('.contact');
 
-contactBtn.addEventListener('click', () => {
+// Open modal when contact button is clicked
+contactBtn.forEach(e =>{e.addEventListener('click', () => {
     overlay.classList.add('visible');
     modal.classList.add('visible');
-});
+})});
 
+// Close modal when clicking outside
 overlay.addEventListener('click', () => {
-    overlay.classList.remove('visible');
+    // Check if there are any unsent inputs
+    const hasInput = [...modal.querySelectorAll('input:not([type=submit]):not([type=hidden]), textarea')].some(el => el.value.trim() !== "");
+
+    if (hasInput) {
+        const confirmClose = confirm("You have unsent content. Close anyway?");
+        if (!confirmClose) return;
+    }
+
     modal.classList.remove('visible');
+    overlay.classList.remove('visible');
 });

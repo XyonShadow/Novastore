@@ -1105,9 +1105,18 @@ footer .footer-icons a:hover{
     background-color: #181a1f;
     border: 1px solid #444;
     color: #dcc;
+    caret-color: #dcc; 
     box-shadow: 0 0 0 1px transparent;
     z-index: 9999;
 }
+.contact .contact-box form input:-webkit-autofill,
+.contact .contact-box form textarea:-webkit-autofill {
+    background-color: #181a1f !important;
+    color: #dcc !important;
+    -webkit-text-fill-color: #dcc !important;
+    -webkit-box-shadow: 0 0 0 1000px #181a1f inset !important;
+}
+
 .contact .contact-box form label{
     display: flex;
     gap: 0.3rem;
