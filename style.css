@@ -735,7 +735,7 @@ footer .footer-icons a:hover{
 
 .cart-card.glowhighlighted {
     border: 2px solid #0a74da;
-    animation: highlight-glow .5s ease-in-out 1;
+    animation: highlight-glow .5s ease-in-out 4;
 }
 
 @keyframes highlight-blink {
@@ -946,7 +946,7 @@ footer .footer-icons a:hover{
 
 .cart-item {
     display: grid;
-    grid-template-columns: 80px 1fr 1fr auto;
+    grid-template-columns: 1fr auto auto;
     align-items: center;
     padding: 0 .5rem 4rem .5rem;
     border-bottom: 1px solid #444a70;
@@ -963,6 +963,19 @@ footer .footer-icons a:hover{
     object-fit: cover;
     border-radius: 8px;
     gap: 0.8rem;
+}
+
+.cart-info{
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: default;
+    width: 100%;
+    transition: transform 1s ease;
+}
+.cart-info:hover img, .cart-info:hover p{
+    transform: scale(1.05);
 }
 
 .remove-cart-item {

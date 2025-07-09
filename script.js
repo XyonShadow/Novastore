@@ -674,7 +674,7 @@ function scrollToProductById(id, matchClass = 'highlighted') {
         match.classList.add(matchClass);
         setTimeout(() => {
             match.classList.remove(matchClass);
-        }, 1000);
+        }, 2000);
     }
 }
 
@@ -1032,13 +1032,23 @@ function renderCartItems() {
         itemDiv.className = 'cart-item';
 
         itemDiv.innerHTML = `
+            <div title="Check Product" class="cart-info" data-id="${p.id}">
             <img src="./Assets/car1.jpg" alt="${p.name}" class="cart-item-image" />
             <p>${p.name}</p>
+            </div>
             <p><i class="currency-icon"></i>${converted.toLocaleString()}</p>
             <button class="remove-cart-item${isInCart(p.id) ? ' remove-from-cart' : ''}" data-id="${p.id}">
             ${isInCart(p.id) ? 'Remove From Cart' : 'Add To Cart'}
             </button>
         `;
+
+        const cartInfo = itemDiv.querySelector('.cart-info');
+
+        cartInfo.addEventListener('click', () => {
+            const productId = cartInfo.getAttribute('data-id');
+            scrollToProductById(productId, 'glowhighlighted');
+            closeCart();
+        });
 
         const removeBtn = itemDiv.querySelector('.remove-cart-item');
         removeBtn.addEventListener('click', () => {
