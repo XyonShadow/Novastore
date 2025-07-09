@@ -33,84 +33,95 @@ function checkInput() {
     } else {
         box.style.display = 'none'; // hide suggestion box when input is empty
         if (existingBtn) {
-            Parent.style.display = 'none';
-            Parent.innerHTML = '';
             existingBtn.remove();
         }
     }
 }
+
+const searchBtn = document.querySelector('.search-btn');
+const box = document.getElementById('suggestionBox');
 
 // make search icon active when the search input is on focus
 searchInput.addEventListener('focus', () => {
     searchIcon.classList.add('active');
 });
 
-const box = document.getElementById('suggestionBox');
-let selectedIndex = -1; // Track the currently selected suggestion index
+// Utility function to get search matches
+function getSearchMatches(query) {
+    const nameMatches = products.filter(p => p.name.toLowerCase().includes(query));
+    const categoryMatches = products.filter(p => p.category.toLowerCase().includes(query));
 
-// Check input
-searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.trim().toLowerCase();
-    checkInput(); // check input while typing
+    const names = nameMatches.map(p => p.name);
+    const categories = categoryMatches.map(p => p.category);
+
+    return {
+        names,
+        categories,
+        all: [...new Set([...categories, ...names])].slice(0, 5)
+    };
+}
+
+// Display suggestions or 'no results' message
+function handleSearch() {
+    const query = searchInput.value.trim().toLowerCase();
 
     if (!query) {
-        box.style.display = 'none';
+        searchInput.classList.add('shake');
+        setTimeout(() => searchInput.classList.remove('shake'), 400);
         return;
     }
 
-    // Get matching suggestions
-    const nameMatches = products.filter(p => p.name.toLowerCase().includes(query)).map(p => p.name);
-
-    const categoryMatches = products.filter(p => p.category.toLowerCase().includes(query)).map(p => p.category);
-
-    // Combine and remove duplicates
-    const matches = [...new Set([...categoryMatches, ...nameMatches])].slice(0, 5);
+    const matches = getSearchMatches(query).all;
 
     if (matches.length === 0) {
+        box.innerHTML = '';
         box.style.display = 'none';
         return;
     }
-    
-    box.innerHTML = ''; // Clear old suggestions
-    selectedIndex = -1; // reset active suggestion
 
-    // Add new suggestions
-    matches.forEach((match) => {
+    // Render suggestions
+    box.innerHTML = '';
+    matches.forEach(match => {
         const div = document.createElement('div');
         div.textContent = match;
         div.classList.add('suggestion-item');
-        
         div.addEventListener('click', () => {
             searchInput.value = match;
             box.style.display = 'none';
             filterByCategory(match, filteredProducts, null, 'filtered');
             filteredProducts.style.display = 'grid';
         });
-
         box.appendChild(div);
     });
-
     box.style.display = 'block';
-});
+}
 
-// Handle keyboard navigation in the suggestion box
+// Handle input changes
+searchInput.addEventListener('input', handleSearch);
+
+// Handle keyboard nav
+let selectedIndex = -1;
 searchInput.addEventListener('keydown', (e) => {
     const items = box.querySelectorAll('.suggestion-item');
 
-    if (box.style.display !== 'block' || items.length === 0) return;
-
     if (e.key === 'ArrowDown') {
         e.preventDefault();
-        selectedIndex = (selectedIndex + 1) % items.length;
-        updateHighlight(items);
+        if (box.style.display === 'block') {
+            selectedIndex = (selectedIndex + 1) % items.length;
+            updateHighlight(items);
+        }
     } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        selectedIndex = (selectedIndex - 1 + items.length) % items.length;
-        updateHighlight(items);
+        if (box.style.display === 'block') {
+            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+            updateHighlight(items);
+        }
     } else if (e.key === 'Enter') {
         e.preventDefault();
         if (selectedIndex >= 0 && items[selectedIndex]) {
             items[selectedIndex].click();
+        } else {
+            performSearch();
         }
     } else if (e.key === 'Escape') {
         box.style.display = 'none';
@@ -118,7 +129,7 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Update highlight based on selected index
+// highlight suggestions for keyboard navigation
 function updateHighlight(items) {
     items.forEach(item => item.classList.remove('active'));
     if (selectedIndex >= 0 && items[selectedIndex]) {
@@ -126,14 +137,63 @@ function updateHighlight(items) {
     }
 }
 
-// handle focus change from the search bar
 searchInput.addEventListener('blur', () => {
     setTimeout(() => {
         searchIcon.classList.remove('active');
         box.style.display = 'none';
         checkInput();
-    }, 400); //delay to allow for suggestion click
+    }, 400);
 });
+
+// set placeholder message for invalid or empty search input
+function setTemporaryPlaceholder(msg) {
+    const original = searchInput.getAttribute('data-original') || searchInput.placeholder;
+
+    if (!searchInput.getAttribute('data-original')) {
+        searchInput.setAttribute('data-original', original);
+    }
+
+    searchInput.placeholder = msg;
+    searchInput.classList.add('shake');
+    setTimeout(() => searchInput.classList.remove('shake'), 400);
+    searchInput.value = '';
+
+    setTimeout(() => {
+        searchInput.placeholder = searchInput.getAttribute('data-original');
+    }, 2500);
+}
+
+// Perform actual product search & filtering
+function performSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+
+    // Handle empty search input
+    if (!query) {
+        setTemporaryPlaceholder(`Please type something...`);
+    return;
+    }
+
+    const { categories, names } = getSearchMatches(query);
+
+    if (categories.length > 0) {
+    const categoryName = categories[0].toLowerCase();
+    const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
+
+    if (matchingBtn) {
+        matchingBtn.click();
+        matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    }
+    } else if (names.length > 0) {
+        filterByCategory(query, filteredProducts, null, 'filtered');
+        filteredProducts.style.display = 'grid';
+    } else {
+        setTemporaryPlaceholder(`No results for "${query}"`);
+        filteredProducts.style.display = 'none';
+    }
+}
+
+// Trigger search
+searchBtn.addEventListener('click', performSearch);
 
 // set html of a product card for a container
 function setCardHtml(container){
@@ -425,92 +485,6 @@ function spinIcon(element){
     void element.offsetWidth; // force reflow to restart animation
     element.classList.add('spin');
 }
-
-
-let Parent = ''; // Tracks the parent container for rendering filtered products
-
-// Filter products based on search input and render matching products
-function searchAndRenderProducts(parent) {
-    const query = searchInput.value.trim();
-
-    if (!query) {
-        parent.style.display = 'grid';
-        parent.innerHTML = `<p style='display:flex; justify-content:center;'>Please enter a category to search.</p>`;
-        setTimeout(() => {
-            parent.style.display = 'none';
-            parent.innerHTML = '';
-        }, 500);
-        searchInput.focus();
-        return;
-    }
-
-    Parent = parent;
-    filterByCategory(query, parent, null, 'filtered');
-    parent.style.display = 'grid';
-}
-
-// Handles tab activation and scrolls to category if matched
-function searchAndActivateTab(parent) {
-    const query = searchInput.value.trim();
-    if (!query) {
-        parent.style.display = 'grid';
-        parent.innerHTML = `<p style='display:flex; justify-content:center;'>Please enter a category to search.</p>`;
-        setTimeout(() => {
-            parent.style.display = 'none';
-            parent.innerHTML = '';
-        }, 500);
-        searchInput.focus();
-        return;
-    }
-
-    // Match by category
-    const matchedCategory = shuffleArray(products.filter(p =>
-        p.category.toLowerCase().includes(query.toLowerCase())
-    ));
-
-    // Match by name
-    const matchedName = shuffleArray(products.filter(p =>
-        p.name.toLowerCase().includes(query.toLowerCase())
-    ));
-    
-    // Handle matching category
-    if (matchedCategory.length > 0) {
-        const categoryName = matchedCategory[0].category.toLowerCase();
-
-        const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
-
-        if (matchingBtn) {
-            matchingBtn.click();
-            matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-        }
-    }
-    // Handle matching product name
-    else if (matchedName.length > 0) {
-        Parent = parent;
-        filterByCategory(query, parent, null, 'filtered');
-        parent.style.display = 'grid';
-    } else {
-        // Handle invalid category input
-        const validCategories = shuffleArray(products.filter(p => p.category.toLowerCase().includes(query.toLowerCase()) || // search if it is contained in the category
-                                                p.name.toLowerCase().includes(query.toLowerCase()))); // search if it is contained in the name
-        const suggestions = validCategories.join(', ');
-
-        parent.style.display = 'grid';
-        parent.innerHTML = `<p>Please enter a valid category. Try one of - ${suggestions}.</p>`;
-        setTimeout(() => {
-            parent.style.display = 'none';
-            parent.innerHTML = '';
-        }, 3000);
-    }
-}
-
-// Trigger search functions when Enter key is pressed
-searchInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        searchAndActivateTab(filteredProducts);
-        searchAndRenderProducts(filteredProducts);
-    }
-});
 
 // Randomly shuffle products for dynamic display
 function shuffleArray(array) {
