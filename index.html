@@ -17,7 +17,8 @@
             <div class="search-box">
                 <div class="search-bar">
                     <i class="ri-search-line"></i>
-                    <input name="itemSearch" type="text" placeholder="Search items">
+                    <input name="itemSearch" id="searchInput" type="text" placeholder="Search items" autocomplete="off">
+                    <div id="suggestionBox"></div>
                 </div>
                 <button onclick="searchAndRenderProducts(filteredProducts)" class="search-btn">Search</button>
             </div>

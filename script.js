@@ -1,4 +1,4 @@
-const searchInput = document.querySelector('.search-box .search-bar input');
+const searchInput = document.getElementById('searchInput');
 const searchIcon = document.querySelector('.search-bar .ri-search-line');
 const searchBar = document.querySelector('.search-bar');
 
@@ -31,6 +31,7 @@ function checkInput() {
             searchBar.appendChild(i);
         }
     } else {
+        box.style.display = 'none'; // hide suggestion box when input is empty
         if (existingBtn) {
             Parent.style.display = 'none';
             Parent.innerHTML = '';
@@ -39,20 +40,100 @@ function checkInput() {
     }
 }
 
-if(searchInput){
-    // make search icon active when the search input is on focus
-    searchInput.addEventListener('focus', () => {
-        searchIcon.classList.add('active');
+// make search icon active when the search input is on focus
+searchInput.addEventListener('focus', () => {
+    searchIcon.classList.add('active');
+});
+
+const box = document.getElementById('suggestionBox');
+let selectedIndex = -1; // Track the currently selected suggestion index
+
+// Check input
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    checkInput(); // check input while typing
+
+    if (!query) {
+        box.style.display = 'none';
+        return;
+    }
+
+    // Get matching suggestions
+    const nameMatches = products.filter(p => p.name.toLowerCase().includes(query)).map(p => p.name);
+
+    const categoryMatches = products.filter(p => p.category.toLowerCase().includes(query)).map(p => p.category);
+
+    // Combine and remove duplicates
+    const matches = [...new Set([...categoryMatches, ...nameMatches])].slice(0, 5);
+
+    if (matches.length === 0) {
+        box.style.display = 'none';
+        return;
+    }
+    
+    box.innerHTML = ''; // Clear old suggestions
+    selectedIndex = -1; // reset active suggestion
+
+    // Add new suggestions
+    matches.forEach((match) => {
+        const div = document.createElement('div');
+        div.textContent = match;
+        div.classList.add('suggestion-item');
+        
+        div.addEventListener('click', () => {
+            searchInput.value = match;
+            box.style.display = 'none';
+            filterByCategory(match, filteredProducts, null, 'filtered');
+            filteredProducts.style.display = 'grid';
+        });
+
+        box.appendChild(div);
     });
 
-    searchInput.addEventListener('input', checkInput); // check input while typing
-    
-    // remove active from search icon and check search input on focus change from the search bar
-    searchInput.addEventListener('blur', () => {
-        searchIcon.classList.remove('active');
-        checkInput();
-    });
+    box.style.display = 'block';
+});
+
+// Handle keyboard navigation in the suggestion box
+searchInput.addEventListener('keydown', (e) => {
+    const items = box.querySelectorAll('.suggestion-item');
+
+    if (box.style.display !== 'block' || items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex + 1) % items.length;
+        updateHighlight(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+        updateHighlight(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex >= 0 && items[selectedIndex]) {
+            items[selectedIndex].click();
+        }
+    } else if (e.key === 'Escape') {
+        box.style.display = 'none';
+        selectedIndex = -1;
+    }
+});
+
+// Update highlight based on selected index
+function updateHighlight(items) {
+    items.forEach(item => item.classList.remove('active'));
+    if (selectedIndex >= 0 && items[selectedIndex]) {
+        items[selectedIndex].classList.add('active');
+    }
 }
+
+// handle focus change from the search bar
+searchInput.addEventListener('blur', () => {
+    setTimeout(() => {
+        searchIcon.classList.remove('active');
+        box.style.display = 'none';
+        checkInput();
+    }, 400); //delay to allow for suggestion click
+});
 
 // set html of a product card for a container
 function setCardHtml(container){
