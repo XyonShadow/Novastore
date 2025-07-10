@@ -48,11 +48,33 @@
                 </div>
             </div>
             <div class="head-icons">
-                <button id="themeToggle" title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+                <button data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
                 <a title="Return to store" href="index.html"><i class="ri-shopping-bag-line"></i></a>
                 <button class="contact-button" style="font-size: 2rem;" title="Contact me" href="#"><i class="ri-account-circle-fill"></i></button>
             </div>
+            <div class="searchIcon"><i class="ri-search-line"></i></div>
         </header>
+        
+        <!-- Fixed bottom mobile nav -->
+        <div class="bottom-nav">
+            <a class="bottom-nav-item active" title="Return to store" href="index.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <button title="Check cart" class="bottom-nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Cart</span>
+            </button>
+            <button class="bottom-nav-item contact-button"title="Contact me" href="#">
+                <i class="ri-account-circle-fill"></i>
+                <span>Message</span>
+            </button>
+            </a>
+            <button class="bottom-nav-item" data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+            </a>
+        </div>
+
+        <!--------------------------== Main Section ==-------------------------->
         <div class="category-buttons">
             <!-- Buttons are rendered here -->
         </div>
@@ -117,7 +139,7 @@
     </div>
         
     <!--------------------------== Contact Section ==-------------------------->
-
+    
     <div class="contact-overlay"></div>
     <div class="contact">
         <div class="contact-box">

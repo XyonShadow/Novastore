@@ -20,7 +20,7 @@
 
     <div class="container">
             <!--------------------------== Header Section ==-------------------------->
-        <header>
+        <header class="desktop-header">
             <div class="logo">NovaStore</div>
             <div class="search-box">
                 <div class="search-bar">
@@ -50,11 +50,28 @@
                 </div>
             </div>
             <div class="head-icons">
-                <button id="themeToggle" title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
-                <a title="Check Cart" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span id="cart-count"></span></a>
+                <button  data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+                <a title="Check Cart" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span></a>
                 <button class="contact-button" style="font-size: 2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-account-circle-fill"></i></button>
             </div>
+            <div class="searchIcon"><i class="ri-search-line"></i></div>
         </header>
+
+            <!-- Fixed bottom mobile nav -->
+        <div class="bottom-nav">
+            <a title="Check Cart" href="cart.html" class="bottom-nav-item go-to-cart-link">
+                <i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span>
+                <span>Cart</span>
+            </a>
+            <button class="bottom-nav-item contact-button"title="Contact me" href="#">
+                <i class="ri-account-circle-fill"></i>
+                <span>Message</span>
+            </button>
+            </a>
+            <button class="bottom-nav-item" data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+            </a>
+        </div>
+        
         <div class="filtered-products"></div>
         
         <!--------------------------== Info Section ==-------------------------->
@@ -62,7 +79,7 @@
             <div class="info-text">
                 <h2>ALL THE TECH YOU <br>NEED, ALL IN ONE PLACE</h2>
                 <p>Discover the latest electronics, powerful computers, cutting-edge mobiles, security gadgets, accessories, and more -- all from trusted sellers and at unbeatable prices. Whether you're upgrading your setup or searching for smart solutions, NovaStore has got you covered, we've got everything you need.</p>
-                <a href="#">Shop Now <i class="ri-external-link-line"></i></a>
+                <a href="cart.html">Shop Now <i class="ri-external-link-line"></i></a>
             </div>
             <img src="Assets/car1.jpg">
         </div>

@@ -895,10 +895,13 @@ function addToCart(id) {
         console.log(`Product ${product.name} is already in the cart`);
     }
 }
-
+    
 function updateCartCount() {
     const cartCounter = document.getElementById('cart-count');
+    const homecartCounter = document.querySelectorAll('.count-badge');
+    if (homecartCounter){homecartCounter.forEach(e => e.textContent = cart.length);}
     if (cartCounter) cartCounter.textContent = cart.length;
+    console.log(homecartCounter)
 }
 
 function updateCartStorage(){
@@ -1104,16 +1107,19 @@ checkoutBtn.addEventListener('click', () => {
 
 
 const footer = document.querySelector('.footer');
+const bottomNav = document.querySelector('.bottom-nav');
 // Hide cart toggle button when footer is in view
-if(cartToggleBtn && footer) {
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-        cartToggleBtn.classList.add('hide');
-    } else {
-        cartToggleBtn.classList.remove('hide');
-    }
-  });
+if(footer) {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if(bottomNav) bottomNav.classList.add('hide');
+                if(cartToggleBtn) cartToggleBtn.classList.add('hide');
+            } else {
+                if(bottomNav) bottomNav.classList.remove('hide');
+                if(cartToggleBtn) cartToggleBtn.classList.remove('hide');
+            }
+        });
 });
 observer.observe(footer);
 }
@@ -1145,9 +1151,7 @@ overlay.addEventListener('click', () => {
 
 class ThemeManager {
     constructor() {
-        this.themeToggle = document.getElementById('themeToggle');
-        this.themeIcon = this.themeToggle.querySelector('i');
-        
+        this.themeToggles = document.querySelectorAll('[data-theme-toggle]');
         this.init();
     }
 
@@ -1157,22 +1161,26 @@ class ThemeManager {
         const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
         this.setTheme(currentTheme, false);
-        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+        this.themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => this.toggleTheme());
+        });
     }
 
     setTheme(theme, save = true) {
         const root = document.documentElement;
         const isDark = theme === 'dark';
-
         root.setAttribute('data-theme', theme);
 
-        // Icon toggle
-        this.themeIcon.classList.toggle('ri-moon-fill', !isDark);
-        this.themeIcon.classList.toggle('ri-sun-fill', isDark);
-        this.themeIcon.style.color = isDark ? '#e98409' : '#031632';
-
-        // Title update
-        this.themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        this.themeToggles.forEach(toggle => {
+            const icon = toggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('ri-moon-fill', !isDark);
+                icon.classList.toggle('ri-sun-fill', isDark);
+                icon.style.color = isDark ? '#e98409' : '#031632';
+            }
+            toggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        });
 
         if (save) localStorage.setItem('theme', theme);
     }
