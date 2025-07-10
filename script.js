@@ -521,7 +521,7 @@ function createCategoryButtons(){
         btn.className = 'category-btn';
         btn.onclick = function () {
             setActiveButton(this);
-            filterByCategory(category, productContainer, productContainer);
+            filterByCategory(category, productContainer, productContainer, 'full');
         };
         if(categoryContainer) categoryContainer.appendChild(btn);
     });
@@ -546,9 +546,9 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
 
     parent.innerHTML = '';
 
-    const top = shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || // search if it is contained in the category
-                        p.name.toLowerCase().includes(selectedCategory.toLowerCase()))); // search if it is contained in the name
-
+    const top = mode === 'filtered'? shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || // search if it is contained in the category
+                        p.name.toLowerCase().includes(selectedCategory.toLowerCase()))) // search if it is contained in the name
+                        : shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase())));
     // Show results from the search
     if (top.length > 0) {
         const categoryLabel = top.length > 0 ? top[0].category : selectedCategory;
@@ -1139,4 +1139,24 @@ overlay.addEventListener('click', () => {
 
     modal.classList.remove('visible');
     overlay.classList.remove('visible');
+});
+
+const root = document.documentElement;
+const toggleBtn = document.getElementById('themeToggle');
+
+toggleBtn.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark'; // moved inside
+    
+    // Toggle theme
+    const newTheme = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', newTheme);
+
+    // Toggle icon and color
+    const toggleIcon = toggleBtn.querySelector('i');
+    toggleIcon.classList.toggle('ri-moon-fill', isDark);
+    toggleIcon.classList.toggle('ri-sun-fill', !isDark);
+    toggleIcon.style.color = isDark ? '#031632': '#e98409';
+
+    // Switch title
+    toggleBtn.title = isDark ? 'Switch to dark mode' : 'Switch to light mode';
 });
