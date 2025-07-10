@@ -1,4 +1,8 @@
-:root{
+html.loading body {
+  display: none;
+}
+
+:root[data-theme="light"]{
     /* ======= Core Colors ======= */
     --accent-color: #0a74da;
     --accent-accent: #031632;
@@ -28,7 +32,7 @@
 }
 
 /* darkmode */
-[data-theme='dark'] {
+:root[data-theme='dark'] {
     /* ======= Core Colors ======= */
     --accent-color: #2a5d86;
     --accent-accent: #2980b9;

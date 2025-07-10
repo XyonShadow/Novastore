@@ -369,6 +369,8 @@ function switchCategory(category, button, containerID){
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+    new ThemeManager();
+    
     // Refresh contents on load
     if (document.getElementById('vehicles'))
         changeCategoryContent('Cars', 'vehicles');
@@ -1141,22 +1143,47 @@ overlay.addEventListener('click', () => {
     overlay.classList.remove('visible');
 });
 
-const root = document.documentElement;
-const toggleBtn = document.getElementById('themeToggle');
+class ThemeManager {
+    constructor() {
+        this.themeToggle = document.getElementById('themeToggle');
+        this.themeIcon = this.themeToggle.querySelector('i');
+        
+        this.init();
+    }
 
-toggleBtn.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark'; // moved inside
-    
-    // Toggle theme
-    const newTheme = isDark ? 'light' : 'dark';
-    root.setAttribute('data-theme', newTheme);
+    init() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
-    // Toggle icon and color
-    const toggleIcon = toggleBtn.querySelector('i');
-    toggleIcon.classList.toggle('ri-moon-fill', isDark);
-    toggleIcon.classList.toggle('ri-sun-fill', !isDark);
-    toggleIcon.style.color = isDark ? '#031632': '#e98409';
+        this.setTheme(currentTheme, false);
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+    }
 
-    // Switch title
-    toggleBtn.title = isDark ? 'Switch to dark mode' : 'Switch to light mode';
+    setTheme(theme, save = true) {
+        const root = document.documentElement;
+        const isDark = theme === 'dark';
+
+        root.setAttribute('data-theme', theme);
+
+        // Icon toggle
+        this.themeIcon.classList.toggle('ri-moon-fill', !isDark);
+        this.themeIcon.classList.toggle('ri-sun-fill', isDark);
+        this.themeIcon.style.color = isDark ? '#e98409' : '#031632';
+
+        // Title update
+        this.themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+
+        if (save) localStorage.setItem('theme', theme);
+    }
+
+    toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = current === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.classList.remove('loading');
 });
