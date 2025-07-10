@@ -968,7 +968,7 @@ function updateCartBtn(id, btn) {
 
 const cartToggleBtn = document.getElementById('cart-toggle');
 const cartPanel = document.querySelector('.cart-panel');
-const cartCloseBtn = document.querySelector('.cart-close');
+const cartCloseBtn = document.querySelector('.cart-close-btn');
 const cartOverlay = document.querySelector('.cart-overlay');
 
 // Open
@@ -987,15 +987,8 @@ function closeCart() {
 }
 
 // Click to open/close cart
-if(cartToggleBtn) {
-    cartToggleBtn.addEventListener('click', (e) => {
-        if (cartPanel.classList.contains('visible')) {
-            closeCart();
-        } else {
-            openCart();
-        }
-    });
-}
+if(cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
+if(cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
 
 if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
@@ -1091,14 +1084,17 @@ checkoutBtn.addEventListener('click', () => {
 
     checkoutBtn.textContent = 'Processing...';
     checkoutBtn.disabled = true;
-
+    
     setTimeout(() => {
         alert('Order placed successfully!');
         cart = [];
         updateCartStorage();
         updateCartCount();
         renderCartItems();
-
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            const productId = btn.closest('.product-card').dataset.id;
+            setCartButtonState(btn, productId);
+        }); //update all add-to-cart buttons
         checkoutBtn.textContent = 'Checkout';
         checkoutBtn.disabled = false;
     }, 2000);
