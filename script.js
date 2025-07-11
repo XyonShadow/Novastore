@@ -256,23 +256,32 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     updateCurrencyIcons();
 }
 
-let currentCurrency = localStorage.getItem('currency') || 'NGN'; // page default currency
+
+
+let currentCurrency = localStorage.getItem('currency') || 'NGN';
 
 // update currency selector
 const Select = document.querySelector('.select-container');
 const option = Select.querySelectorAll('.option');
+const selectTrigger = Select.querySelector('.select-trigger span');
 
-option.forEach(opt => {
-    const value = opt.dataset.value.toLowerCase();
+// Find and update selected option
+const selectedOption = Array.from(option).find(opt => 
+    opt.dataset.value.toLowerCase() === currentCurrency.toLowerCase()
+);
 
-    if (value === currentCurrency.toLowerCase()) {
-        opt.classList.add('selected');
-    } else {
-        opt.classList.remove('selected');
-    }
-});
-
-
+if (selectedOption) {
+    // Remove selected class from all options
+    option.forEach(opt => opt.classList.remove('selected'));
+    
+    // Add selected class to current option
+    selectedOption.classList.add('selected');
+    
+    // Update trigger display
+    const icon = selectedOption.querySelector('i').className;
+    const text = selectedOption.textContent.trim();
+    selectTrigger.innerHTML = `<i class="${icon}"></i>${text}`;
+}
 /*
 // used to refresh various categries
 
