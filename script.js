@@ -60,7 +60,7 @@ function getSearchMatches(query) {
     
     const names = [...cartNames, ...nonCartNames];
     const categories = categoryMatches.map(p => p.category);
-
+    console.log(query, 'sugh');
     return {
         names,
         categories,
@@ -164,20 +164,20 @@ searchInput.addEventListener('blur', () => {
 });
 
 // set placeholder message for invalid or empty search input
-function setTemporaryPlaceholder(msg) {
-    const original = searchInput.getAttribute('data-original') || searchInput.placeholder;
+function setTemporaryPlaceholder(msg, inputContainer = searchInput) {
+    const original = searchInput.getAttribute('data-original') || inputContainer.placeholder;
 
-    if (!searchInput.getAttribute('data-original')) {
-        searchInput.setAttribute('data-original', original);
+    if (!inputContainer.getAttribute('data-original')) {
+        inputContainer.setAttribute('data-original', original);
     }
 
-    searchInput.placeholder = msg;
-    searchInput.classList.add('shake');
-    setTimeout(() => searchInput.classList.remove('shake'), 400);
-    searchInput.value = '';
+    inputContainer.placeholder = msg;
+    inputContainer.classList.add('shake');
+    setTimeout(() => inputContainer.classList.remove('shake'), 400);
+    inputContainer.value = '';
 
     setTimeout(() => {
-        searchInput.placeholder = searchInput.getAttribute('data-original');
+        inputContainer.placeholder = searchInput.getAttribute('data-original');
     }, 2500);
 }
 
@@ -679,17 +679,15 @@ window.addEventListener('resize', () => {
             productContainer.innerHTML = '';
             renderCategoryBlock('All Products', shuffledInitial, productContainer);
         }
-        if (showMoreContent) {
-            showMoreContent.innerHTML = '';
-        }
+        if (showMoreContent) showMoreContent.innerHTML = '';
 
          // Restore "All" button as active
         const allButton = document.querySelector('.category-btn:first-child');
         if (allButton) setActiveButton(allButton);
 
         // Update show/hide state of the button
-        showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
-        showLessBtn.style.display = 'none';
+        if (showMoreBtn) showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
+        if (showLessBtn) showLessBtn.style.display = 'none';
     }
 });
 
@@ -1366,3 +1364,396 @@ class ThemeManager {
 document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.classList.remove('loading');
 });
+
+function initMobileSearch() {
+    const overlay = document.getElementById('mobileSearchOverlay');
+    const searchIcon = document.getElementById('mobileSearchIcon');
+    const closeBtn = document.getElementById('mobileSearchClose');
+    const searchInput = document.getElementById('mobileSearchInput');
+    const searchBtn = document.getElementById('mobileSearchBtn');
+    const clearBtn = document.getElementById('mobileClearBtn');
+    const suggestions = document.getElementById('mobileSuggestions');
+    const results = document.getElementById('mobileSearchResults');
+    const recentSearches = document.getElementById('recentSearches');
+
+    let selectedIndex = -1;
+    let isOpen = false;
+    let recentSearchList = getRecentSearches();
+
+    // Open mobile search overlay
+    function openSearch() {
+        overlay.classList.add('active');
+        isOpen = true;
+        history.pushState({ searchOpen: true }, '', '');
+        setTimeout(() => searchInput.focus(), 300);
+        showRecentSearches();
+    }
+
+    // Close mobile search overlay
+    function closeSearch() {
+        overlay.classList.remove('active');
+        isOpen = false;
+        clearSearch();
+        hideSuggestions();
+        results.innerHTML = '';
+        results.style.display = 'none';
+        if (history.state && history.state.searchOpen) {
+            history.back();
+        }
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        clearBtn.classList.remove('show');
+        hideSuggestions();
+        showRecentSearches();
+        results.style.display = 'none';
+        selectedIndex = -1;
+    }
+
+    // Reset search state to initial state -- shows recent search
+    function resetSearchState() {
+        searchInput.value = '';
+        clearBtn.classList.remove('show');
+        hideSuggestions();
+        showRecentSearches();
+        results.innerHTML = '';
+        results.style.display = 'none';
+        selectedIndex = -1;
+    }
+
+    // Recent searches management
+    function getRecentSearches() {
+        try {
+            const stored = localStorage.getItem('recentSearches');
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            // console.warn('Failed to load recent searches from localStorage:', e);
+            return [];
+        }
+    }
+
+    function saveRecentSearches(searches) {
+        try {
+            localStorage.setItem('recentSearches', JSON.stringify(searches));
+        } catch (e) {
+            // console.warn('Failed to save recent searches to localStorage:', e);
+        }
+    }
+
+    function addRecentSearch(query) {
+        if (!query || query.trim() === '') return;
+        
+        const trimmedQuery = query.trim();
+        
+        // Remove if already exists to avoid duplicates
+        recentSearchList = recentSearchList.filter(item => item !== trimmedQuery);
+        
+        // Add to beginning of array
+        recentSearchList.unshift(trimmedQuery);
+        
+        // Keep only last 8 searches
+        recentSearchList = recentSearchList.slice(0, 8);
+        
+        // Save to localStorage
+        saveRecentSearches(recentSearchList);
+    }
+
+    function clearRecentSearches() {
+        recentSearchList = [];
+        renderRecentSearches();
+        try {
+            localStorage.removeItem('recentSearches');
+        } catch (e) {
+            console.warn('Failed to clear recent searches from localStorage:', e);
+        }
+    }
+
+    function renderRecentSearches() {
+        if (!recentSearches) return;
+        
+        if (recentSearchList.length === 0) {
+            recentSearches.innerHTML = `
+                <div class="recent-searches-empty">
+                    <p>No recent searches</p>
+                </div>
+            `;
+            return;
+        }
+
+        recentSearches.innerHTML = `
+            <div class="recent-searches-header">
+                <h3>Recent Searches</h3>
+                <button class="clear-recent-btn" onclick="clearRecentSearches()">Clear All</button>
+            </div>
+            <div class="recent-searches-list">
+                ${recentSearchList.map(search => `
+                    <div class="recent-search-item">
+                        <i class="ri-time-line"></i>
+                        <span class="recent-search-text">${search}</span>
+                        <i class="ri-close-line remove-recent" data-search="${search}"></i>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Add event listeners for recent search items
+        const recentItems = recentSearches.querySelectorAll('.recent-search-item');
+        recentItems.forEach(item => {
+            const searchText = item.querySelector('.recent-search-text');
+            const removeBtn = item.querySelector('.remove-recent');
+            
+            searchText.addEventListener('click', () => {
+                const query = searchText.textContent;
+                searchInput.value = query;
+                performSearch();
+            });
+
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const searchToRemove = removeBtn.dataset.search;
+                removeRecentSearch(searchToRemove);
+            });
+        });
+    }
+
+    function removeRecentSearch(searchToRemove) {
+        recentSearchList = recentSearchList.filter(item => item !== searchToRemove);
+        renderRecentSearches();
+        saveRecentSearches(recentSearchList);
+    }
+
+    // Show recent searches
+    function showRecentSearches() {
+        if (recentSearches) {
+            renderRecentSearches();
+            recentSearches.style.display = 'block';
+        }
+    }
+
+    function hideRecentSearches() {
+        if (recentSearches) {
+            recentSearches.style.display = 'none';
+        }
+    }
+
+    // Using the same search matching logic as previously
+    function getSearchMatches(query) {
+        query = query.toLowerCase();
+        
+        const nameMatches = products.filter(p =>
+            p.name.toLowerCase().includes(query)
+        );
+        const categoryMatches = products.filter(p =>
+            p.category.toLowerCase().includes(query)
+        );
+
+        const cartProductIds = cart.map(item => item.id || item.product_id || item);
+        const cartNames = nameMatches.filter(p => cartProductIds.includes(p.id)).map(p => p.name);
+        const nonCartNames = nameMatches.filter(p => !cartProductIds.includes(p.id)).map(p => p.name);
+
+        const names = [...cartNames, ...nonCartNames];
+        const categories = [...new Set(categoryMatches.map(p => p.category))];
+
+        return {
+            names,
+            categories,
+            all: [...new Set([...categories, ...names])].slice(0, 6)
+        };
+    }
+
+    // Check if item is in cart
+    function isItemInCart(item) {
+        return products.some(p =>
+            (p.name === item || p.category === item) &&
+            cart.some(cartItem => (cartItem.id || cartItem.product_id || cartItem) === p.id)
+        );
+    }
+
+    // Render suggestions dropdown with cart badges
+    function showSuggestions(query) {
+        const matches = getSearchMatches(query).all;
+        if (matches.length === 0) {
+            hideSuggestions();
+            return;
+        }
+
+        suggestions.innerHTML = '';
+        matches.forEach(match => {
+            const div = document.createElement('div');
+            const inCart = isItemInCart(match);
+
+            div.classList.add('mobile-suggestion-item');
+            if (inCart) div.classList.add('in-cart-suggestion');
+
+            div.innerHTML = `
+                <span>${match}</span>
+                ${inCart ? '<span class="cart-badge-mobile">In Cart</span>' : ''}
+            `;
+
+            div.addEventListener('click', () => {
+                searchInput.value = match;
+                performSearch();
+            });
+
+            suggestions.appendChild(div);
+        });
+
+        suggestions.classList.add('show');
+        selectedIndex = -1;
+    }
+
+    function hideSuggestions() {
+        suggestions.classList.remove('show');
+        selectedIndex = -1;
+    }
+
+    // Handle input change
+    function handleInput(e) {
+        const query = e.target.value.trim();
+        if (query) {
+            clearBtn.classList.add('show');
+            hideRecentSearches();
+            showSuggestions(query);
+        } else {
+            clearBtn.classList.remove('show');
+            hideSuggestions();
+            showRecentSearches();
+        }
+    }
+
+    // Handle keyboard navigation in suggestions
+    function handleKeydown(e) {
+        const items = suggestions.querySelectorAll('.mobile-suggestion-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateHighlight(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            updateHighlight(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                items[selectedIndex].click();
+            } else {
+                performSearch();
+            }
+        } else if (e.key === 'Escape') {
+            closeSearch();
+        }
+    }
+
+    // Highlight currently selected suggestion for keyboard nav
+    function updateHighlight(items) {
+        items.forEach(item => item.classList.remove('active'));
+        if (selectedIndex >= 0 && items[selectedIndex]) {
+            items[selectedIndex].classList.add('active');
+        }
+    }
+
+    // Set placeholder message for invalid or empty search input
+    function setTemporaryPlaceholder(msg, inputContainer = searchInput) {
+        const original = inputContainer.getAttribute('data-original') || inputContainer.placeholder;
+
+        if (!inputContainer.getAttribute('data-original')) {
+            inputContainer.setAttribute('data-original', original);
+        }
+
+        inputContainer.placeholder = msg;
+        inputContainer.classList.add('shake');
+        setTimeout(() => inputContainer.classList.remove('shake'), 400);
+        inputContainer.value = '';
+
+        setTimeout(() => {
+            inputContainer.placeholder = inputContainer.getAttribute('data-original');
+            // Reset to initial state after showing the error message
+            resetSearchState();
+        }, 2500);
+    }
+
+    // Perform actual search - now matches desktop behavior
+    function performSearch() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!query) {
+            setTemporaryPlaceholder('Please type something...', searchInput);
+            return;
+        }
+
+        // Add to recent searches
+        addRecentSearch(query);
+
+        hideSuggestions();
+        hideRecentSearches();
+        
+        const { categories, names } = getSearchMatches(query);
+
+        // Reset results container
+        results.innerHTML = '';
+        results.style.display = 'none';
+
+        if (categories.length > 0) {
+            // Found category match - look for matching category button and click it
+            const categoryName = categories[0].toLowerCase();
+            const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => 
+                btn.textContent.toLowerCase() === categoryName
+            );
+
+            if (matchingBtn) {
+                // Close mobile search overlay first
+                closeSearch();
+                
+                // Click the category button and scroll to it
+                matchingBtn.click();
+                matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                
+                // Don't show filtered results since we're using category button
+                return;
+            }
+        }
+
+        // If no category button found, or only product matches, show filtered results
+        if (categories.length > 0 || names.length > 0) {
+            filterByCategory(query, results, null, 'filtered');
+            results.style.display = 'grid';
+            
+            // Update currency icons after rendering
+            if (typeof updateCurrencyIcons === 'function') {
+                updateCurrencyIcons();
+            }
+        } else {
+            // No results found - show error message and reset after delay
+            setTemporaryPlaceholder(`No results for "${query}"`);
+            results.style.display = 'none';
+        }
+
+        console.log('Mobile search results:', getSearchMatches(query));
+    }
+
+    // Event listeners
+    searchIcon.addEventListener('click', openSearch);
+    closeBtn.addEventListener('click', closeSearch);
+    searchInput.addEventListener('input', handleInput);
+    searchInput.addEventListener('keydown', handleKeydown);
+    searchBtn.addEventListener('click', performSearch);
+    clearBtn.addEventListener('click', clearSearch);
+
+    // Make clearRecentSearches globally accessible for the onclick handler
+    window.clearRecentSearches = clearRecentSearches;
+
+    // Close overlay when clicking outside
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeSearch();
+    });
+
+    // Handle browser back button
+    window.addEventListener('popstate', () => {
+        if (isOpen) closeSearch();
+    });
+}
+
+// Initialize mobile search functionality
+initMobileSearch();
+ 
