@@ -122,7 +122,6 @@ header {
     display: flex;
     text-align: center;
     align-items: center;
-    color: var(--text-muted);
     gap: 0.6rem;
     box-shadow: 3px 3px 10px var(--background-shadow);
 }
@@ -142,6 +141,7 @@ header {
 }
 
 .search-box .search-bar input {
+    color: var(--text-muted);
     outline: none;
     border: none;
     background: transparent;
@@ -944,6 +944,7 @@ footer .footer-icons a:hover {
     animation: highlight-blink 0.5s ease-in-out 4;
 }
 
+
 .cart-card.glowhighlighted {
     border: 2px solid var(--accent-color);
     animation: highlight-glow 0.5s ease-in-out 5;
@@ -1539,4 +1540,32 @@ footer .footer-icons a:hover {
 .suggestion-item.active {
   background-color: #e8f0fe;
   font-weight: bold;
+}
+
+/* --------------------------== Cart Badges ==-------------------------- */
+.cart-badge {
+    background: #007bff;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7em;
+    margin-left: 5px;
+}
+
+.cart-badge-small {
+    background: #007bff;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 8px;
+    font-size: 0.6em;
+    margin-left: 5px;
+}
+
+.suggestion-item.in-cart-suggestion {
+    background: rgba(0, 123, 255, 0.1);
+    border-left: 3px solid #007bff;
+}
+
+.suggestion-item.in-cart-suggestion:hover {
+    background: rgba(0, 123, 255, 0.2);
 }
