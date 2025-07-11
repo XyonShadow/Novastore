@@ -476,13 +476,12 @@ function loadMoreCategory({excluded = [], containerID = 'load-area', count = 4} 
         document.getElementById(containerID).appendChild(labelText);
         document.getElementById(containerID).appendChild(cardContainer);
         updateCurrencyIcons();
+        // Hide the button immediately if last load
+        if (noMoreToLoad) {
+            document.querySelector('.load-section').innerHTML = '<p>You\'ve Reached the End, <a href="./cart.html">Go to Cart</a></p>';
+        }
     }, Math.floor(Math.random() * 100) + 1000);
     
-
-    // Hide the button immediately if last load
-    if (noMoreToLoad) {
-        document.querySelector('.load-section').innerHTML = '<p>You\'ve Reached the End, <a href="./cart.html">Go to Cart</a></p>';
-    }
 }
 
 const moreButton = document.querySelector('.load-more');
@@ -592,7 +591,7 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
 }
 
 // Render a labeled block of products under a given heading
-function renderCategoryBlock(labelText, items, parent, mode) {
+function renderCategoryBlock(labelText, items, parent, mode, sliceFrom = 0, sliceTo = visibleCount) {
     const block = document.createElement('div');
     block.className = 'category-block';
 
@@ -600,19 +599,61 @@ function renderCategoryBlock(labelText, items, parent, mode) {
     label.textContent = labelText;
     block.appendChild(label);
 
-    renderProduct(items, block, mode);
+    renderProduct(items, block, mode, sliceFrom, sliceTo);
     if(parent) parent.appendChild(block);
 }
 
+// e.g. 12, 20, etc. items to render based on screen size
+function getVisibleCount() {
+    const width = window.innerWidth;
+    
+    if (width >= 1200) return 60;
+    else if (width >= 992) return 48;
+    else if (width >= 768) return 36;
+    else if (width >= 576) return 24;
+    else return 12;
+}
+let initialVisibleCount = getVisibleCount();
+let visibleCount = getVisibleCount();
+
+// update visble count on screen resize
+window.addEventListener('resize', () => {
+    const newVisibleCount = getVisibleCount();
+
+    // Only update if user hasn't clicked "Show More" yet
+    if (visibleCount === initialVisibleCount) {
+        visibleCount = newVisibleCount;
+        initialVisibleCount = newVisibleCount;
+
+        // rre-render initial products if layout changes
+        const showMoreContent = document.getElementById('showMoreContent');
+        if (productContainer) {
+            productContainer.innerHTML = '';
+            renderCategoryBlock('All Products', shuffledInitial, productContainer);
+        }
+        if (showMoreContent) {
+            showMoreContent.innerHTML = '';
+        }
+
+         // Restore "All" button as active
+        const allButton = document.querySelector('.category-btn:first-child');
+        if (allButton) setActiveButton(allButton);
+
+        // Update show/hide state of the button
+        showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
+        showLessBtn.style.display = 'none';
+    }
+});
+
 // Render product cards inside a given container
-function renderProduct(items, parent, mode = 'full') {
+function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = visibleCount) {
     // Convert prices of all products
     applyCurrencyConversion();
 
     const group = document.createElement('div');
     group.className = 'product-group';
 
-    items.forEach(product => {
+    items.slice(sliceFrom, sliceTo).forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card card';
         card.setAttribute('data-id', product.id); // tracking
@@ -629,22 +670,22 @@ function renderProduct(items, parent, mode = 'full') {
                 <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
             `;
         } else {
-                card.className = 'product-card cart-card';
-                card.setAttribute('data-id', product.id);
-                card.innerHTML = `
+            card.className = 'product-card cart-card';
+            card.setAttribute('data-id', product.id);
+            card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <h3 class="product-price"><i class="currency-icon "></i>${product.price.toLocaleString()}</h3>
                 <button class="add-to-cart-btn">Add To Cart</button>
-                `;
-                const btn = card.querySelector('.add-to-cart-btn');
-                btn.addEventListener('click', (e) => {
-                    updateCartBtn(product.id, btn);
-                });
-
-                // Reflect localStorage cart state
-                setCartButtonState(btn, product.id)
-            }
+            `;
+            const btn = card.querySelector('.add-to-cart-btn');
+            btn.addEventListener('click', (e) => {
+                updateCartBtn(product.id, btn);
+            });
+            
+            // Reflect localStorage cart state
+            setCartButtonState(btn, product.id);
+        }
 
         group.appendChild(card);
     });
@@ -653,6 +694,52 @@ function renderProduct(items, parent, mode = 'full') {
 
     updateCurrencyIcons();
 }
+
+const showMoreBtn = document.getElementById('showMoreBtn');
+const showMoreContent = document.getElementById('showMoreContent');
+const showLessBtn = document.getElementById('showLessBtn');
+
+function showMoreProductsAlternative() {
+    const showMoreContent = document.getElementById('showMoreContent');
+    const showLessBtn = document.getElementById('showLessBtn');
+    
+    if (!showMoreBtn || !products || !showMoreContent || !showLessBtn) return;
+
+    showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
+    showLessBtn.style.display = 'none';
+
+    showMoreBtn.addEventListener('click', () => {
+        const start = visibleCount;
+        const end = Math.min(visibleCount + 4, products.length);
+        const nextBatch = shuffledInitial.slice(start, end);
+        spinIcon(showMoreBtn.querySelector('i'));
+
+        // Re-render from the start to new visible count
+        setTimeout(() => {
+            renderProduct(nextBatch, showMoreContent, 'full');
+            if (visibleCount >= products.length) {
+                showMoreBtn.style.display = 'none';
+            }
+
+            showLessBtn.style.display = visibleCount > initialVisibleCount ? 'flex' : 'none';
+        }, Math.floor(Math.random() * 100) + 1000);
+        
+        visibleCount = end;
+    });
+
+    showLessBtn.addEventListener('click', () => {
+        spinIcon(showLessBtn.querySelector('i'));
+        setTimeout(() => {
+            showMoreContent.innerHTML = ''; // Clear additional products
+            showLessBtn.style.display = 'none';
+            showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
+        }, Math.floor(Math.random() * 100) + 1000)
+
+        visibleCount = initialVisibleCount;
+    });
+}
+
+showMoreProductsAlternative();
 
 // function to go to cart.html with selected category and product
 function goTo(category, product) {
@@ -891,7 +978,7 @@ function handleCurrencyChange(selectedCurrency){
  // rebuild all visible sections and update icons
 function handleCurrencyChange(){
     updateCategoryContent();
-    updateCurrencyIcons(currentCurrency);
+    updateCurrencyIcons();
 }
 
 function addToCart(id) {
