@@ -256,7 +256,22 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     updateCurrencyIcons();
 }
 
-let currentCurrency = 'NGN'; // page default currency
+let currentCurrency = localStorage.getItem('currency') || 'NGN'; // page default currency
+
+// update currency selector
+const Select = document.querySelector('.select-container');
+const option = Select.querySelectorAll('.option');
+
+option.forEach(opt => {
+    const value = opt.dataset.value.toLowerCase();
+
+    if (value === currentCurrency.toLowerCase()) {
+        opt.classList.add('selected');
+    } else {
+        opt.classList.remove('selected');
+    }
+});
+
 
 /*
 // used to refresh various categries
@@ -688,9 +703,7 @@ if (selectedProduct) {
 }
 
 // Custom Select Dropdown Logic
-const Select = document.querySelector('.select-container');
 const trigger = Select.querySelector('.select-trigger');
-const option = Select.querySelectorAll('.option');
 const options = Select.querySelector('.options');
 const arrow = Select.querySelector('.ri-arrow-down-s-line');
 
@@ -722,6 +735,7 @@ function selectCurrency(opt) {
 
     // Trigger currency logic
     currentCurrency = value;
+    localStorage.setItem('currency', value);
     handleCurrencyChange();
 }
 
@@ -803,9 +817,10 @@ let conversionRates = {};
 // get rates from api
 async function fetchRates() {
     try {
-        const res = await fetch(`https://v6.exchangerate-api.com/v6/bb966c4d6129c5d3224cee33/latest/${currentCurrency}`);
-        const data = await res.json();
-        conversionRates = data['conversion_rates'];
+        // const res = await fetch(`https://v6.exchangerate-api.com/v6/bb966c4d6129c5d3224cee33/latest/${currentCurrency}`);
+        // const data = await res.json();
+        // conversionRates = data['conversion_rates'];
+        conversionRates = exchangeRates['rates'];
         saveRatesToStorage(conversionRates);
     } catch (err) {
         console.error('Failed to fetch rates', err.message);
@@ -901,7 +916,6 @@ function updateCartCount() {
     const homecartCounter = document.querySelectorAll('.count-badge');
     if (homecartCounter){homecartCounter.forEach(e => e.textContent = cart.length);}
     if (cartCounter) cartCounter.textContent = cart.length;
-    console.log(homecartCounter)
 }
 
 function updateCartStorage(){

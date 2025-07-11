@@ -89,3 +89,5 @@ const products = [
   { id: 59, name: "Power Bank 20000mAh", price: 18000, category: "Power", image: "images/power/powerbank.jpg" },
   { id: 60, name: "Generator 3.5KVA", price: 230000, category: "Power", image: "images/power/generator.jpg" }
 ];
+
+//TODO: IMPLEMENT BACKEND FETCHING

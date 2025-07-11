@@ -254,7 +254,7 @@ header {
 }
 
 .option:hover {
-    background: var(--background-light);
+    background: #b7e0fe;
 }
 
 .head-icons a, .head-icons button, .searchIcon{
