@@ -571,9 +571,19 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
 
     parent.innerHTML = '';
 
-    const top = mode === 'filtered'? shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || // search if it is contained in the category
-                        p.name.toLowerCase().includes(selectedCategory.toLowerCase()))) // search if it is contained in the name
-                        : shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase())));
+    const filtered = mode === 'filtered'? 
+        shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || 
+                    p.name.toLowerCase().includes(selectedCategory.toLowerCase()))) 
+        : shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase())));
+    
+    // Separate cart products from other products
+    const cartProductIds = cart.map(item => item.id || item.product_id || item); // Handle different cart structures
+    const cartProducts = filtered.filter(p => cartProductIds.includes(p.id));
+    const nonCartProducts = filtered.filter(p => !cartProductIds.includes(p.id));
+    
+    // Combine: cart products first, then others
+    const top = [...cartProducts, ...nonCartProducts];
+    
     // Show results from the search
     if (top.length > 0) {
         const categoryLabel = top.length > 0 ? top[0].category : selectedCategory;
@@ -625,7 +635,7 @@ function getVisibleCount() {
 let initialVisibleCount = getVisibleCount();
 let visibleCount = getVisibleCount();
 
-// update visble count on screen resize
+// update visible count on screen resize
 window.addEventListener('resize', () => {
     const newVisibleCount = getVisibleCount();
 
@@ -634,7 +644,7 @@ window.addEventListener('resize', () => {
         visibleCount = newVisibleCount;
         initialVisibleCount = newVisibleCount;
 
-        // rre-render initial products if layout changes
+        // re-render initial products if layout changes
         const showMoreContent = document.getElementById('showMoreContent');
         if (productContainer) {
             productContainer.innerHTML = '';
@@ -662,16 +672,31 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
     const group = document.createElement('div');
     group.className = 'product-group';
 
-    items.slice(sliceFrom, sliceTo).forEach(product => {
+    // Don't slice if we're showing cart products - show all cart items
+    const cartProductIds = cart.map(item => item.id || item.product_id || item);
+    const cartProducts = items.filter(p => cartProductIds.includes(p.id));
+    const nonCartProducts = items.filter(p => !cartProductIds.includes(p.id));
+    
+    // Show all cart products + sliced non-cart products
+    const maxNonCartItems = Math.max(0, sliceTo - cartProducts.length);
+    const productsToShow = [
+        ...cartProducts, // All cart products (no slicing)
+        ...nonCartProducts.slice(sliceFrom, maxNonCartItems)
+    ];
+
+    productsToShow.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card card';
-        card.setAttribute('data-id', product.id); // tracking
+        card.setAttribute('data-id', product.id);
 
+        // Add visual indicator for cart items
+        const isInCart = cartProductIds.includes(product.id);
+        
         if (mode === 'filtered') {
             card.setAttribute('onclick', `goTo('${product.category}', '${product.id}')`);
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
-                <h4>${product.name}</h4>
+                <h4>${product.name} ${isInCart ? '<span class="cart-badge">In Cart</span>' : ''}</h4>
                 <div class="card-info">
                     <p>Discover the latest electronic</p>
                     <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
@@ -680,11 +705,11 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             `;
         } else {
             card.className = 'product-card cart-card';
-            card.setAttribute('data-id', product.id);
+
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
-                <h3 class="product-price"><i class="currency-icon "></i>${product.price.toLocaleString()}</h3>
+                <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
                 <button class="add-to-cart-btn">Add To Cart</button>
             `;
             const btn = card.querySelector('.add-to-cart-btn');
@@ -700,7 +725,6 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
     });
 
     if (parent) parent.appendChild(group);
-
     updateCurrencyIcons();
 }
 
@@ -717,34 +741,39 @@ function showMoreProductsAlternative() {
     showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
     showLessBtn.style.display = 'none';
 
-    showMoreBtn.addEventListener('click', () => {
+    // Remove existing listeners to prevent duplication
+    const newShowMoreBtn = showMoreBtn.cloneNode(true);
+    const newShowLessBtn = showLessBtn.cloneNode(true);
+    showMoreBtn.parentNode.replaceChild(newShowMoreBtn, showMoreBtn);
+    showLessBtn.parentNode.replaceChild(newShowLessBtn, showLessBtn);
+
+    newShowMoreBtn.addEventListener('click', () => {
         const start = visibleCount;
         const end = Math.min(visibleCount + 4, products.length);
         const nextBatch = shuffledInitial.slice(start, end);
-        spinIcon(showMoreBtn.querySelector('i'));
+        spinIcon(newShowMoreBtn.querySelector('i'));
 
         // Re-render from the start to new visible count
         setTimeout(() => {
             renderProduct(nextBatch, showMoreContent, 'full');
+            visibleCount = end;
+            
             if (visibleCount >= products.length) {
-                showMoreBtn.style.display = 'none';
+                newShowMoreBtn.style.display = 'none';
             }
 
-            showLessBtn.style.display = visibleCount > initialVisibleCount ? 'flex' : 'none';
+            newShowLessBtn.style.display = visibleCount > initialVisibleCount ? 'flex' : 'none';
         }, Math.floor(Math.random() * 100) + 1000);
-        
-        visibleCount = end;
     });
 
-    showLessBtn.addEventListener('click', () => {
-        spinIcon(showLessBtn.querySelector('i'));
+    newShowLessBtn.addEventListener('click', () => {
+        spinIcon(newShowLessBtn.querySelector('i'));
         setTimeout(() => {
             showMoreContent.innerHTML = ''; // Clear additional products
-            showLessBtn.style.display = 'none';
-            showMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
-        }, Math.floor(Math.random() * 100) + 1000)
-
-        visibleCount = initialVisibleCount;
+            newShowLessBtn.style.display = 'none';
+            newShowMoreBtn.style.display = products.length > visibleCount ? 'flex' : 'none';
+            visibleCount = initialVisibleCount;
+        }, Math.floor(Math.random() * 100) + 1000);
     });
 }
 
