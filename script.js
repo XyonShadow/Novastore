@@ -1000,7 +1000,9 @@ function closeCart() {
     cartToggleBtn.classList.remove('active');
 }
 
+const cartOpener = document.querySelector('.open-cart');
 // Click to open/close cart
+if(cartOpener) cartOpener.addEventListener('click', openCart)
 if(cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
 if(cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
 
