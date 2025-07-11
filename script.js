@@ -1124,6 +1124,7 @@ observer.observe(footer);
 const contactBtn = document.querySelectorAll('.contact-button');
 const overlay = document.querySelector('.contact-overlay');
 const modal = document.querySelector('.contact');
+const contactCloseBtn = document.querySelector('.contact-close-btn');
 
 // Open modal when contact button is clicked
 contactBtn.forEach(e =>{e.addEventListener('click', () => {
@@ -1131,8 +1132,7 @@ contactBtn.forEach(e =>{e.addEventListener('click', () => {
     modal.classList.add('visible');
 })});
 
-// Close modal when clicking outside
-overlay.addEventListener('click', () => {
+function closeContact(){
     // Check if there are any unsent inputs
     const hasInput = [...modal.querySelectorAll('input:not([type=submit]):not([type=hidden]), textarea')].some(el => el.value.trim() !== "");
 
@@ -1143,7 +1143,12 @@ overlay.addEventListener('click', () => {
 
     modal.classList.remove('visible');
     overlay.classList.remove('visible');
-});
+}
+
+contactCloseBtn.addEventListener('click', closeContact)
+
+// Close modal when clicking outside
+overlay.addEventListener('click', closeContact);
 
 class ThemeManager {
     constructor() {

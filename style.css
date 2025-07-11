@@ -1331,18 +1331,6 @@ footer .footer-icons a:hover {
     transition: all 1s ease;
 }
 
-@media (max-width: 1200px) {
-    .contact{
-        width: 70%;
-    }
-}
-
-@media (max-width: 768px) {
-    .contact{
-        width: 100%;
-    }
-}
-
 .contact.visible {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
@@ -1353,22 +1341,37 @@ footer .footer-icons a:hover {
     background-color: #2a2e35;
     padding: 2rem 0 0 3rem;
     color: #f1f1f1;
-    z-index: 9999;
+}
+
+.contact .contact-box .contact-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: color 0.2s ease;
+    z-index: 10;
+}
+
+.contact .contact-box .contact-close-btn:hover {
+    color: var(--primary-color);
 }
 
 .contact .contact-box form .details{
     display: flex;
-    z-index: 9999;
 }
 .contact .contact-box form input{
-    margin-bottom: 32px;
-    z-index: 9999;
+    margin-bottom: 25px;
 }
 .contact .contact-box form input::placeholder, textarea::placeholder{
     color: var(--text-muted);
     font-size: 0.9rem;
     font-weight: 500;
-    z-index: 9999;
 }
 .contact .contact-box form input, .contact .contact-box form textarea{
     outline: none;
@@ -1382,7 +1385,6 @@ footer .footer-icons a:hover {
     color: #dcc;
     caret-color: #dcc; 
     box-shadow: 0 0 0 1px transparent;
-    z-index: 9999;
 }
 .contact .contact-box form input:-webkit-autofill,
 .contact .contact-box form textarea:-webkit-autofill {
@@ -1412,7 +1414,6 @@ footer .footer-icons a:hover {
     min-height: 4.4rem;
     max-height: 300px;
     max-width: 43rem;
-    z-index: 9999;
 }
 .contact .contact-box form .send{
     display: inline-block;
@@ -1424,12 +1425,48 @@ footer .footer-icons a:hover {
     text-decoration: none;
     font-weight: 600;
     box-shadow: 0 0 0 1px transparent;
-    z-index: 9999;
 }
 .contact .contact-box form .send:hover{
     cursor: pointer;
     background: #e69b2e;
 }
+
+@media (max-width: 1200px) {
+    .contact{
+        width: 60%;
+    }
+    .contact .contact-box{
+        padding: 1rem;
+    }
+    .contact .contact-box form input{
+        margin-bottom: 1rem;
+    }   
+}
+
+@media (max-width: 992px) {
+    .contact{
+        width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact{
+        width: 85%;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact{
+        width: 95%;
+    }
+}
+
+@media (max-width: 490px) {
+    .contact{
+        width: 100%;
+    }
+}
+
 
 /* --------------------------== Search Input and Suggestions ==-------------------------- */
 #suggestionBox {
