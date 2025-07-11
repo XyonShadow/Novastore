@@ -26,6 +26,8 @@ function checkInput() {
                 searchInput.value = '';
                 checkInput(); // Re-check input after clearing
                 searchInput.focus();
+                // Clear filtered results when search is cleared
+                filteredProducts.style.display = 'none';
             });
 
             searchBar.appendChild(i);
@@ -46,12 +48,17 @@ searchInput.addEventListener('focus', () => {
     searchIcon.classList.add('active');
 });
 
-// Utility function to get search matches
+// Utility function to get search matches with cart priority
 function getSearchMatches(query) {
     const nameMatches = products.filter(p => p.name.toLowerCase().includes(query));
     const categoryMatches = products.filter(p => p.category.toLowerCase().includes(query));
 
-    const names = nameMatches.map(p => p.name);
+    // Prioritize cart items in suggestions
+    const cartProductIds = cart.map(item => item.id || item.product_id || item);
+    const cartNames = nameMatches.filter(p => cartProductIds.includes(p.id)).map(p => p.name);
+    const nonCartNames = nameMatches.filter(p => !cartProductIds.includes(p.id)).map(p => p.name);
+    
+    const names = [...cartNames, ...nonCartNames];
     const categories = categoryMatches.map(p => p.category);
 
     return {
@@ -79,12 +86,21 @@ function handleSearch() {
         return;
     }
 
-    // Render suggestions
+    // Render suggestions with cart indicators
     box.innerHTML = '';
     matches.forEach(match => {
         const div = document.createElement('div');
-        div.textContent = match;
+        
+        // Check if this suggestion corresponds to a cart item
+        const isProductInCart = products.some(p => 
+            (p.name === match || p.category === match) && 
+            cart.some(cartItem => (cartItem.id || cartItem.product_id || cartItem) === p.id)
+        );
+        
+        div.innerHTML = `${match} ${isProductInCart ? '<span class="cart-badge-small">In Cart</span>' : ''}`;
         div.classList.add('suggestion-item');
+        if (isProductInCart) div.classList.add('in-cart-suggestion');
+        
         div.addEventListener('click', () => {
             searchInput.value = match;
             box.style.display = 'none';
@@ -118,6 +134,8 @@ searchInput.addEventListener('keydown', (e) => {
         }
     } else if (e.key === 'Enter') {
         e.preventDefault();
+        box.innerHTML = '';
+        box.style.display = 'none';
         if (selectedIndex >= 0 && items[selectedIndex]) {
             items[selectedIndex].click();
         } else {
@@ -170,19 +188,21 @@ function performSearch() {
     // Handle empty search input
     if (!query) {
         setTemporaryPlaceholder(`Please type something...`);
-    return;
+        return;
     }
 
     const { categories, names } = getSearchMatches(query);
 
     if (categories.length > 0) {
-    const categoryName = categories[0].toLowerCase();
-    const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
+        const categoryName = categories[0].toLowerCase();
+        const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
 
-    if (matchingBtn) {
-        matchingBtn.click();
-        matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-    }
+        if (matchingBtn) {
+            matchingBtn.click();
+            matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            // Hide filtered results when clicking category button
+            filteredProducts.style.display = 'none';
+        }
     } else if (names.length > 0) {
         filterByCategory(query, filteredProducts, null, 'filtered');
         filteredProducts.style.display = 'grid';
@@ -194,6 +214,15 @@ function performSearch() {
 
 // Trigger search
 searchBtn.addEventListener('click', performSearch);
+
+// Add event listener to hide filtered results when category buttons are clicked 
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('category-btn')) {
+        filteredProducts.style.display = 'none';
+        searchInput.value = '';
+        checkInput();
+    }
+});
 
 // set html of a product card for a container
 function setCardHtml(container){
