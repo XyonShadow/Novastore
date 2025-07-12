@@ -26,6 +26,7 @@ function checkInput() {
                 searchInput.value = '';
                 checkInput(); // Re-check input after clearing
                 searchInput.focus();
+                searchIcon.classList.add('active');
                 // Clear filtered results when search is cleared
                 filteredProducts.style.display = 'none';
             });
@@ -60,7 +61,6 @@ function getSearchMatches(query) {
     
     const names = [...cartNames, ...nonCartNames];
     const categories = categoryMatches.map(p => p.category);
-    console.log(query, 'sugh');
     return {
         names,
         categories,
@@ -70,6 +70,7 @@ function getSearchMatches(query) {
 
 // Display suggestions or 'no results' message
 function handleSearch() {
+    checkInput();
     const query = searchInput.value.trim().toLowerCase();
 
     if (!query) {
@@ -156,8 +157,8 @@ function updateHighlight(items) {
 }
 
 searchInput.addEventListener('blur', () => {
+    searchIcon.classList.remove('active');
     setTimeout(() => {
-        searchIcon.classList.remove('active');
         box.style.display = 'none';
         checkInput();
     }, 400);
@@ -194,14 +195,17 @@ function performSearch() {
     const { categories, names } = getSearchMatches(query);
 
     if (categories.length > 0) {
-        const categoryName = categories[0].toLowerCase();
-        const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === categoryName);
+        filterByCategory(query, filteredProducts, null, 'filtered');
+        filteredProducts.style.display = 'grid';
+        if(query === categories[0].toLowerCase()){
+            const matchingBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.textContent.toLowerCase() === query);
 
-        if (matchingBtn) {
-            matchingBtn.click();
-            matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-            // Hide filtered results when clicking category button
-            filteredProducts.style.display = 'none';
+            if (matchingBtn) {
+                matchingBtn.click();
+                matchingBtn.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                // Hide filtered results when clicking category button
+                filteredProducts.style.display = 'none';
+            }
         }
     } else if (names.length > 0) {
         filterByCategory(query, filteredProducts, null, 'filtered');
