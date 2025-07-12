@@ -1756,4 +1756,51 @@ function initMobileSearch() {
 
 // Initialize mobile search functionality
 initMobileSearch();
- 
+
+// typing animation for expandable info sections in the homepage
+document.querySelectorAll(".info1").forEach(section => {
+    const textEl = section.querySelector(".infoText");
+    const btn = section.querySelector(".read-more");
+
+    const shortText = textEl.getAttribute("data-short");
+    const fullText = textEl.textContent.trim();
+    
+    textEl.textContent = shortText;
+
+    let isExpanded = false;
+    let typingInterval = null; // to track the current typing process
+
+    function startTyping(text, callback) {
+        let index = 0;
+        if (typingInterval) clearInterval(typingInterval);
+
+        typingInterval = setInterval(() => {
+            if (index <= text.length) {
+                textEl.textContent = text.slice(0, index);
+                index++;
+            } else {
+                clearInterval(typingInterval);
+                typingInterval = null;
+                if (callback) callback();
+            }
+        }, 40); //Typing speed
+    }
+
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (!isExpanded) {
+            textEl.textContent = "";
+            startTyping(fullText);
+            btn.textContent = "Show Less";
+            isExpanded = true;
+        } else {
+        if (typingInterval) {
+            clearInterval(typingInterval);
+            typingInterval = null;
+        }
+        textEl.textContent = shortText; // reset the current text in the paragraph
+        btn.textContent = "Read More";
+        isExpanded = false;
+        }
+    });
+});
