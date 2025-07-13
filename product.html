@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="loading" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -120,23 +120,122 @@
                 <span>Message</span>
             </button>
             </a>
-            <button class="bottom-nav-item" data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+            <button class="bottom-nav-item switch-theme" data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
             </a>
         </div>
         
-
         <!--------------------------==Search Results Section ==-------------------------->
         <div class="filtered-products"></div>
 
-        
+        <!--------------------------==Main Content==-------------------------->
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><i class="ri-arrow-right-s-line"></i>
+            <span id="categoryBreadcrumb">Loading..</span><i class="ri-arrow-right-s-line"></i>
+            <span id="productBreadcrumb">Loading...</span>
+        </div>
 
+        <div class="product-section">
+            <div class="product-main">
+                <div class="product-images">
+                    <div class="thumbnail-list" id="thumbnailList">
+                        <!-- Generated thumbnails -->
+                    </div>
+                    <div class="main-image">
+                        <img id="mainImage" src="" alt="">
+                    </div>
+                </div>
 
+                <div class="product-info">
+                    <h1 class="product-title" id="productTitle">Loading...</h1>
+                    
+                    <div class="rating-section">
+                        <div class="stars" id="productStars">
+                            <!-- Generated stars -->
+                        </div>
+                        <span class="rating-text" id="ratingValue">0.0</span>
+                        <span class="rating-text" id="soldCount">0 sold</span>
+                    </div>
 
+                    <div class="price-section">
+                        <span id="currentPrice">0</span>
+                        <span class="original-price" id="originalPrice">₦0</span>
+                        <span class="discount-badge">15% OFF</span>
+                    </div>
 
+                    <div class="shipping-info">
+                        <i class="fas fa-check-circle"></i> Free shipping for you - Limited-time offer
+                    </div>
 
+                    <div class="options-section">
+                        <div class="option-group">
+                            <div class="option-label">Color</div>
+                            <div class="color-options" id="colorOptions">
+                                <!-- Generated color options -->
+                            </div>
+                        </div>
 
+                        <div class="option-group">
+                            <div class="option-label">Variant</div>
+                            <div class="model-options" id="modelOptions">
+                                <!-- Generated model options -->
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="quantity-section">
+                        <label class="quantity-label">Qty</label>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" id="decreaseBtn">-</button>
+                            <span class="quantity-display" id="quantityDisplay">1</span>
+                            <button class="quantity-btn" id="increaseBtn">+</button>
+                        </div>
+                    </div>
 
+                    <button class="add-to-cart-btn">Add to cart</button>
+
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-truck feature-icon"></i>
+                            <span>Free shipping on all orders</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-undo feature-icon"></i>
+                            <span>30-day returns • Money back guarantee</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt feature-icon"></i>
+                            <span>Secure payment & buyer protection</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-headset feature-icon"></i>
+                            <span>24/7 customer support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h2 class="reviews-title" id="reviewsTitle">Loading reviews...</h2>
+                <div class="stars" id="reviewStars">
+                    <!-- Generated stars -->
+                </div>
+                <span class="rating-text" id="reviewRating">0.0</span>
+                <span class="verified-badge">All reviews verified</span>
+            </div>
+
+            <div id="reviewsList">
+                <!-- Generated reviews -->
+            </div>
+        </div>
+
+        <div class="related-products">
+            <h2 class="related-title">Related Products</h2>
+            <div class="products-grid" id="relatedProductsGrid">
+                <!-- Generated related products -->
+            </div>
+        </div>
 
 
         <!--------------------------== Footer Section ==-------------------------->
@@ -209,5 +308,10 @@
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
     <script src="script.js"></script>
+    <script>
+        initializeProduct();
+        generateReviews();
+        renderRelatedProducts();
+    </script>
 </body>
 </html>

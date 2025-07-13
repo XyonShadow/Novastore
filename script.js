@@ -408,6 +408,11 @@ function updateCategoryContent() {
             }
         }
     });
+
+    // Update price in products page
+    const originalPrice = Math.floor(currentProduct.price * 1.2);
+    document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
+    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
 }
 
 function switchCategory(category, button, containerID){
@@ -736,20 +741,16 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             `;
         } else {
             card.className = 'product-card cart-card';
+            card.setAttribute('onclick', `goTo('${product.category}', '${product.id}', 'product.html')`);
 
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
                 <h4>${product.name}</h4>
                 <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
-                <button class="add-to-cart-btn">Add To Cart</button>
+                <button class="add-to-cart-btn" onClick="addToCart(${product.id}, this, event)">Add To Cart</button>
             `;
-            const btn = card.querySelector('.add-to-cart-btn');
-            btn.addEventListener('click', (e) => {
-                updateCartBtn(product.id, btn);
-            });
             
-            // Reflect localStorage cart state
-            setCartButtonState(btn, product.id);
+            
         }
 
         group.appendChild(card);
@@ -811,10 +812,10 @@ function showMoreProductsAlternative() {
 showMoreProductsAlternative();
 
 // function to go to cart.html with selected category and product
-function goTo(category, product) {
-  const timestamp = Date.now(); // force unique URL
-  const url = `./cart.html?category=${encodeURIComponent(category)}${product?`&product=${encodeURIComponent(product)}`:''}&t=${timestamp}`;
-  window.location.href = url;
+function goTo(category, product, location = 'cart.html') {
+    const timestamp = Date.now(); // force unique URL
+    const url = `./${location}?category=${encodeURIComponent(category)}${product?`&product=${encodeURIComponent(product)}`:''}&t=${timestamp}`;
+    window.location.href = url;
 }
 
 // Initialize category buttons and show all products on load
@@ -1050,28 +1051,69 @@ function handleCurrencyChange(){
     updateCurrencyIcons();
 }
 
-function addToCart(id) {
+function addToCart(id, btnElement = null, event) {
+    event.stopPropagation(); // prevent it from triggering parent onclick
     const product = products.find(p => p.id === id); // find the product
     
     if (!product) return console.warn(`Product with ID ${id} not found`);
 
-    const existing = cart.find(p => p.id === id); // check if it's already in cart
+    // Check for existing cart item with same variant
+    const existing = cart.find(p =>
+        p.id === id &&
+        p.selectedColor === selectedColor &&
+        p.selectedModel === selectedModel
+    );
 
     if (!existing) {
-        cart.push(product);
+        // Add product with selected options
+        const productWithOptions = {
+            ...product,
+            selectedColor,
+            selectedModel,
+            quantity
+        };
+
+        cart.push(productWithOptions);
         updateCartStorage();
         updateCartCount();
-        console.log(`Added ${product.name} to cart`);
+        console.log(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
+        if (btnElement) {
+            btnElement.innerHTML = 'Added ✓';
+        }
     } else {
-        console.log(`Product ${product.name} is already in the cart`);
+        // Just increase quantity
+        existing.quantity += quantity;
+        updateCartStorage();
+        updateCartCount();
+        console.log(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
+         if (btnElement) {
+            btnElement.innerHTML = 'Updated ✓';
+        }
+    }
+
+    if (btnElement) {
+        btnElement.style.background = '#28a745';
+        btnElement.disabled = true;
+
+        setTimeout(() => {
+            btnElement.innerHTML = 'Add to Cart';
+            btnElement.style.background = 'var(--accent-color)';
+            btnElement.disabled = false;
+        }, 2000);
     }
 }
-    
+
 function updateCartCount() {
+    const totalCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0); // The total quantity
+    
     const cartCounter = document.getElementById('cart-count');
     const homecartCounter = document.querySelectorAll('.count-badge');
-    if (homecartCounter){homecartCounter.forEach(e => e.textContent = cart.length);}
-    if (cartCounter) cartCounter.textContent = cart.length;
+    
+    if (cartCounter) cartCounter.textContent = totalCount;
+    if (homecartCounter){
+        homecartCounter.forEach(e => e.textContent = totalCount);
+    }
+
 }
 
 function updateCartStorage(){
@@ -1225,7 +1267,6 @@ function renderCartItems() {
             updateCartBtn(p.id, removeBtn);
             setTimeout(() => {
                 renderCartItems();
-                const btn = document.querySelector(`.add-to-cart-btn`);
                 // If there are multiple product lists, update all matching buttons for the affected id in the product list
                 document.querySelectorAll(`.product-card[data-id='${p.id}'] .add-to-cart-btn`).forEach(btn => {
                     setCartButtonState(btn, p.id);
@@ -1808,3 +1849,237 @@ document.querySelectorAll(".info1").forEach(section => {
         }
     });
 });
+
+/*************************** Product Page *************************/
+// Get product ID from URL or use first product
+const urlParams = new URLSearchParams(window.location.search);
+const productId = parseInt(urlParams.get('product')) || 1;
+const currentProduct = products.find(p => p.id === productId) || products[0];
+
+let selectedColor = 'default';
+let selectedModel = 'standard';
+let quantity = 1;
+
+// Color options
+const colors = ['Black', 'Blue', 'Red', 'Green', 'Purple', 'White'];
+const models = ['Standard', 'Pro', 'Max', 'Ultra', 'Premium'];
+
+function renderStars(rating) {
+    let starsHTML = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            starsHTML += '<i class="fas fa-star star"></i>';
+        } else {
+            starsHTML += '<i class="far fa-star star"></i>';
+        }
+    }
+    return starsHTML;
+}
+
+function getCartQuantity(id, color = null, model = null) {
+    const item = cart.find(p =>
+        p.id === id &&
+        (color ? p.selectedColor === color : true) &&
+        (model ? p.selectedModel === model : true)
+    );
+    return item ? item.quantity : 0;
+}
+
+function initializeProduct() {
+    // Update breadcrumb
+    document.getElementById('categoryBreadcrumb').textContent = currentProduct.category;
+    document.getElementById('productBreadcrumb').textContent = currentProduct.name;
+    
+    // Update product info
+    document.getElementById('productTitle').textContent = currentProduct.name;
+    document.getElementById('mainImage').src = './Assets/car1.jpg';
+    document.getElementById('mainImage').alt = currentProduct.name;
+    
+    // Generate random rating and sales
+    const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+    const soldCount = Math.floor(Math.random() * 500) + 50;
+    
+    document.getElementById('productStars').innerHTML = renderStars(Math.floor(rating));
+    document.getElementById('ratingValue').textContent = rating;
+    document.getElementById('soldCount').textContent = `${soldCount} sold`;
+    
+    // Update price
+    const originalPrice = Math.floor(currentProduct.price * 1.2);
+    document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
+    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
+    
+    // Generate thumbnails
+    const thumbnailList = document.getElementById('thumbnailList');
+    for (let i = 0; i < 4; i++) {
+        const thumb = document.createElement('div');
+        thumb.className = i === 0 ? 'thumbnail active' : 'thumbnail';
+        thumb.innerHTML = `<img src="./Assets/car1.jpg" alt="${currentProduct.name}">`;
+        thumb.addEventListener('click', () => {
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        });
+        thumbnailList.appendChild(thumb);
+    }
+    
+    // Generate color options
+    const colorOptions = document.getElementById('colorOptions');
+    colors.slice(0, 4).forEach((color, index) => {
+        const option = document.createElement('div');
+        option.className = index === 0 ? 'color-option active' : 'color-option';
+        option.innerHTML = `
+            <img src="./Assets/car1.jpg" alt="${color}">
+            <div class="color-name">${color}</div>
+        `;
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            selectedColor = color;
+        });
+        colorOptions.appendChild(option);
+    });
+    
+    // Generate model options
+    const modelOptions = document.getElementById('modelOptions');
+    models.slice(0, 3).forEach((model, index) => {
+        const option = document.createElement('div');
+        option.className = index === 0 ? 'model-option active' : 'model-option';
+        option.textContent = model;
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            selectedModel = model;
+        });
+        modelOptions.appendChild(option);
+    });
+    
+    selectedColor = colors[0];
+    selectedModel = models[0];
+
+    // Quantity controls    
+    document.getElementById('decreaseBtn').addEventListener('click', () => {
+        if (quantity > 1) {
+            quantity--;
+            document.getElementById('quantityDisplay').textContent = quantity;
+        }
+    });
+
+    document.getElementById('increaseBtn').addEventListener('click', () => {
+        quantity++;
+        document.getElementById('quantityDisplay').textContent = quantity;
+    });
+
+    document.querySelector('.add-to-cart-btn').addEventListener('click', function () {
+        addToCart(currentProduct.id, this, event);
+    });
+}
+
+// Random letters for the name in reviews
+function getRandomLetter() {
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    return letters[Math.floor(Math.random() * letters.length)];
+}
+
+// Random names using random letters in reviews
+function generateRandomName() {
+    const firstLetter = getRandomLetter().toUpperCase();
+    const midLength = Math.floor(Math.random() * 3) + 2; // 2–4 letters
+    const mid = Array.from({ length: midLength }, getRandomLetter).join(""); //  creates an array of midLength size and fills it with random letters
+    const end = getRandomLetter() + getRandomLetter();
+    return `${firstLetter}${mid}****${end}`; // mask the middle using ****
+}
+
+// Get random dates the reviews were made
+function getRandomDate() {
+    const now = new Date();
+    const daysAgo = Math.floor(Math.random() * 30); // random day in last 30
+    const date = new Date(now.setDate(now.getDate() - daysAgo));
+    return date.toISOString().split("T")[0];
+}
+
+// to generate the entire reviews array
+function generateRandomReviews(count = 6) {
+    const sampleComments = [
+        "Absolutely love this product!",
+        "Great quality and fast delivery.",
+        "Good value for the price.",
+        "Packaging could be better.",
+        "Customer service was helpful.",
+        "Not bad. I'd buy again.",
+        "Very satisfied overall.",
+        "Exceeded my expectations.",
+        "It does the job perfectly!",
+        "One of my best purchases this year!"
+    ];
+
+    const reviews = [];
+    for (let i = 0; i < count; i++) {
+        reviews.push({
+            name: generateRandomName(),
+            rating: Math.floor(Math.random() * 3) + 3, // 3–5 stars
+            comment: sampleComments[Math.floor(Math.random() * sampleComments.length)],
+            date: getRandomDate()
+        });
+    }
+    return reviews;
+}
+
+// for review generation to the page
+function generateReviews() {
+    const reviewCount = Math.floor(Math.random() * 25) + 5;
+    const avgRating = (Math.random() * 1.5 + 3.5).toFixed(1);
+    
+    document.getElementById('reviewsTitle').textContent = `${reviewCount} reviews`;
+    document.getElementById('reviewStars').innerHTML = renderStars(Math.floor(avgRating));
+    document.getElementById('reviewRating').textContent = avgRating;
+    
+    const reviewsList = document.getElementById('reviewsList');
+    
+    // Generate all reviews at once
+    const allReviews = generateRandomReviews(reviewCount);
+    
+    allReviews.forEach(review => {
+        const reviewItem = document.createElement('div');
+        reviewItem.className = 'review-item';
+        reviewItem.innerHTML = `
+            <div class="review-header">
+                <span class="reviewer-name">${review.name}</span>
+                <span class="review-date">on ${review.date}</span>
+            </div>
+            <div class="review-stars">
+                ${renderStars(review.rating)}
+            </div>
+            <p class="review-text">${review.comment}</p>
+        `;
+        reviewsList.appendChild(reviewItem);
+    });
+}
+
+function renderRelatedProducts() {
+    const relatedProducts = products
+        .filter(p => p.id !== currentProduct.id) //ensure its not the current product
+        .sort(() => Math.random() - 0.5) //shuffle it randomly
+        .slice(0, 16); // get 16 products
+    
+    const grid = document.getElementById('relatedProductsGrid');
+    
+    relatedProducts.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-card-info" data-id="${p.id}">
+                <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
+                <h4>${p.name}</h4>
+                <h3 class="product-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
+                <button class="add-to-cart-btn" onclick="addToCart(${p.id}, this, event)">Add to Cart</button>
+            </div>
+        `;
+        
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('add-to-cart-btn')) {
+                window.location.href = `?product=${p.id}`;
+            }
+        });
+        
+        grid.appendChild(card);
+    });
+}
