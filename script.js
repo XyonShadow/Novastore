@@ -414,7 +414,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('hot'))
         changeCategoryContent('random', 'hot');
 
-    updateCurrencyIcons(currentCurrency);    
+    updateCurrencyIcons();    
 
     // fetchRates from API
     await fetchRates();
@@ -845,6 +845,13 @@ Select.addEventListener('click', (e) => {
 });
 
 function selectCurrency(opt) {
+
+    // remove selected class from all
+        option.forEach(opt => opt.classList.remove('selected'));
+
+        // add selected class to current
+        opt.classList.add('selected');
+
     const value = opt.dataset.value;
     const label = opt.innerHTML;
 
@@ -868,12 +875,6 @@ option.forEach(opt => {
     opt.addEventListener('click', () => {
         // trigger currency change handler 
         selectCurrency(opt);
-        
-        // remove selcected class from all
-        option.forEach(opt => opt.classList.remove('selected'));
-
-        // add selected class to current
-        opt.classList.add('selected');
     });
 });
 
@@ -932,6 +933,7 @@ Select.addEventListener('keydown', (e) => {
 
 // Close dropdown if focus is outside
 Select.addEventListener('blur', () => {
+    focusedIndex = -1;
     Select.classList.remove('open');
     isRotated = false;
     Select.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
@@ -968,7 +970,7 @@ function getRatesFromStorage() {
 function convertPrice(basePrice, targetCurrency) {
     targetCurrency = targetCurrency.toUpperCase();
 
-    const quotes = getRatesFromStorage();
+    const quotes = getRatesFromStorage() || exchangeRates['rates'];
     const targetRate = quotes[targetCurrency];
         
     if (!targetRate) {
