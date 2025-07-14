@@ -183,11 +183,28 @@
                     </div>
 
                     <div class="quantity-section">
-                        <label class="quantity-label">Qty</label>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" id="decreaseBtn">-</button>
-                            <span class="quantity-display" id="quantityDisplay">1</span>
-                            <button class="quantity-btn" id="increaseBtn">+</button>
+                        <div class="quantity-info">
+                            <label class="quantity-label">Qty</label>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" id="decreaseBtn">-</button>
+                                <span class="quantity-display" id="quantityDisplay">1</span>
+                                <button class="quantity-btn" id="increaseBtn">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="cart-quantities">
+                            <div class="cart-quantity-item">
+                                <span class="cart-quantity-label">In Cart:</span>
+                                <span class="cart-quantity-value" id="totalInCart">0</span>
+                            </div>
+                            <div class="cart-quantity-item">
+                                <span class="cart-quantity-label" id="selectedModelLabel">Standard:</span>
+                                <span class="cart-quantity-value" id="modelInCart">0</span>
+                            </div>
+                            <div class="cart-quantity-item">
+                                <span class="cart-quantity-label" id="selectedColorLabel">Black:</span>
+                                <span class="cart-quantity-value" id="colorInCart">0</span>
+                            </div>
                         </div>
                     </div>
 
