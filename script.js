@@ -377,42 +377,10 @@ function updateCategoryContent(){
 
 // convert prices of all products
 function applyCurrencyConversion() {
-    if (currentCurrency === 'NGN') {
-        products.forEach(p => {
-            if (!p.originalPrice) p.originalPrice = p.price;
-            p.price = p.originalPrice
-        });
-    } else {
-        products.forEach(p => {
-            if (!p.originalPrice) p.originalPrice = p.price;
-            p.price = convertPrice(p.originalPrice, currentCurrency);
-        });
-    }
-}
-
-// changes the prices of the product card html
-function updateCategoryContent() {
-    // convert all product prices
-    applyCurrencyConversion();
-
-    // update price text in the DOM
-    products.forEach(product => {
-        const card = document.querySelector(`[data-id="${product.id}"]`);
-        if (card) {
-            const priceTag = card.querySelector('.product-price');
-            if (priceTag) {
-                priceTag.innerHTML = `
-                    <i class="currency-icon"></i>
-                    ${product.price.toLocaleString()}
-                `;
-            }
-        }
+    products.forEach(p => {
+        if (!p.originalPrice) p.originalPrice = p.price;
+        p.price = convertPrice(p.originalPrice, currentCurrency);
     });
-
-    // Update price in products page
-    const originalPrice = Math.floor(currentProduct.price * 1.2);
-    document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
-    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
 }
 
 function switchCategory(category, button, containerID){
@@ -702,7 +670,7 @@ window.addEventListener('resize', () => {
 
 // Render product cards inside a given container
 function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = visibleCount) {
-    // Convert prices of all products
+    // Convert prices of all products on load to correctly load from the local storage
     applyCurrencyConversion();
 
     const group = document.createElement('div');
@@ -1045,10 +1013,30 @@ function handleCurrencyChange(selectedCurrency){
     updateCurrencyIcons(currentCurrency);
 */
 
- // rebuild all visible sections and update icons
+ // rebuild html of the price and update icons
 function handleCurrencyChange(){
-    updateCategoryContent();
-    updateCurrencyIcons();
+    // convert all product prices
+    applyCurrencyConversion();
+
+    // update price text in the DOM
+    products.forEach(product => {
+        const card = document.querySelector(`[data-id="${product.id}"]`);
+        if (card) {
+            const priceTag = card.querySelector('.product-price');
+            if (priceTag) {
+                priceTag.innerHTML = `
+                    <i class="currency-icon"></i>
+                    ${product.price.toLocaleString()}
+                `;
+            }
+        }
+        updateCurrencyIcons();
+    });
+
+    // Update price in products page
+    const originalPrice = Math.floor(currentProduct.price * 1.2);
+    document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
+    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
 }
 
 function addToCart(id, btnElement = null, event) {
