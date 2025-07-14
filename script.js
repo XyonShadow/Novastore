@@ -1037,8 +1037,9 @@ function handleCurrencyChange(){
 
     // Update price in products page
     const originalPrice = Math.floor(currentProduct.price * 1.2);
-    document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
-    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
+    if(document.getElementById('currentPrice')) document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
+    if(document.getElementById('originalPrice')) document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
+    updateCurrencyIcons();
 }
 
 function addToCart(id, btnElement = null, event) {
