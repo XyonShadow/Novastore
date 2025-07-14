@@ -1091,6 +1091,9 @@ function addToCart(id, btnElement = null, event) {
         }
     }
 
+    // Update cart quantity displays
+    updateCartQuantityDisplay();
+
     if (btnElement) {
         btnElement.style.background = '#28a745';
         btnElement.disabled = true;
@@ -1876,13 +1879,40 @@ function renderStars(rating) {
     return starsHTML;
 }
 
-function getCartQuantity(id, color = null, model = null) {
-    const item = cart.find(p =>
-        p.id === id &&
-        (color ? p.selectedColor === color : true) &&
-        (model ? p.selectedModel === model : true)
-    );
-    return item ? item.quantity : 0;
+// Get total quantity of a product in cart (all variants)
+function getTotalCartQuantity(id) {
+    return cart
+        .filter(item => item.id === id)
+        .reduce((total, item) => total + item.quantity, 0);
+}
+
+// Get quantity of specific color variant in cart
+function getColorCartQuantity(id, color) {
+    return cart
+        .filter(item => item.id === id && item.selectedColor === color)
+        .reduce((total, item) => total + item.quantity, 0);
+}
+
+// Get quantity of specific model variant in cart
+function getModelCartQuantity(id, model) {
+    return cart
+        .filter(item => item.id === id && item.selectedModel === model)
+        .reduce((total, item) => total + item.quantity, 0);
+}
+
+// Update cart quantity displays
+function updateCartQuantityDisplay() {
+    const totalInCart = getTotalCartQuantity(currentProduct.id);
+    const modelInCart = getModelCartQuantity(currentProduct.id, selectedModel);
+    const colorInCart = getColorCartQuantity(currentProduct.id, selectedColor);
+    
+    document.getElementById('totalInCart').textContent = totalInCart;
+    document.getElementById('modelInCart').textContent = modelInCart;
+    document.getElementById('colorInCart').textContent = colorInCart;
+    
+    // Update labels with current selections
+    document.getElementById('selectedModelLabel').textContent = `${selectedModel}:`;
+    document.getElementById('selectedColorLabel').textContent = `${selectedColor}:`;
 }
 
 function initializeProduct() {
@@ -1934,6 +1964,7 @@ function initializeProduct() {
             document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
             option.classList.add('active');
             selectedColor = color;
+            updateCartQuantityDisplay(); // Update display when color changes
         });
         colorOptions.appendChild(option);
     });
@@ -1948,12 +1979,16 @@ function initializeProduct() {
             document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
             option.classList.add('active');
             selectedModel = model;
+            updateCartQuantityDisplay(); // Update display when model changes
         });
         modelOptions.appendChild(option);
     });
     
     selectedColor = colors[0];
     selectedModel = models[0];
+    
+    // Initialize cart quantity display
+    updateCartQuantityDisplay();
 
     // Quantity controls    
     document.getElementById('decreaseBtn').addEventListener('click', () => {
