@@ -289,32 +289,120 @@ function changeCategoryContent (category, containerID, append = null, count = 4)
     updateCurrencyIcons();
 }
 
-
-
 let currentCurrency = localStorage.getItem('currency') || 'NGN';
 
-// update currency selector
-const Select = document.querySelector('.select-container');
-const option = Select.querySelectorAll('.option');
-const selectTrigger = Select.querySelector('.select-trigger span');
+// handle custom select dropdowns
+document.querySelectorAll('.select-container').forEach((Select) => {
+    const options = Select.querySelector('.options');
+    const trigger = Select.querySelector('.select-trigger');
+    const arrow = Select.querySelector('.ri-arrow-down-s-line');
+    const allOptions = Select.querySelectorAll('.option');
+    let focusedIndex = -1;
+    let isRotated = false;
 
-// Find and update selected option
-const selectedOption = Array.from(option).find(opt => 
-    opt.dataset.value.toLowerCase() === currentCurrency.toLowerCase()
-);
+    const isCurrencySelector = Select.dataset.type === 'currency';
+    const span = trigger.querySelector('span');
 
-if (selectedOption) {
-    // Remove selected class from all options
-    option.forEach(opt => opt.classList.remove('selected'));
-    
-    // Add selected class to current option
-    selectedOption.classList.add('selected');
-    
-    // Update trigger display
-    const icon = selectedOption.querySelector('i').className;
-    const text = selectedOption.textContent.trim();
-    selectTrigger.innerHTML = `<i class="${icon}"></i>${text}`;
-}
+    // Currency selector default value from localStorage
+    if (isCurrencySelector) {
+        const selectedOption = Array.from(allOptions).find(opt =>
+            opt.dataset.value?.toLowerCase() === currentCurrency.toLowerCase()
+        );
+        if (selectedOption) {
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedOption.classList.add('selected');
+            const icon = selectedOption.querySelector('i').className;
+            const text = selectedOption.textContent.trim();
+            span.innerHTML = `<i class="${icon}"></i>${text}`;
+        }
+    }
+
+    // Highlight logic
+    function highlightOption(optionList, index) {
+        optionList.forEach(opt => opt.classList.remove('highlighted'));
+        if (optionList[index]) {
+            optionList[index].classList.add('highlighted');
+        }
+    }
+
+    // Handle selecting an option
+    function selectOption(opt) {
+        if (isCurrencySelector) {
+            allOptions.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+
+            span.innerHTML = opt.innerHTML;
+            Select.classList.remove('open');
+            isRotated = false;
+            if(arrow) arrow.style.transform = 'rotate(0deg)';
+
+            const value = opt.dataset.value;
+            currentCurrency = value;
+            localStorage.setItem('currency', value);
+            handleCurrencyChange(); // run currency logic
+        }
+    }
+
+    // Toggle dropdown on click
+    Select.addEventListener('click', (e) => {
+        if (!options.contains(e.target)) {
+            Select.classList.toggle('open');
+            isRotated = !isRotated;
+            if(arrow) arrow.style.transform = isRotated ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    });
+
+    // Select by clicking
+    allOptions.forEach(opt => {
+        opt.addEventListener('click', () => selectOption(opt));
+    });
+
+    // Keyboard support
+    Select.addEventListener('keydown', (e) => {
+        const isOpen = Select.classList.contains('open');
+
+        const visibleOptions = Array.from(Select.querySelectorAll('.option'))
+            .filter(opt => !opt.classList.contains('selected'));
+
+        if (!visibleOptions.length) return;
+
+        if ((e.key === 'Enter' || e.key === ' ') && focusedIndex === -1) {
+            e.preventDefault();
+            Select.classList.toggle('open');
+            return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (!isOpen) Select.classList.add('open');
+            focusedIndex = (focusedIndex + 1) % visibleOptions.length;
+            highlightOption(visibleOptions, focusedIndex);
+        }
+
+        else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (!isOpen) Select.classList.add('open');
+            focusedIndex = (focusedIndex - 1 + visibleOptions.length) % visibleOptions.length;
+            highlightOption(visibleOptions, focusedIndex);
+        }
+
+        else if ((e.key === 'Enter' || e.key === ' ') && isOpen && focusedIndex !== -1) {
+            e.preventDefault();
+            visibleOptions[focusedIndex].click();
+            focusedIndex = -1;
+        }
+    });
+
+    // Close on blur
+    Select.addEventListener('blur', () => {
+        allOptions.forEach(opt => opt.classList.remove('highlighted'));
+        Select.classList.remove('open');
+        isRotated = false;
+        if(arrow) arrow.style.transform = 'rotate(0deg)';
+        focusedIndex = -1;
+    });
+});
+
 /*
 // used to refresh various categries
 
@@ -827,118 +915,6 @@ if (selectedProduct) {
     }, 100); // delay to ensure rendering is done
 }
 
-// Custom Select Dropdown Logic
-const trigger = Select.querySelector('.select-trigger');
-const options = Select.querySelector('.options');
-const arrow = Select.querySelector('.ri-arrow-down-s-line');
-
-let isRotated = false;
-Select.addEventListener('click', (e) => {
-    // Only toggle if clicking on the trigger (not on options)
-    const isOption = options.contains(e.target);
-
-    if (!isOption) {
-        Select.classList.toggle('open');
-        isRotated = !isRotated;
-        arrow.style.transform = isRotated ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
-});
-
-function selectCurrency(opt) {
-
-    // remove selected class from all
-        option.forEach(opt => opt.classList.remove('selected'));
-
-        // add selected class to current
-        opt.classList.add('selected');
-
-    const value = opt.dataset.value;
-    const label = opt.innerHTML;
-
-    // Update visible selected value
-    trigger.querySelector('span').innerHTML = label;
-
-    // Close dropdown
-    Select.classList.remove('open');
-
-    // Reset arrow rotation
-    isRotated = false;
-    arrow.style.transform = 'rotate(0deg)';
-
-    // Trigger currency logic
-    currentCurrency = value;
-    localStorage.setItem('currency', value);
-    handleCurrencyChange();
-}
-
-option.forEach(opt => {
-    opt.addEventListener('click', () => {
-        // trigger currency change handler 
-        selectCurrency(opt);
-    });
-});
-
-// Add highlight to current option
-function highlightOption(index) {
-    // Remove any previous highlight
-    option.forEach(option => option.classList.remove('highlighted'));
-
-   
-    if (option[index]) {
-    option[index].classList.add('highlighted');
-    }
-}
-
-let focusedIndex = -1; // Keeps track of which option is focused
-
-// keyboard event for when select container is selected
-Select.addEventListener('keydown', (e) => {
-    const isOpen = Select.classList.contains('open');
-
-    if ((e.key === 'Enter' || e.key === ' ') && focusedIndex === -1) {
-        e.preventDefault();
-        Select.classList.toggle('open');
-        return;
-    }
-
-    if (e.key === 'ArrowDown') {
-        e.preventDefault();
-
-        if (!isOpen) {
-            Select.classList.add('open');
-        }
-
-        focusedIndex = (focusedIndex + 1) % option.length;
-        highlightOption(focusedIndex);
-    }
-
-    else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-
-        if (!isOpen) {
-            Select.classList.add('open');
-        }
-
-        focusedIndex = (focusedIndex - 1 + option.length) % option.length;
-        highlightOption(focusedIndex);
-    }
-
-    // Select with Enter or Space if option is highlighted
-    else if ((e.key === 'Enter' || e.key === ' ') && isOpen && focusedIndex !== -1) {
-        e.preventDefault();
-        option[focusedIndex].click();
-        focusedIndex = -1;
-    }
-});
-
-// Close dropdown if focus is outside
-Select.addEventListener('blur', () => {
-    focusedIndex = -1;
-    Select.classList.remove('open');
-    isRotated = false;
-    Select.querySelector('.ri-arrow-down-s-line').style.transform = 'rotate(0deg)';
-});
-
 let conversionRates = {};
 
 // get rates from api
@@ -1083,7 +1059,7 @@ function addToCart(id, btnElement = null, event) {
     }
 
     // Update cart quantity displays
-    updateCartQuantityDisplay();
+    if (window.location.href.includes('product.html')) updateCartQuantityDisplay();
 
     if (btnElement) {
         btnElement.style.background = '#28a745';
