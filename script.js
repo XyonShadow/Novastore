@@ -396,7 +396,9 @@ document.querySelectorAll('.select-container').forEach((Select) => {
     // Close on blur
     Select.addEventListener('blur', () => {
         allOptions.forEach(opt => opt.classList.remove('highlighted'));
-        Select.classList.remove('open');
+        setTimeout(()=>{
+            Select.classList.remove('open');
+        }, 300) // delay to allow for click event
         isRotated = false;
         if(arrow) arrow.style.transform = 'rotate(0deg)';
         focusedIndex = -1;
@@ -1303,35 +1305,72 @@ if(footer) {
 observer.observe(footer);
 }
 
-// Contact logic
-const contactBtn = document.querySelectorAll('.contact-button');
-const overlay = document.querySelector('.contact-overlay');
-const modal = document.querySelector('.contact');
-const contactCloseBtn = document.querySelector('.contact-close-btn');
+// Modals logic
+const openContactButtons = document.querySelectorAll('.contact-button');
+const overlay = document.querySelector('.overlay');
+const modals = document.querySelectorAll('.modal');
+const modalCloseBtns = document.querySelectorAll('.modal-close-btn');
 
-// Open modal when contact button is clicked
-contactBtn.forEach(e =>{e.addEventListener('click', () => {
-    overlay.classList.add('visible');
-    modal.classList.add('visible');
-})});
+// Open modal
+function openModal(modalId) {
+    overlay.classList.remove('hidden');
 
-function closeContact(){
-    // Check if there are any unsent inputs
-    const hasInput = [...modal.querySelectorAll('input:not([type=submit]):not([type=hidden]), textarea')].some(el => el.value.trim() !== "");
+    // Hide all modals first
+    modals.forEach(m => m.classList.remove('visible'));
 
-    if (hasInput) {
-        const confirmClose = confirm("You have unsent content. Close anyway?");
-        if (!confirmClose) return;
+    const modalToOpen = document.getElementById(modalId);
+    if (modalToOpen) {
+        modalToOpen.classList.add('visible');
     }
-
-    modal.classList.remove('visible');
-    overlay.classList.remove('visible');
 }
 
-contactCloseBtn.addEventListener('click', closeContact)
+// Close modal
+function closeModals() {
+    // Check for unsent input in open modal only
+    const currentModal = [...modals].find(modal => modal.classList.contains('visible'));
 
-// Close modal when clicking outside
-overlay.addEventListener('click', closeContact);
+    if (currentModal) {
+        const hasInput = [...currentModal.querySelectorAll('input:not([type=submit]):not([type=checkbox]):not([type=hidden]), textarea')]
+        .some(el => el.value.trim() !== '');
+
+        if (hasInput) {
+            const confirmClose = confirm("You have unsent content. Close anyway?");
+            if (!confirmClose) return;
+        }
+    }
+    overlay.classList.add('hidden');
+    modals.forEach(m => m.classList.remove('visible'));
+}
+
+// Open Contact Modal
+openContactButtons.forEach(btn => {
+    btn.addEventListener('click', () => openModal('contactModal'));
+});
+
+// Open Login & Signup Modal
+document.getElementById('openLoginModal')?.addEventListener('click', () => {
+    openModal('loginModal');
+});
+
+document.getElementById('openSignupModal')?.addEventListener('click', () => {
+    openModal('signupModal');
+});
+
+// Close Modal button
+modalCloseBtns.forEach(btn => btn.addEventListener('click', closeModals));
+
+// Close modals when clicking outside
+overlay.addEventListener('click', closeModals);
+
+// Close modals with Escape key
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeModals();
+    }
+});
+
+// Close modals when clicking outside
+overlay.addEventListener('click', closeModals);
 
 class ThemeManager {
     constructor() {
