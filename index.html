@@ -59,7 +59,7 @@
             <div class="head-icons">
                 <button  data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
                 <a title="Check Cart" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span></a>
-                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-mail-add-line"></i></button>
+                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me"><i class="ri-mail-add-line"></i></button>
             </div>
             <div class="searchIcon" id="mobileSearchIcon"><i class="ri-search-line"></i></div>
         </header>
@@ -119,7 +119,7 @@
                 <i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span>
                 <span>Cart</span>
             </a>
-            <button class="bottom-nav-item contact-button"title="Contact me" href="#">
+            <button class="bottom-nav-item contact-button"title="Contact me">
                 <i class="ri-account-circle-fill"></i>
                 <span>Message</span>
             </button>
@@ -347,7 +347,7 @@
 
                 <div class="loginoptions">
                     <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                    <a id="forgotPasswordLink">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="login-btn">Login</button>
@@ -391,6 +391,8 @@
 
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

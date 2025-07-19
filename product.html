@@ -331,7 +331,7 @@
     
     <!--------------------------== Login Modal ==-------------------------->
     <div class="overlay hidden"></div>
-    <div class="login-modal" id="loginModal">
+    <div class="login-modal modal" id="loginModal">
         <div class="login-container">
             <button class="modal-close-btn" title="Close Contact Form">
                 <i class="ri-close-line"></i>
@@ -360,7 +360,7 @@
 
     <!--------------------------== Signup Modal ==-------------------------->
     <div class="overlay"></div>
-    <div class="login-modal" id="signupModal">
+    <div class="login-modal modal" id="signupModal">
         <div class="login-container">
             <h2>Register</h2>
             <form id="signupForm">
@@ -390,6 +390,8 @@
 
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="auth.js"></script>
     <script src="script.js"></script>
     <script>
         initializeProduct();
