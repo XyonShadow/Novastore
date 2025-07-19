@@ -32,7 +32,7 @@
             </div>
             <div>
             </div>
-            <div title="Select Currency" class="select-container"  tabindex="0">
+            <div title="Select Currency" class="select-container currency-selector" data-type="currency" tabindex="0">
                 <div class="select-trigger"><span style="display: flex; gap: .5rem;"><i class="fa fa-naira-sign"></i>NGN</span><i class="ri-arrow-down-s-line"></i></div>
                 <div class="options">
                     <div class="option" data-value="usd">
@@ -49,10 +49,17 @@
                     </div>
                 </div>
             </div>
+            <div title="Account options" class="select-container register-select" data-type="register" tabindex="0">
+                <div class="select-trigger"><span><i class="ri-account-circle-fill"></i></span></div>
+                <div class="options">
+                    <button id="openSignupModal" class="option">Sign up</button>
+                    <button id="openLoginModal" class="option">Log in</button>
+                </div>
+            </div>
             <div class="head-icons">
                 <button  data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
                 <a title="Check Cart" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span></a>
-                <button class="contact-button" style="font-size: 2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-account-circle-fill"></i></button>
+                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-mail-add-line"></i></button>
             </div>
             <div class="searchIcon" id="mobileSearchIcon"><i class="ri-search-line"></i></div>
         </header>
@@ -292,10 +299,10 @@
     </div>
 
     <!--------------------------== Contact Section ==-------------------------->
-    <div class="contact-overlay"></div>
-    <div class="contact">
+    <div class="overlay hidden"></div>
+    <div id="contactModal" class="contact modal">
         <div class="contact-box">
-            <button class="contact-close-btn" title="Close Contact Form">
+            <button class="modal-close-btn" title="Close Contact Form">
                 <i class="ri-close-line"></i>
             </button>
             <form action="">
@@ -318,8 +325,69 @@
                 <input type="submit" value="Submit" class="send">
             </form>
         </div>
+    </div>   
+
+    <!--------------------------== Login Modal ==-------------------------->
+    <div class="overlay hidden"></div>
+    <div class="login-modal modal" id="loginModal">
+        <div class="login-container">
+            <button class="modal-close-btn" title="Close Form">
+                <i class="ri-close-line"></i>
+            </button>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input id="loginEmail" type="text" placeholder="Email" required />
+                    <i class="ri-user-line icon"></i>
+                </div>
+                <div class="input-group">
+                    <input id="loginPassword" type="password" placeholder="Password" required />
+                    <i class="ri-lock-2-line icon"></i>
+                </div>
+
+                <div class="loginoptions">
+                    <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+                <p class="register-link">Don't have an account? <a href="#">Register</a></p>
+            </form>
+        </div>
     </div>
-    
+
+    <!--------------------------== Signup Modal ==-------------------------->
+    <div class="overlay hidden"></div>
+    <div class="login-modal modal" id="signupModal">
+        <div class="login-container">
+            <button class="modal-close-btn" title="Close Form">
+                <i class="ri-close-line"></i>
+            </button>
+            <h2>Register</h2>
+            <form id="signupForm">
+                <div class="input-group">
+                    <input id="signupNickname" type="text" placeholder="Nickname" required />
+                    <i class="ri-user-line icon"></i>
+                </div>
+                <div class="input-group">
+                    <input id="signupEmail" type="text" placeholder="Email" required />
+                    <i class="ri-mail-open-line"></i> 
+                </div>
+                <div class="input-group">
+                    <input id="signupPassword" type="password" placeholder="Password" required />
+                    <i class="ri-lock-line icon"></i>
+                </div>
+                <div class="input-group">
+                    <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
+                    <i class="ri-lock-2-line icon"></i>
+                </div>
+
+                <button type="submit" class="login-btn">Create Account</button>
+                <p class="register-link">Already have an account? <a href="#">Login</a></p>
+            </form>
+        </div>
+    </div>
+
 
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
