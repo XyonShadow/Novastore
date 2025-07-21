@@ -85,6 +85,7 @@ document.getElementById("logout-btn").addEventListener("click", (e) => {
   signOut(auth)
     .then(() => {
       alert("User logged out");
+      window.location.href = "index.html";
     })
     .catch((error) => {
       alert("Logout error:", error);
@@ -97,14 +98,16 @@ onAuthStateChanged(auth, (user) => {
   authChecked = true;
   if (user) {
     const nickname = user.displayName || "User";
-    const userNickname = document.getElementById("userNickname");
-    userNickname.textContent = nickname;
-    document.querySelector('.register-select').style.display = 'none'
-    document.getElementById("userGreeting").style.display = "flex";
+    document.getElementById("userNickname").textContent = nickname;
+    document.getElementById("openLoginModal").style.display = "none";
+    document.getElementById("openSignupModal").style.display = "none";
+    document.getElementById("logout-btn").style.display = "block";
   } else {
     // User is signed out
-    document.getElementById("userGreeting").style.display = "none";
-    document.querySelector('.register-select').style.display = 'flex'
+    document.getElementById("userNickname").textContent = 'Guest';
+    document.getElementById("openLoginModal").style.display = "block";
+    document.getElementById("openSignupModal").style.display = "block";
+    document.getElementById('logout-btn').style.display = 'none'
   }
 
 // Wait for auth to resolve before revealing UI

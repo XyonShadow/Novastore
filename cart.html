@@ -47,17 +47,12 @@
                     </div>
                 </div>
             </div>
-            <div title="Account options" class="select-container register-select" data-type="register" tabindex="0">
-                <div class="select-trigger"><span><i class="ri-account-circle-fill"></i></span></div>
-                <div class="options">
-                    <button id="openSignupModal" class="option">Sign up</button>
-                    <button id="openLoginModal" class="option">Log in</button>
-                </div>
-            </div>
-            <div id="userGreeting" class="select-container">
-                <div class="select-trigger"><span><i class="fa-regular fa-user"></i>Welcome, <span id="userNickname">Guest</span>!</span></div>
+            <div class="select-container user-dropdown" tabindex="0">
+                <div class="select-trigger"><span class="sigh"><i class="fa-regular fa-user"></i> <span>Hi, <span id="userNickname">Guest</span>!</span></span></div>
                 <div class="options">
                     <button class="option" id="logout-btn">Log out</button>
+                    <button id="openLoginModal" class="option">Log in</button>
+                    <button id="openSignupModal" class="option">Sign up</button>
                 </div>
             </div>
             <div class="head-icons">
