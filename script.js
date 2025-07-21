@@ -1416,7 +1416,7 @@ class ThemeManager {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.documentElement.classList.remove('loading');
+    // document.documentElement.classList.remove('loading');
 });
 
 function initMobileSearch() {

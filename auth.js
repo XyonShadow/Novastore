@@ -1,5 +1,7 @@
 import {
+  onAuthStateChanged,
   signInWithEmailAndPassword,
+  signOut,
   createUserWithEmailAndPassword,
   updateProfile,
   sendPasswordResetEmail,
@@ -28,6 +30,8 @@ if (signupForm) {
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCred.user, { displayName: nickname });
+      signupForm.reset();
+      closeModals();
       alert("Signup successful. Welcome " + nickname);
       window.location.href = "index.html";
     } catch (err) {
@@ -54,7 +58,8 @@ if (loginForm) {
       await setPersistence(auth, persistence);
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       alert("Welcome back " + (userCred.user.displayName || userCred.user.email));
-      window.location.href = "index.html";
+      loginForm.reset();
+      closeModals();
     } catch (err) {
       alert("Login error: " + err.message);
     }
@@ -74,3 +79,42 @@ if (forgotPasswordLink) {
       .catch((err) => alert("Reset error: " + err.message));
   });
 }
+
+//LOG OUT
+document.getElementById("logout-btn").addEventListener("click", (e) => {
+  signOut(auth)
+    .then(() => {
+      alert("User logged out");
+    })
+    .catch((error) => {
+      alert("Logout error:", error);
+    });
+});
+
+// checks if user is logged in
+let authChecked = false;
+onAuthStateChanged(auth, (user) => {
+  authChecked = true;
+  if (user) {
+    const nickname = user.displayName || "User";
+    const userNickname = document.getElementById("userNickname");
+    userNickname.textContent = nickname;
+    document.querySelector('.register-select').style.display = 'none'
+    document.getElementById("userGreeting").style.display = "flex";
+  } else {
+    // User is signed out
+    document.getElementById("userGreeting").style.display = "none";
+    document.querySelector('.register-select').style.display = 'flex'
+  }
+
+// Wait for auth to resolve before revealing UI
+  document.documentElement.classList.remove('loading');
+});
+
+// Prevent UI from getting stuck if Firebase auth fails
+setTimeout(() => {
+  if (!authChecked) {
+    console.log("Firebase auth check did not complete.");
+    document.documentElement.classList.remove('loading'); // prevent infinite loading
+  }
+}, 3000);
