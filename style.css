@@ -63,7 +63,7 @@ html.loading body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'aeonik-medium', sans-serif; /* Added fallback */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
@@ -96,7 +96,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .logo {
@@ -161,6 +161,7 @@ header {
     width: 20%;
     min-width: fit-content;
     border-radius: 20rem;
+    font-weight: 600;
     background: var(--bg-main);
     color: var(--text-muted);
     box-shadow: 3px 3px 15px var(--dark-bg-shadow);
@@ -170,7 +171,7 @@ header {
 .search-box .search-btn:hover {
     cursor: pointer;
     background: rgb(60, 60, 105);
-    transform: scale(1.05);    
+    transform: scale(1.02);    
 }
 
 @keyframes shake {
@@ -205,10 +206,15 @@ header {
     justify-content: space-between;
 }
 
-.select-trigger {
+.currency-selector .select-trigger {
     flex-grow: 1;
     display: flex;
+    align-items: center;
     justify-content: space-between;
+}
+
+.currency-selector .select-trigger i:first-child {
+    margin-top: 3px;
 }
 
 .select-trigger i {
@@ -450,6 +456,11 @@ header {
         position: relative;
         overflow: visible;
     }
+
+    .open-cart{
+        position: relative;
+    }
+
     .bottom-nav-item .count-badge {
         position: absolute;
         top: -0.5rem;
@@ -469,6 +480,11 @@ header {
     .bottom-nav.hide{
         display: none;
         margin-bottom: 1rem;
+    }
+
+    /* Hide Cart toggle button */
+    #cart-toggle{
+        display: none;
     }
 }
 
@@ -1193,7 +1209,6 @@ header {
     color: var(--text-accent);
     font-size: 1.2rem;
     font-weight: 550;
-    margin-bottom: 1.5rem;
 }
 
 .footer li button {
@@ -1202,18 +1217,19 @@ header {
     padding: 0.5rem;
     width: 80%;
     gap: 0.8rem;
-    background: var(--bg-secondary);
+    background: transparent;
     border-radius: 2rem;
     justify-content: center;
-    border: 1px solid #c97106;
+    border: 0.5px solid rgba(102, 117, 172, 0.4);
     color: var(--text-main);
-    font-size: .9rem;
-    transition: transform .3s linear, background .3s ease;
+    font-size: 0.9rem;
+    transition: transform 0.3s linear, background 1s linear;
 }
 
 .footer li button:hover {
     cursor: pointer;
-    transform: scale(1.1);
+    background: linear-gradient(270deg, var(--bg-primary), transparent);
+    transform: scale(1.05);
 }
 
 footer {
@@ -1256,14 +1272,12 @@ footer .footer-icons a:hover {
     background: var(--bg-main);
 }
 
-/* --------------------------== Filtered Products Section ==-------------------------- */
+/* --------------------------== Products Searched for ==-------------------------- */
 .filtered-products {
     background: linear-gradient(180deg, rgba(100, 100, 100, 0.1), transparent);
     padding: 2rem;
     border-radius: 2rem;
-    /* display: none; */
     gap: 0.5rem;
-    margin-bottom: 2rem;
 }
 
 /* --------------------------== Category Buttons ==-------------------------- */
@@ -1388,10 +1402,12 @@ footer .footer-icons a:hover {
     border-radius: 2rem;
     border: 1px solid rgba(0, 0, 0, 0.33);
     box-shadow: 2px 2px 10px var(--background-shadow);
+    transition: var(--transition);
 }
 
-.showBtns button{
-    background: rgba(0, 0, 0, 0.2);
+.showBtns button:hover{
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.03);
     cursor: pointer;
 }
 
@@ -1483,12 +1499,6 @@ footer .footer-icons a:hover {
     position: absolute;
     bottom: 0px;
     right: -10px;
-}
-
-@media (max-width: 768px) {
-    #cart-toggle{
-        display: none;
-    }
 }
 
 /* Overlay to cover panel */
@@ -1714,7 +1724,7 @@ footer .footer-icons a:hover {
     font-size: 1.3rem;
 }
 
-#checkout-btn {
+.checkout-btn {
     background-color: var(--primary-color);
     border: none;
     color: var(--text-accent);
@@ -1728,7 +1738,7 @@ footer .footer-icons a:hover {
     white-space: nowrap;
 }
 
-#checkout-btn:hover {
+.checkout-btn:hover {
     background-color: var(--primary-hover);
 }
 
@@ -1760,7 +1770,7 @@ footer .footer-icons a:hover {
     box-shadow: 0 0 20px var(--dark-bg-shadow);
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
-    transition: transform 1s, opacity 1s, width 0.3s;
+    transition: transform 0.5s, opacity 1s, width 0.3s;
 }
 
 .contact .contact-box{
@@ -1874,7 +1884,7 @@ footer .footer-icons a:hover {
     color: #fff;
     text-align: center;
     font-family: 'Segoe UI', sans-serif;
-    transition: transform 1s, opacity 1s;
+    transition: transform 0.5s, opacity 1s;
     z-index: 9999;
 }
 
@@ -1904,14 +1914,14 @@ footer .footer-icons a:hover {
     margin-bottom: 30px;
     border-radius: 0.75rem;
     align-items: center;
-    padding-right: 1rem;
+    position: relative;
 }
 
 .input-group input {
     border: none;
     outline: none;
     background: none;
-    width: 90%;
+    width: 100%;
     padding: 0.9rem 1.5rem;
     font-size: 0.9rem;
     font-weight: 400;
@@ -1930,6 +1940,9 @@ footer .footer-icons a:hover {
 }
 
 .input-group .icon {
+    position: absolute;
+    right: 0;
+    padding-right: 1rem;
     font-size: 1.2rem;
     color: #fff;
     opacity: 0.8;
@@ -2473,6 +2486,7 @@ footer .footer-icons a:hover {
     background: var(--bg-secondary);
     border-radius: 0.8rem;
     padding: 2rem;
+    margin-bottom: 1rem;
     box-shadow: 0 2px 10px var(--background-shadow);
 }
 
