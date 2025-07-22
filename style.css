@@ -2132,6 +2132,27 @@ footer .footer-icons a:hover {
     margin-bottom: 1rem;
 }
 
+.breadcrumb a{
+    position: relative;
+    color: var(--accent-accent);
+}
+
+.breadcrumb a:after{
+    position: absolute;
+    content: '';
+    height: 2px;
+    width: 0;
+    border-radius: 2rem;
+    background-color: var(--primary-variation);
+    bottom: -1px;
+    left: 0;
+    transition: width 0.5s;
+}
+
+.breadcrumb a:hover::after{
+    width: 100%;
+}
+
 .breadcrumb i{
     margin: 0 0.5rem;
 }
@@ -2511,9 +2532,9 @@ footer .footer-icons a:hover {
 /******************************* Cart Quantities Display Section**************************/
 .quantity-section {
     display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-    width: 60%;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
     margin-bottom: 1.2rem;
 }
 
@@ -2615,6 +2636,10 @@ footer .footer-icons a:hover {
     box-shadow: 0 2px 4px var(--background-shadow);
 }
 
+.variant-section{
+    display: flex;
+    gap: 2rem;
+}
 
 @media (max-width: 768px) {
     .product-main {
@@ -2624,6 +2649,11 @@ footer .footer-icons a:hover {
     
     .product-images {
         flex-direction: column;
+        align-items: center;
+    }
+
+    .main-image{
+        max-width: 70%;
     }
     
     .thumbnail-list {
@@ -2638,10 +2668,5 @@ footer .footer-icons a:hover {
     .cart-quantity-item {
         font-size: 11px;
     }
-    .quantity-section{
-        flex-direction: column;
-        width: 70%;
-        align-items: center;
-        justify-content: center;
-    }
+
 }
