@@ -583,7 +583,7 @@ function loadMoreCategory({excluded = [], containerID = 'load-area', count = 4} 
         updateCurrencyIcons();
         // Hide the button immediately if last load
         if (noMoreToLoad) {
-            document.querySelector('.load-section').innerHTML = '<p>You\'ve Reached the End, <a href="./cart.html">Go to Cart</a></p>';
+            document.querySelector('.load-section').innerHTML = '<p>You\'ve Reached the End, <a href="./cart.html">View all products</a></p>';
         }
     }, Math.floor(Math.random() * 100) + 1000);
     

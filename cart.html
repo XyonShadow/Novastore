@@ -58,7 +58,7 @@
             <div class="head-icons">
                 <button data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
                 <a title="Return to store" href="index.html"><i class="ri-shopping-bag-line"></i></a>
-                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me" href="#"><i class="ri-mail-add-line"></i></button>
+                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me"><i class="ri-mail-add-line"></i></button>
             </div>
             <div class="searchIcon" id="mobileSearchIcon"><i class="ri-search-line"></i></div>
         </header>
@@ -114,16 +114,16 @@
 
         <!-- Fixed bottom mobile nav -->
         <div class="bottom-nav">
-            <a class="bottom-nav-item active" title="Return to store" href="index.html">
+            <a class="bottom-nav-item" title="Return to store" href="index.html">
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
             <button title="Check cart" class="open-cart bottom-nav-item">
-                <i class="fas fa-shopping-cart"></i>
+                <i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span>
                 <span>Cart</span>
             </button>
-            <button class="bottom-nav-item contact-button"title="Contact me" href="#">
-                <i class="ri-account-circle-fill"></i>
+            <button class="bottom-nav-item contact-button" title="Contact me">
+                <i class="ri-mail-add-line"></i>
                 <span>Message</span>
             </button>
             </a>
@@ -262,11 +262,11 @@
 
                 <div class="loginoptions">
                     <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                    <a id="forgotPasswordLink">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="login-btn">Login</button>
-                <p class="register-link">Don't have an account? <a href="#">Register</a></p>
+                <p class="register-link">Don't have an account? <a>Register</a></p>
             </form>
         </div>
     </div>
@@ -283,7 +283,7 @@
                 </div>
                 <div class="input-group">
                     <input id="signupEmail" type="text" placeholder="Email" required />
-                    <i class="ri-mail-open-line"></i> 
+                    <i class="ri-mail-open-line icon"></i> 
                 </div>
                 <div class="input-group">
                     <input id="signupPassword" type="password" placeholder="Password" required />
@@ -295,7 +295,7 @@
                 </div>
 
                 <button type="submit" class="login-btn">Create Account</button>
-                <p class="register-link">Already have an account? <a href="#">Login</a></p>
+                <p class="register-link">Already have an account? <a>Login</a></p>
             </form>
         </div>
     </div>
