@@ -1258,35 +1258,6 @@ function renderCartItems() {
     updateCurrencyIcons();
 }
 
-// checkout button logic
-const checkoutBtn = document.getElementById('checkout-btn');
-if (checkoutBtn) {
-checkoutBtn.addEventListener('click', () => {
-    if (cart.length === 0) {
-        alert('Your cart is empty!');
-        return;
-    }
-
-    checkoutBtn.textContent = 'Processing...';
-    checkoutBtn.disabled = true;
-    
-    setTimeout(() => {
-        alert('Order placed successfully!');
-        cart = [];
-        updateCartStorage();
-        updateCartCount();
-        renderCartItems();
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            const productId = btn.closest('.product-card').dataset.id;
-            setCartButtonState(btn, productId);
-        }); //update all add-to-cart buttons
-        checkoutBtn.textContent = 'Checkout';
-        checkoutBtn.disabled = false;
-    }, 2000);
-    });
-}
-
-
 const footer = document.querySelector('.footer');
 const bottomNav = document.querySelector('.bottom-nav');
 // Hide cart toggle button when footer is in view
