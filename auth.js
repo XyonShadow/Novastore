@@ -110,7 +110,7 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById('logout-btn').style.display = 'none'
   }
 
-// Wait for auth to resolve before revealing UI
+  // Wait for auth to resolve before revealing UI
   document.documentElement.classList.remove('loading');
 });
 
@@ -120,4 +120,7 @@ setTimeout(() => {
     console.log("Firebase auth check did not complete.");
     document.documentElement.classList.remove('loading'); // prevent infinite loading
   }
-}, 3000);
+}, 5000);
+
+// Expose user login check globally
+window.isUserLoggedIn = () => auth.currentUser !== null;
