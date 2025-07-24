@@ -55,7 +55,7 @@ function getSearchMatches(query) {
     const categoryMatches = products.filter(p => p.category.toLowerCase().includes(query));
 
     // Prioritize cart items in suggestions
-    const cartProductIds = cart.map(item => item.id || item.product_id || item);
+    const cartProductIds = cart.map(item => item.id);
     const cartNames = nameMatches.filter(p => cartProductIds.includes(p.id)).map(p => p.name);
     const nonCartNames = nameMatches.filter(p => !cartProductIds.includes(p.id)).map(p => p.name);
     
@@ -95,7 +95,7 @@ function handleSearch() {
         // Check if this suggestion corresponds to a cart item
         const isProductInCart = products.some(p => 
             (p.name === match || p.category === match) && 
-            cart.some(cartItem => (cartItem.id || cartItem.product_id || cartItem) === p.id)
+            cart.some(cartItem => cartItem.id === p.id)
         );
         
         div.innerHTML = `${match} ${isProductInCart ? '<span class="cart-badge-small">In Cart</span>' : ''}`;
@@ -673,7 +673,7 @@ function filterByCategory(selectedCategory, parent, otherParent, mode) {
         : shuffleArray(products.filter(p => p.category.toLowerCase().includes(selectedCategory.toLowerCase())));
     
     // Separate cart products from other products
-    const cartProductIds = cart.map(item => item.id || item.product_id || item); // Handle different cart structures
+    const cartProductIds = cart.map(item => item.id);
     const cartProducts = filtered.filter(p => cartProductIds.includes(p.id));
     const nonCartProducts = filtered.filter(p => !cartProductIds.includes(p.id));
     
@@ -767,7 +767,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
     group.className = 'product-group';
 
     // Don't slice if we're showing cart products - show all cart items
-    const cartProductIds = cart.map(item => item.id || item.product_id || item);
+    const cartProductIds = cart.map(item => item.id);
     const cartProducts = items.filter(p => cartProductIds.includes(p.id));
     const nonCartProducts = items.filter(p => !cartProductIds.includes(p.id));
     
@@ -1602,7 +1602,7 @@ function initMobileSearch() {
             p.category.toLowerCase().includes(query)
         );
 
-        const cartProductIds = cart.map(item => item.id || item.product_id || item);
+        const cartProductIds = cart.map(item => item.id);
         const cartNames = nameMatches.filter(p => cartProductIds.includes(p.id)).map(p => p.name);
         const nonCartNames = nameMatches.filter(p => !cartProductIds.includes(p.id)).map(p => p.name);
 
@@ -1620,7 +1620,7 @@ function initMobileSearch() {
     function isItemInCart(item) {
         return products.some(p =>
             (p.name === item || p.category === item) &&
-            cart.some(cartItem => (cartItem.id || cartItem.product_id || cartItem) === p.id)
+            cart.some(cartItem => cartItem.id === p.id)
         );
     }
 
@@ -1774,9 +1774,7 @@ function initMobileSearch() {
             results.style.display = 'grid';
             
             // Update currency icons after rendering
-            if (typeof updateCurrencyIcons === 'function') {
-                updateCurrencyIcons();
-            }
+            updateCurrencyIcons();
         } else {
             // No results found - show error message and reset after delay
             setTemporaryPlaceholder(`No results for "${query}"`);
