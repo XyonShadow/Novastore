@@ -118,7 +118,7 @@
                 <i class="fas fa-home"></i>
                 <span>Home</span>
             </a>
-            <button title="Check cart" class="open-cart bottom-nav-item">
+            <button style="position: relative;" title="Check cart" class="cart-toggle bottom-nav-item">
                 <i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span>
                 <span>Cart</span>
             </button>
@@ -145,15 +145,15 @@
         </div>
 
         <!-- Cart Toggle Button -->
-        <button id="cart-toggle" title="Check Cart"><i><i class="ri-shopping-cart-2-line"></i></i> Cart (<span id="cart-count">0</span>)</button>
+        <button id="open-cart" title="Check Cart"><i><i class="ri-shopping-cart-2-line"></i></i> Cart (<span id="cart-count">0</span>)</button>
 
         <!-- Cart Overlay + Panel -->
-        <div class="cart-overlay hidden"></div>
+        <div class="cart-overlay"></div>
 
-        <div class="cart-panel hidden">
+        <div class="cart-panel">
            <div class="cart-header">
                 <h3>Your Cart</h3>
-                <button class="cart-close-btn" title="Close Cart">
+                <button class="cart-toggle" title="Close Cart">
                     <i class="ri-close-line"></i>
                 </button>
             </div>

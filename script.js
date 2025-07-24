@@ -1185,33 +1185,29 @@ function updateCartBtn(id, btn) {
     }
 }
 
-const cartToggleBtn = document.getElementById('cart-toggle');
+const cartToggleBtn = document.querySelectorAll('.cart-toggle');
+const cartOpener = document.getElementById('open-cart');
 const cartPanel = document.querySelector('.cart-panel');
-const cartCloseBtn = document.querySelector('.cart-close-btn');
 const cartOverlay = document.querySelector('.cart-overlay');
 
-// Open
-function openCart() {
-    cartPanel.classList.add('visible');
-    cartOverlay.classList.add('visible');
-    cartToggleBtn.classList.add('active');
+// Open / close cart panel
+function toggleCart() {
     renderCartItems();
+    if(!cartPanel.classList.contains('visible')){
+        cartPanel.classList.add('visible');
+        cartOverlay.classList.add('visible');
+        cartOpener.classList.add('active');
+    }else{
+        cartPanel.classList.remove('visible');
+        cartOverlay.classList.remove('visible');
+        cartOpener.classList.remove('active');
+    }
 }
 
-// Close
-function closeCart() {
-    cartPanel.classList.remove('visible');
-    cartOverlay.classList.remove('visible');
-    cartToggleBtn.classList.remove('active');
-}
+if(cartToggleBtn) cartToggleBtn.forEach(Btn => Btn.addEventListener('click', toggleCart));
+if(cartOpener) cartOpener.addEventListener('click', toggleCart);
 
-const cartOpener = document.querySelector('.open-cart');
-// Click to open/close cart
-if(cartOpener) cartOpener.addEventListener('click', openCart)
-if(cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
-if(cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
-
-if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
+if(cartOverlay) cartOverlay.addEventListener('click', toggleCart);
 
 // Swipe to close (mobile)
 let startX = 0;
@@ -1295,16 +1291,16 @@ function renderCartItems() {
 
 const footer = document.querySelector('.footer');
 const bottomNav = document.querySelector('.bottom-nav');
-// Hide cart toggle button when footer is in view
+// Hide cart open button when footer is in view and the bottom navbar
 if(footer) {
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 if(bottomNav) bottomNav.classList.add('hide');
-                if(cartToggleBtn) cartToggleBtn.classList.add('hide');
+                if(cartOpener) cartOpener.classList.add('hide');
             } else {
                 if(bottomNav) bottomNav.classList.remove('hide');
-                if(cartToggleBtn) cartToggleBtn.classList.remove('hide');
+                if(cartOpener) cartOpener.classList.remove('hide');
             }
         });
 });
