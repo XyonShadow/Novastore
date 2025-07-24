@@ -945,7 +945,7 @@ function getRatesFromStorage() {
 }
 
 // convert based on rate from storage
-function convertPrice(basePrice, targetCurrency) {
+function convertPrice(basePrice, targetCurrency = currentCurrency) {
     targetCurrency = targetCurrency.toUpperCase();
 
     const quotes = getRatesFromStorage() || exchangeRates['rates'];
@@ -993,7 +993,7 @@ function handleCurrencyChange(selectedCurrency){
     updateCurrencyIcons(currentCurrency);
 */
 
- // rebuild html of the price and update icons
+// rebuild html of the price and update icons
 function handleCurrencyChange(){
     // convert all product prices
     applyCurrencyConversion();
@@ -1003,16 +1003,25 @@ function handleCurrencyChange(){
         const card = document.querySelector(`[data-id="${product.id}"]`);
         if (card) {
             const priceTag = card.querySelector('.product-price');
+            const discount = card.querySelector('.discounted-price');
+            const currentPrice = product.price - (product.price * product.discount) / 100;
             if (priceTag) {
                 priceTag.innerHTML = `
                     <i class="currency-icon"></i>
                     ${product.price.toLocaleString()}
                 `;
             }
+            if (discount) {
+                discount.innerHTML = `
+                    <i class="currency-icon"></i>
+                    ${currentPrice.toLocaleString()}
+                `;
+            }
         }
         updateCurrencyIcons();
     });
 
+    if(window.location.href.includes('checkout.html')) updateSummary();
     // Update price in products page
     const originalPrice = Math.floor(currentProduct.price * 1.2);
     if(document.getElementById('currentPrice')) document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
@@ -1021,12 +1030,21 @@ function handleCurrencyChange(){
 }
 
 function addToCart(id, btnElement = null, event) {
-    event.stopPropagation(); // prevent it from triggering parent onclick
+    event.stopPropagation(); // prevent triggering parent onclick
+
     const product = products.find(p => p.id === id); // find the product
-    
     if (!product) return console.warn(`Product with ID ${id} not found`);
 
-    // Check for existing cart item with same variant
+    // random promotions
+    const promoOptions = [
+        { discount: 15, badges: ["Hot Deal"] },
+        { discount: 25, badges: ["Clearance"] },
+        { discount: 10, badges: ["Limited Stock"] },
+        { discount: 30, badges: ["Big Sale"] }
+    ];
+    const randomPromo = promoOptions[Math.floor(Math.random() * promoOptions.length)];
+
+    // Check if already in cart with same variants
     const existing = cart.find(p =>
         p.id === id &&
         p.selectedColor === selectedColor &&
@@ -1039,30 +1057,30 @@ function addToCart(id, btnElement = null, event) {
             ...product,
             selectedColor,
             selectedModel,
+            variants: [selectedColor, selectedModel],
+            selected: true,
+            discount: randomPromo.discount,
+            badges: randomPromo.badges,
             quantity
         };
 
         cart.push(productWithOptions);
         updateCartStorage();
         updateCartCount();
+
         console.log(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
-        if (btnElement) {
-            btnElement.innerHTML = 'Added ✓';
-        }
+        if (btnElement) btnElement.innerHTML = 'Added ✓';
     } else {
         // Just increase quantity
         existing.quantity += quantity;
         updateCartStorage();
         updateCartCount();
+
         console.log(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
-         if (btnElement) {
-            btnElement.innerHTML = 'Updated ✓';
-        }
+        if (btnElement) btnElement.innerHTML = 'Updated ✓';
     }
 
-    // Update cart quantity displays
-    if (window.location.href.includes('product.html')) updateCartQuantityDisplay();
-
+    // UI feedback for the button
     if (btnElement) {
         btnElement.style.background = '#28a745';
         btnElement.disabled = true;
@@ -1071,6 +1089,17 @@ function addToCart(id, btnElement = null, event) {
             btnElement.innerHTML = 'Add to Cart';
             btnElement.style.background = 'var(--accent-color)';
             btnElement.disabled = false;
+            // Re-render cart if on checkout page
+            if (window.location.href.includes('checkout.html')) {
+                renderCartProducts();
+                renderRelatedProducts('checkout');
+            }
+
+            // Update cart display if on product page
+            if (window.location.href.includes('product.html')) {
+                updateCartQuantityDisplay();
+                renderRelatedProducts();
+            }
         }, 2000);
     }
 }
@@ -2066,13 +2095,34 @@ function generateReviews() {
     });
 }
 
-function renderRelatedProducts() {
-    const relatedProducts = products
+function renderRelatedProducts(mode = 'product') {
+    let relatedProducts = [];
+
+    if (mode === 'checkout') {
+        const cartIds = cart.map(item => item.id);
+
+        relatedProducts = products
+            .filter(p => !cartIds.includes(p.id)) // exclude cart items
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 16); // Get 16 items
+
+        relatedProducts.forEach(related => {
+            cart.forEach(cartItem => {
+                if (related.id === cartItem.id) {
+                    console.warn(`MATCH FOUND ❌: Product ID ${related.id} is in both cart and relatedProducts`);
+                }
+            });
+        });
+
+    }else{
+        relatedProducts = products
         .filter(p => p.id !== currentProduct.id) //ensure its not the current product
         .sort(() => Math.random() - 0.5) //shuffle it randomly
         .slice(0, 16); // get 16 products
-    
+    }
+
     const grid = document.getElementById('relatedProductsGrid');
+    grid.innerHTML = ''; // clears previously related products
     
     relatedProducts.forEach(p => {
         const card = document.createElement('div');
@@ -2081,17 +2131,204 @@ function renderRelatedProducts() {
             <div class="product-card-info" data-id="${p.id}">
                 <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
                 <h4>${p.name}</h4>
-                <h3 class="product-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
+                <h3 class="product-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</h3>
                 <button class="add-to-cart-btn" onclick="addToCart(${p.id}, this, event)">Add to Cart</button>
             </div>
         `;
         
         card.addEventListener('click', (e) => {
             if (!e.target.classList.contains('add-to-cart-btn')) {
-                window.location.href = `?product=${p.id}`;
+                goTo(p.category, p.id, 'product.html');
             }
         });
         
         grid.appendChild(card);
     });
+}
+
+/*************************** Checkout Page *************************/
+const checkoutBtn = document.getElementById('checkoutBtn');
+const discountData = [
+    { discount: 26, selected: true, badges: ["Big sale"] },
+    { discount: 10, selected: true, badges: ["Almost sold out"] },
+    { discount: 79, selected: true, badges: ["Clearance deal"] },
+    { discount: 36, selected: true, badges: ["Only 19 left"] },
+];
+
+// Extend or fill discountData to match cart length
+for (let i = discountData.length; i < cart.length; i++) {
+    discountData.push({ discount: 0, selected: true, badges: ["Big Sale"] });
+}
+
+// Update cart directly
+cart.forEach((item, index) => {
+  const discountItem = discountData[index];
+
+  // Only assign if not already set
+  if (!item.hasOwnProperty('variants')) {
+    item.variants = [item.selectedColor, item.selectedModel];
+  }
+
+  if (!item.hasOwnProperty('selected')) {
+    item.selected = discountItem.selected;
+  }
+
+  if (!item.hasOwnProperty('badges')) {
+    item.badges = discountItem.badges;
+  }
+
+  // ensure quantity exists
+  if (!item.hasOwnProperty('quantity')) {
+    item.quantity = 1;
+  }
+});
+
+function increaseQuantity(index) {
+    cart[index].quantity++;
+    updateCartStorage();
+    updateCartCount();
+    renderCartProducts();
+}
+
+function decreaseQuantity(index) {
+    if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+        updateCartStorage();
+        updateCartCount();
+        renderCartProducts();
+    }
+}
+
+function renderCartProducts(){
+    const cartItemsContainer = document.getElementById('cartItems');
+    cartItemsContainer.innerHTML = '';
+
+    cart.forEach((item, index) => {
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-product';
+        cartItem.setAttribute('data-id', item.id);
+        const currentPrice = item.originalPrice - (item.originalPrice * item.discount) / 100;
+        cartItem.innerHTML = `
+            <input type="checkbox" class="item-checkbox" ${item.selected ? 'checked' : ''} 
+                    onchange="toggleItemSelection(${index})">
+            <img src="./Assets/car1.jpg" alt="${item.name}" class="item-image" onClick="goTo('${item.category}', '${item.id}', 'product.html')">
+            <div class="item-details">
+                <div>    
+                    <div onClick="goTo('${item.category}', '${item.id}', 'product.html')" class="item-name">${item.name}</div>
+                    <div class="item-variant">${item.variants.join('/')}</div>
+                </div>
+                <div>
+                    <div class="item-badges">
+                        ${item.badges.map(badge => {
+                            return `<span class="badge">${badge}</span>`;
+                        }).join('')}
+                    </div>
+                    <div class="item-price">
+                        <div class="discounted-price">
+                            ${item.discount>0?`<i class="currency-icon"></i>${convertPrice(currentPrice).toLocaleString()}
+                        </div>
+                        <div class="product-price">
+                            <i class="currency-icon"></i>${convertPrice(item.originalPrice).toLocaleString()}
+                        </div>
+                        <span class="discount">-${item.discount}%</span>`:`<i class="currency-icon"></i>${item.originalPrice.toLocaleString()}
+                        </div>`}
+                    </div>
+                </div>
+            </div>
+            <div class="item-actions">
+                <div class="remove-btn" onclick="removeItem(${index})">
+                    <i class="ri-delete-bin-7-line"></i>
+                </div>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantity(${index})">-</button>
+                    <div class="quantity-display">${item.quantity}</div>
+                    <button class="quantity-btn" onclick="increaseQuantity(${index})">+</button>
+                </div>
+            </div>
+        `;
+        cartItemsContainer.appendChild(cartItem);
+    });
+
+    // Event listeners
+    document.getElementById('selectAll').addEventListener('change', toggleSelectAll);
+    checkoutBtn.addEventListener('click', checkout);
+
+    updateSummary();
+    updateCurrencyIcons();
+    updateSelectAll();
+    renderRelatedProducts('checkout');
+}
+
+function toggleItemSelection(index) {
+    cart[index].selected = !cart[index].selected;
+    updateSummary();
+    updateSelectAll();
+    updateCartStorage();
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll').checked;
+    cart.forEach(item => item.selected = selectAll);
+    renderCartProducts();
+    updateCartStorage();
+}
+
+function updateSelectAll() {
+    const allSelected = cart.every(item => item.selected);
+    const someSelected = cart.some(item => item.selected);
+    const selectAllCheckbox = document.getElementById('selectAll');
+    
+    selectAllCheckbox.checked = allSelected;
+    selectAllCheckbox.indeterminate = someSelected && !allSelected;
+}
+
+function removeItem(index) {
+    const cartItemsContainer = document.getElementById('cartItems');
+    const itemElements = cartItemsContainer.getElementsByClassName('cart-product');
+    const itemElement = itemElements[index];
+    const animationClass = Math.random() < 0.5 ? 'slide-out' : 'slide-up';
+    itemElement.classList.add(animationClass);
+
+    setTimeout(() => {
+        cart.splice(index, 1);
+        updateCartStorage?.();
+        renderCartProducts();
+    }, 500);
+}
+
+function updateSummary() {
+    const selectedItems = cart.filter(item => item.selected);
+    
+    const totalItems = selectedItems.reduce((sum, item) => sum + item.quantity, 0);
+    const itemsTotal = selectedItems.reduce((sum, item) => sum + (item.originalPrice * item.quantity), 0);
+    const discount = selectedItems.reduce((sum, item) => sum + (((item.originalPrice * item.discount) / 100) * item.quantity), 0);
+    const currentTotal = itemsTotal - discount;
+
+    document.getElementById('totalItems').textContent = cart.length;
+    document.getElementById('itemsTotal').innerHTML = `<i class="currency-icon"></i>${convertPrice(itemsTotal).toLocaleString()}`;
+    document.getElementById('itemsDiscount').innerHTML = `-<i class="currency-icon"></i>${convertPrice(discount).toLocaleString()}`;
+    document.getElementById('finalTotal').innerHTML = `<i class="currency-icon"></i>${convertPrice(currentTotal).toLocaleString()}`;
+    document.getElementById('checkoutItems').textContent = totalItems;
+
+    // Update checkout button state
+    if (totalItems === 0) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = '0.5';
+        checkoutBtn.style.cursor = 'not-allowed';
+    } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = '1';
+        checkoutBtn.style.cursor = 'pointer';
+    }
+    updateCurrencyIcons();
+}
+
+function checkout() {
+    const selectedItems = cart.filter(item => item.selected);
+    if (selectedItems.length === 0) {
+        alert('Please select at least one item to checkout.');
+        return;
+    }
+    
+    alert(`Proceeding to checkout with ${selectedItems.length} item(s).`);
 }

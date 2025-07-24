@@ -15,19 +15,6 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body{
-            padding: 0;
-        }
-        .container{
-            padding: 0;
-        }
-        header{
-            width: 100%;
-            padding: 1rem 2rem;
-            box-shadow: 0 6px 4px var(--background-shadow);
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -147,9 +134,122 @@
         <!--------------------------==Search Results Section ==-------------------------->
         <div class="filtered-products"></div>
 
+        <!--------------------------==Main Content==-------------------------->
+        <div class="breadcrumb">
+            <a href="index.html">Home</a><i class="ri-arrow-right-s-line"></i>
+            <a href="cart.html">Cart</a><i class="ri-arrow-right-s-line"></i>
+            <span>Checkout</span>
+        </div>
+        
+        <div class="checkout-content">
+            <!-- Cart Section -->
+            <div class="cart-section">
+                <div class="checkout-header">
+                    <div class="shipping-banner">
+                        <i class="fas fa-check-circle"></i>Free shipping special for you<span>Limited-time offer</span>
+                    </div>
+
+                    <div class="checkout-cart-header">
+                        <input type="checkbox" class="select-all-checkbox" id="selectAll">
+                        <span>Select all (<span id="totalItems">0</span>)</span>
+                    </div>
+                </div>
+
+                <div class="cart-products" id="cartItems">
+                    <!-- Products in cart will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="order-scroll">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="summary-row">
+                        <span>Item(s) total:</span>
+                        <span id="itemsTotal" class="items-total"><i class="currency-icon"></i>0</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Item(s) discount:</span>
+                        <span class="discount-amount" id="itemsDiscount">-<i class="currency-icon"></i>0</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="finalTotal"><i class="currency-icon"></i>0</span>
+                    </div>
+
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                        Please refer to your final actual payment amount.
+                    </p>
+
+                    <button class="checkout-btn" id="checkoutBtn">
+                        Checkout (<span id="checkoutItems">0</span>)
+                        <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+
+                    <div class="checkout-info">
+                        <span>Item availability and pricing are not guaranteed until payment is final.</span>
+                        <p>By checking out, you agree to our <a href="#">Terms of Use</a> and acknowledge that 
+                        you have read our <a href="#">Privacy Policy</a>.</p>
+                    </div>
+
+                    <div class="checkout-info2">
+                        <p style="color: var(--text-muted);">Create account or log in to checkout</p>
+                        <p style="font-weight: 500;"><i style="margin-right: 5px;" class="fas fa-shield-alt"></i>You will not be charged until you review this order on the next page</p>
+                        <p style="font-weight: 600;"><i style="margin-right: 5px;" class="fas fa-check-circle"></i>Safe Payment Options</p>
+                    </div>
+                    
+                    <div class="payment-info">
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">
+                            We are committed to protecting your payment information. We follow PCI DSS standards, 
+                            use strong encryption, and conduct regular reviews of its system to protect your privacy.
+                        </p>
+                        
+                        <h4>1. Payment methods</h4>
+                        <div class="payment-methods">
+                            <div class="payment-icon">VISA</div>
+                            <div class="payment-icon">MC</div>
+                            <div class="payment-icon">AMEX</div>
+                            <div class="payment-icon">DISC</div>
+                            <div class="payment-icon">PYPL</div>
+                            <div class="payment-icon">APAY</div>
+                            <div class="payment-icon">GPAY</div>
+                            <div class="payment-icon">JCB</div>
+                        </div>
+                        
+                        <h4>2. Security certification</h4>
+                        <div class="security-badges">
+                            <div class="security-badge">SSL</div>
+                            <div class="security-badge">PCI DSS</div>
+                            <div class="security-badge">McAfee</div>
+                            <div class="security-badge">Norton</div>
+                            <div class="security-badge">Trustwave</div>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-info">
+                        <span style="font-weight: 600;"><i class="fas fa-lock" style="margin-right: 8px;"></i>Secure privacy</span>
+                        <p style="font-size: 12px; color: var(--text-muted);">
+                            Protecting your privacy is our top priority. Your personal information is stored
+                            securely and never shared without your consent. We use it only to enhance your shopping experience, in line with
+                            our <a href="#" style="color: var(--accent-color); text-decoration: underline;">Privacy Policy</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="related-products">
+                <h2 class="related-title">Explore More</h2>
+                <div class="products-grid" id="relatedProductsGrid">
+                    <!-- More products are rendered here -->
+                </div>
+            </div>
+        </div>
         
 
-         <!--------------------------== Footer Section ==-------------------------->
+        <!--------------------------== Footer Section ==-------------------------->
         <div class="footer">
             <div>
                 <h2>NovaStore</h2>
@@ -274,12 +374,13 @@
     </div>
 
 
-
-
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
     <script type="module" src="firebase.js"></script>
     <script type="module" src="auth.js"></script>
     <script src="script.js"></script>
+    <script>
+        renderCartProducts();
+    </script>
 </body>
 </html>
