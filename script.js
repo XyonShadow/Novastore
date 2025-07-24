@@ -872,7 +872,7 @@ showMoreProductsAlternative();
 // function to go to cart.html with selected category and product
 function goTo(category, product, location = 'cart.html') {
     const timestamp = Date.now(); // force unique URL
-    const url = `./${location}?category=${encodeURIComponent(category)}${product?`&product=${encodeURIComponent(product)}`:''}&t=${timestamp}`;
+    const url = `./${location}?${category!==''?`category=${encodeURIComponent(category)}&`:''}${product?`product=${encodeURIComponent(product)}`:''}&t=${timestamp}`;
     window.location.href = url;
 }
 
@@ -913,7 +913,13 @@ function scrollToProductById(id, matchClass = 'highlighted') {
 // Scroll to the spectific product after rendering
 if (selectedProduct) {
     setTimeout(() => {
-       scrollToProductById(selectedProduct);
+        if(!window.location.href.includes('checkout.html')){
+            scrollToProductById(selectedProduct);
+        }else{
+            // check if the product is in cart before scrolling to it
+            const cartCheck = cart.some(cartItem => Number(cartItem.id) === Number(selectedProduct)); // converts both to number then checks
+            if(cartCheck) scrollToProductById(selectedProduct);
+        }
     }, 100); // delay to ensure rendering is done
 }
 
