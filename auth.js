@@ -164,16 +164,15 @@ function sendCheckoutToFirestore() {
   // TODO: ADD LOADING FOR DELAYS
   .then(() => {
     alert("Order submitted!");
-    window.checkedOutItems = []; // clear items after sending
     window.checkedOutItems.forEach(selected => {
       const index = cart.findIndex(item => item.id === selected.id);
       // animate items going out
       if (index !== -1) {
         const itemElement = document.getElementById('cartItems').getElementsByClassName('cart-product')[index];
-        const animationClass = Math.random() < 0.5 ? 'slide-out' : 'slide-up';
-        itemElement.classList.add(animationClass);
+        itemElement.classList.add('slide-out');
       }
     });
+    window.checkedOutItems = []; // clear items after sending
 
     // re render and update
     setTimeout(() => {
