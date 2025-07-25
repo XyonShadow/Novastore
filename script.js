@@ -2336,23 +2336,8 @@ function checkout() {
     if (window.isUserLoggedIn && window.isUserLoggedIn()) {
         const confirmCheckout = confirm(`Proceeding to checkout with ${itemsQuantity} item${itemsQuantity>1?'s':''}?`);
         if(confirmCheckout){
-            // animate going out
-            selectedItems.forEach(selected => {
-                const index = cart.findIndex(item => item.id === selected.id);
-                if (index !== -1) {
-                    const itemElement = document.getElementById('cartItems').getElementsByClassName('cart-product')[index];
-                    const animationClass = Math.random() < 0.5 ? 'slide-out' : 'slide-up';
-                    itemElement.classList.add(animationClass);
-                }
-            });
-
-            // now update the cart and re render
-            setTimeout(() => {
-                cart = cart.filter(item => !item.selected);
-                renderRelatedProducts();
-                renderCartProducts();
-            }, 500);
-            updateCartStorage();
+            window.checkedOutItems = selectedItems;
+            window.sendCheckoutToFirestore(); // calls the function defined in auth.js
         }
     } else {
         alert("Please log in first");

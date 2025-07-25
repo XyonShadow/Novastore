@@ -10,7 +10,14 @@ import {
   browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-import { auth } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
 
 // SIGN UP
 const signupForm = document.getElementById("signupForm");
@@ -124,3 +131,65 @@ setTimeout(() => {
 
 // Expose user login check globally
 window.isUserLoggedIn = () => auth.currentUser !== null;
+
+// for checkout functionality
+function sendCheckoutToFirestore() {
+  const items = window.checkedOutItems;
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Login required to complete checkout");
+    return;
+  }
+
+  if (!items || items.length === 0) {
+    alert("No items to checkout");
+    return;
+  }
+
+  const orderData = items.map(item => ({
+    id: item.id,
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+    variants: item.variants
+  }));
+
+  addDoc(collection(db, "orders"), {
+    userId: user.uid,
+    email: user.email,
+    items: orderData,
+    createdAt: serverTimestamp()
+  })
+  // TODO: ADD LOADING FOR DELAYS
+  .then(() => {
+    alert("Order submitted!");
+    window.checkedOutItems = []; // clear items after sending
+    window.checkedOutItems.forEach(selected => {
+      const index = cart.findIndex(item => item.id === selected.id);
+      // animate items going out
+      if (index !== -1) {
+        const itemElement = document.getElementById('cartItems').getElementsByClassName('cart-product')[index];
+        const animationClass = Math.random() < 0.5 ? 'slide-out' : 'slide-up';
+        itemElement.classList.add(animationClass);
+      }
+    });
+
+    // re render and update
+    setTimeout(() => {
+      cart = cart.filter(item => !item.selected);
+      renderRelatedProducts();
+      renderCartProducts();
+      updateCartStorage();
+    }, 500);
+    console.log("Checkout Items from script.js:", window.checkedOutItems);
+
+  })
+  .catch(err => {
+    console.error("Error submitting order:", err);
+    alert("Failed to submit order.");
+  });
+}
+
+// Make it accessible globally so script.js can trigger it
+window.sendCheckoutToFirestore = sendCheckoutToFirestore;
