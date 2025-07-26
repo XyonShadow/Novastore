@@ -23,15 +23,12 @@ function formatTimestamp(timestamp) {
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 }
 
-function calculateTotal(items) {
-    return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-}
-
 function renderOrderRow(doc) {
     const data = doc.data();
     const orderId = doc.id;
     const user = data.email || 'Anonymous';
-    const total = `$${calculateTotal(data.items || []).toFixed(2)}`;
+    const totalItems = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = `$${totalItems.toFixed(2)}`;
     const date = formatTimestamp(data.createdAt);
 
     return `
@@ -68,6 +65,36 @@ onAuthStateChanged(auth, user => {
 const links = document.querySelectorAll("[data-page]");
 const main = document.getElementById("admin-content");
 
+async function loadStats() {
+    const snapshot = await getDocs(collection(db, 'orders'));
+
+    let totalOrders = 0;
+    let totalRevenue = 0;
+    let productCount = 0;
+    const uniqueUsers = new Set();
+
+    snapshot.forEach(doc => {
+        totalOrders++;
+        const data = doc.data();
+
+        // Add user
+        if (data.email) uniqueUsers.add(data.email);
+
+        // Add products + revenue
+        if (data.items && Array.isArray(data.items)) {
+            productCount += data.items.length;
+            totalRevenue += data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+    });
+
+    // Update DOM
+    document.getElementById("stat-orders").textContent = `Total Orders: ${totalOrders}`;
+    document.getElementById("stat-revenue").textContent = `Revenue: $${totalRevenue.toFixed(2)}`;
+    document.getElementById("stat-products").textContent = `Products: ${productCount}`;
+    document.getElementById("stat-users").textContent = `Users: ${uniqueUsers.size}`;
+}
+
+
 async function loadPage(page) {
     const template = document.getElementById(`template-${page}`);
     if (template) {
@@ -77,12 +104,14 @@ async function loadPage(page) {
 
         if (page === "dashboard") {
             await loadOrders();
+            await loadStats();
         }
     }
 }
 
 // Load dashboard by default
 loadPage("dashboard");
+loadStats();
 
 // Handle sidebar clicks
 links.forEach(link => {
