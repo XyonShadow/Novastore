@@ -54,4 +54,40 @@ async function loadOrders() {
         tableBody.innerHTML += renderOrderRow(doc);
     });
 }
-loadOrders();
+
+onAuthStateChanged(auth, user => {
+    if (!user) {
+        // TODO: MAKE ADMIN LOGIN
+        // alert('Admins only. Please log in.');
+        // location.href = '/login.html';
+    } else {
+        // loadOrders();
+    }
+});
+
+const links = document.querySelectorAll("[data-page]");
+const main = document.getElementById("admin-content");
+
+async function loadPage(page) {
+    const template = document.getElementById(`template-${page}`);
+    if (template) {
+        main.innerHTML = "";
+        const content = template.content.cloneNode(true);
+        main.appendChild(content);
+
+        if (page === "dashboard") {
+            await loadOrders();
+        }
+    }
+}
+
+// Load dashboard by default
+loadPage("dashboard");
+
+// Handle sidebar clicks
+links.forEach(link => {
+    link.addEventListener("click", () => {
+        const page = link.dataset.page;
+        loadPage(page);
+    });
+});

@@ -28,23 +28,48 @@
 
         <main id="admin-content" class="dashboard">
             <!-- TODO: ADD DEFAULT CONTENT-->
-            <section class="stats">
-                <div class="card">Total Orders: 120</div>
-                <div class="card">Revenue: $4,500</div>
-                <div class="card">Products: 58</div>
-                <div class="card">Users: 200</div>
-            </section>
-            <section class="recent-orders">
-                <h3>Recent Orders</h3>
-                <table>
-                    <thead><tr><th>Order ID</th><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                    <tbody id="orderTableBody">
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </section>
         </main>
     </div>
+
+    <!-- Templates -->
+    <template id="template-dashboard">
+        <section class="stats">
+            <div class="card">Total Orders: 120</div>
+            <div class="card">Revenue: $4,500</div>
+            <div class="card">Products: 58</div>
+            <div class="card">Users: 200</div>
+        </section>
+        <section class="recent-orders">
+            <h3>Recent Orders</h3>
+            <table>
+                <thead><tr><th>Order ID</th><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody id="orderTableBody">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </section>
+    </template>
+
+    <template id="template-products">
+        <section>
+            <h3>All Products</h3>
+            <p>Display product table here...</p>
+        </section>
+    </template>
+
+    <template id="template-orders">
+        <section>
+            <h3>All Orders</h3>
+            <p>Display orders here...</p>
+        </section>
+    </template>
+
+    <template id="template-users">
+        <section>
+            <h3>All Users</h3>
+            <p>Display users here...</p>
+        </section>
+    </template>
 
     <script type="module" src="admin.js"></script>
 </body>
