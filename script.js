@@ -1374,6 +1374,7 @@ document.addEventListener('keydown', e => {
 // Close modals when clicking outside
 overlay.addEventListener('click', closeModals);
 
+// toggling light/dark theme
 class ThemeManager {
     constructor() {
         this.themeToggles = document.querySelectorAll('[data-theme-toggle]');
@@ -1418,7 +1419,12 @@ class ThemeManager {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // document.documentElement.classList.remove('loading');
+    setTimeout(()=>{
+        if(document.documentElement.classList.contains('loading')){
+            document.documentElement.classList.remove('loading');
+            console.log('Html did not complete loading (offline?)');
+        }
+    }, 5000); // Prevent UI from getting stuck
 });
 
 function initMobileSearch() {
@@ -2008,6 +2014,9 @@ function initializeProduct() {
         quantity++;
         document.getElementById('quantityDisplay').textContent = quantity;
     });
+
+    // link to checkout page
+    document.querySelector('.cart-quantities').addEventListener('click', ()=>{goTo('', currentProduct.id, 'checkout.html')})
 
     document.querySelector('.add-to-cart-btn').addEventListener('click', function () {
         addToCart(currentProduct.id, this, event);

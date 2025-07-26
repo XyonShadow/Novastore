@@ -61,6 +61,9 @@ html.loading body {
     --selector-bg: #0d6efd22;
     --hover-bg: #33335a;
 
+    /* ======= Layout ======= */
+    --transition: all 0.3s ease;
+
     --bg-light: #2a18b455;
     --bg-dark: #ffffff55;
 }
