@@ -7,37 +7,50 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
 </head>
 <body>
-    <div class="admin-container">
-        <aside class="sidebar">
-            <h2>NovaStore Admin</h2>
-            <nav>
-                <ul class="nav-links">
-                    <li><button data-page="dashboard">Dashboard</button></li>
-                    <li><button data-page="products">Products</button></li>
-                    <li><button data-page="orders">Orders</button></li>
-                    <li><button data-page="users">Users</button></li>
-                </ul>
+    <aside class="sidebar">
+        <h2>NovaStore/Admin</h2>
+        <nav>
+            <ul class="nav-links">
+                <li><button data-page="dashboard" class="active"><i class="ri-computer-line"></i> Dashboard</button></li>
+                <li><button data-page="products"><i class="ri-receipt-line"></i> Products</button></li>
+                <li><button data-page="orders"><i class="ri-article-line"></i> Orders</button></li>
+                <li><button data-page="users"><i class="ri-group-line"></i> Users</button></li>
+            </ul>
 
-                <ul class="user-section">
-                    <li><button id="toggle-theme"><i class="ri-sun-fill"></i> Toggle Theme</button></li>
-                    <li><button id="account-settings">Account Settings</button></li>
-                    <li><button id="logout-btn">Log Out</button></li>
-                </ul>
-            </nav>
-        </aside>
+            <ul class="user-section">
+                <li><button id="toggle-theme"><i class="ri-sun-fill"></i> Toggle Theme</button></li>
+                <li><button data-page="settings"><i class="ri-tools-fill"></i> Account Settings</button></li>
+                <li><button id="logout-btn"><i class="ri-logout-box-line"></i> Log Out</button></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <div class="container">
+        <div class="admin-container">
+            <main id="admin-content" class="dashboard">
+                <!-- CONTENTS DISPLAYED HERE -->
+            </main>
+        </div>
 
-        <main id="admin-content" class="dashboard">
-            <!-- TODO: ADD DEFAULT CONTENT-->
-        </main>
+        <!--------------------------== Copyright Section ==-------------------------->
+        <footer>
+            <p>Copyright &copy; NovaStore & design by <span>XyonShadow</span></p>
+            <div class="footer-icons">
+                <a href="#"><i class="ri-facebook-circle-fill"></i></a>
+                <a href="#"><i class="ri-instagram-line"></i></a>
+                <a href="#"><i class="ri-linkedin-box-fill"></i></a>
+                <a href="#"><i class="ri-whatsapp-line"></i></a>
+            </div>
+        </footer>
     </div>
 
     <!-- Templates -->
     <template id="template-dashboard">
         <section class="stats">
-            <div class="card">Total Orders: 120</div>
-            <div class="card">Revenue: $4,500</div>
-            <div class="card">Products: 58</div>
-            <div class="card">Users: 200</div>
+            <div class="card" id="stat-orders">Total Orders: ...</div>
+            <div class="card" id="stat-revenue">Revenue: ...</div>
+            <div class="card" id="stat-products">Products: ...</div>
+            <div class="card" id="stat-users">Users: ...</div>
         </section>
         <section class="recent-orders">
             <h3>Recent Orders</h3>
@@ -68,6 +81,13 @@
         <section>
             <h3>All Users</h3>
             <p>Display users here...</p>
+        </section>
+    </template>
+
+    <template id="template-settings">
+        <section>
+            <h3>All Users</h3>
+            <p>Display Settings here...</p>
         </section>
     </template>
 
