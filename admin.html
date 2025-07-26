@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - NovaStore</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <h2>NovaStore Admin</h2>
+            <nav>
+                <ul class="nav-links">
+                    <li><button data-page="dashboard">Dashboard</button></li>
+                    <li><button data-page="products">Products</button></li>
+                    <li><button data-page="orders">Orders</button></li>
+                    <li><button data-page="users">Users</button></li>
+                </ul>
+
+                <ul class="user-section">
+                    <li><button id="toggle-theme"><i class="ri-sun-fill"></i> Toggle Theme</button></li>
+                    <li><button id="account-settings">Account Settings</button></li>
+                    <li><button id="logout-btn">Log Out</button></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main id="admin-content" class="dashboard">
+            <!-- TODO: ADD DEFAULT CONTENT-->
+        </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
