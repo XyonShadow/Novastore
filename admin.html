@@ -28,6 +28,21 @@
 
         <main id="admin-content" class="dashboard">
             <!-- TODO: ADD DEFAULT CONTENT-->
+            <section class="stats">
+                <div class="card">Total Orders: 120</div>
+                <div class="card">Revenue: $4,500</div>
+                <div class="card">Products: 58</div>
+                <div class="card">Users: 200</div>
+            </section>
+            <section class="recent-orders">
+                <h3>Recent Orders</h3>
+                <table>
+                    <thead><tr><th>Order ID</th><th>User</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody id="orderTableBody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </section>
         </main>
     </div>
 
