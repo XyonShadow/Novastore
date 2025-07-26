@@ -15,6 +15,8 @@ import { auth, db } from "./firebase.js";
 import {
   collection,
   addDoc,
+  doc,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
@@ -162,7 +164,20 @@ function sendCheckoutToFirestore() {
     createdAt: serverTimestamp()
   })
   // TODO: ADD LOADING FOR DELAYS
-  .then(() => {
+  .then(async (orderRef) => {
+
+    const orderId = orderRef.id;
+
+    // Save orderId inside the document
+    await updateDoc(doc(db, "orders", orderId), {
+      orderId: orderId
+    });
+
+    // Save to userOrderIds array
+    let orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
+    orderHistory.push(orderId);
+    localStorage.setItem("userOrderIds", JSON.stringify(orderHistory));
+
     alert("Order submitted!");
     window.checkedOutItems.forEach(selected => {
       const index = cart.findIndex(item => item.id === selected.id);
@@ -177,9 +192,11 @@ function sendCheckoutToFirestore() {
     // re render and update
     setTimeout(() => {
       cart = cart.filter(item => !item.selected);
-      renderRelatedProducts();
       renderCartProducts();
       updateCartStorage();
+
+      // Redirect to thank-you page with order ID
+      window.location.href = `thank-you.html?orderId=${orderId}`;
     }, 500);
     console.log("Checkout Items from script.js:", window.checkedOutItems);
 
