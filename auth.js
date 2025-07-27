@@ -16,6 +16,7 @@ import {
   collection,
   addDoc,
   doc,
+  getDoc,
   updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -174,8 +175,17 @@ function sendCheckoutToFirestore() {
     });
 
     // Save to userOrderIds array
+    const orderSnap = await getDoc(doc(db, "orders", orderId));
+    const orderData = orderSnap.data();
+    const createdAt = orderData.createdAt?.toDate().toISOString() || new Date().toISOString();
+
+    // Save to localStorage with timestamp
     let orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
-    orderHistory.push(orderId);
+    orderHistory.push({
+      orderId,
+      createdAt
+    });
+  
     localStorage.setItem("userOrderIds", JSON.stringify(orderHistory));
 
     alert("Order submitted!");
