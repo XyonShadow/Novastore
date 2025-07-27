@@ -165,6 +165,20 @@
             </div>
         </section>
 
+        <!-- List order -->
+        <section>
+            <h2>📦 Your Products Are On Their Way!</h2>
+            <div id="orderedProducts" class="order-details-box">
+                <!-- Dynamically inserted product items -->
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--background-light);">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-main); margin-bottom: 15px;">
+                    <span>Total: <span id="orderTotal">Loading...</span></span>
+                </div>
+                <button class="btn" onclick="downloadReceipt()">📄 Download Receipt</button>
+            </div>
+        </section>
+
         <!--------------------------== Footer Section ==-------------------------->
         <div class="footer">
             <div>

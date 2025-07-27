@@ -155,7 +155,8 @@ function sendCheckoutToFirestore() {
     name: item.name,
     quantity: item.quantity,
     price: item.price,
-    variants: item.variants
+    variants: item.variants,
+    currency: currentCurrency
   }));
 
   addDoc(collection(db, "orders"), {
@@ -219,3 +220,77 @@ function sendCheckoutToFirestore() {
 
 // Make it accessible globally so script.js can trigger it
 window.sendCheckoutToFirestore = sendCheckoutToFirestore;
+
+/*
+ * Loads an order by ID and displays it in the given container IDs
+ * @param {string} orderId - The Firestore order ID
+ * @param {object} options - DOM element IDs to target
+ */
+async function loadOrderDetails(orderId, options = {}) {
+  const {
+    productsContainerId = "orderedProducts",
+    totalId = "orderTotal",
+    timeId = "orderTime"
+  } = options;
+
+  if (!document.getElementById(productsContainerId)) return console.warn("Missing container element");
+
+  const orderRef = doc(db, "orders", orderId);
+
+  try {
+    const docSnap = await getDoc(orderRef);
+
+    if (!docSnap.exists()) {
+      document.getElementById(productsContainerId).textContent = "Order not found!";
+      return;
+    }
+
+    const order = docSnap.data();
+    const items = order.items || [];
+    let total = 0;
+
+    const container = document.getElementById(productsContainerId);
+    container.innerHTML = "";
+    
+    let icon = 'fa-naira-sign';
+    
+    items.forEach(item => {
+      const { name, quantity, price, variants, currency } = item;
+      const Icons = {
+        usd: 'fa-dollar-sign',
+        eur: 'fa-euro-sign',
+        ngn: 'fa-naira-sign',
+        gbp: 'fa-pound-sign'
+      };
+      let icon = Icons[currency] || 'fa-naira-sign';
+      const itemTotal = price * quantity;
+      total += itemTotal;
+
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "order-item";
+      itemDiv.innerHTML = `
+        <div style="flex: 1">
+          <strong style="color: var(--text-main);">${name}</strong><br>
+          <small style="color: var(--text-muted);">${variants?`${Object.values(variants).join("/")}`:''}</small><br>
+          <small style="color: var(--text-accent);">Qty: ${quantity} × <i class='fa ${icon}'></i>${price.toLocaleString()}</small>
+        </div>
+      `;
+      
+      container.appendChild(itemDiv);
+    });
+
+    document.getElementById(totalId).innerHTML = `<i class='fa ${icon}'></i>${total.toLocaleString()}`;
+      
+    if (order.createdAt?.toDate) {
+      const time = order.createdAt.toDate().toLocaleString();
+      document.getElementById(timeId).textContent = time;
+    }
+
+  } catch (err) {
+    document.getElementById(productsContainerId).textContent = "Error loading order. Please try again.";
+    console.error("Failed to fetch order:", err);
+  }
+}
+
+// Expose to non-module scripts
+window.loadOrderDetails = loadOrderDetails;

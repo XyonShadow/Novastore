@@ -2380,6 +2380,9 @@ window.addEventListener('load', function() {
         steps[1].classList.remove('pending');
         showNotification('📦 Your order is now being processed!');
     }, 1500);
+
+    window.loadOrderDetails(orderId);
+
 });
 
 const order = orderHistory.find(o => o.orderId === orderId);
