@@ -2353,3 +2353,11 @@ function checkout() {
     }
     checkoutBtn.disabled = false;
 }
+
+/*************************** Thank you Page *************************/     
+const orderId = params.get("orderId") || localStorage.getItem("lastOrderId");
+
+document.getElementById("orderIdDisplay").textContent = orderId || "Unavailable";
+
+// Clean up single-use backup
+localStorage.removeItem("lastOrderId");

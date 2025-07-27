@@ -123,6 +123,14 @@
         <!--------------------------==Search Results Section ==-------------------------->
         <div class="filtered-products"></div>
 
+        <!-- Order Header -->
+        <div class="order-header">
+            <div class="success-icon"></div>
+            <div class="order-number">Order #<span id="orderIdDisplay">Loading...</span></div>
+            <h1>Order <span style="color: #28a745;">Confirmed</span>!</h1>
+            <p style="color: var(--text-muted); margin-top: 10px;">Thank you for shopping with <span style="color: var(--accent-accent); font-weight: 500;">Novastore</span>! Your order is being processed, you can download your order receipt below.</p>
+        </div>
+
         <!--------------------------== Footer Section ==-------------------------->
         <div class="footer">
             <div>
@@ -247,6 +255,8 @@
         </div>
     </div>
     
+    <!-- Notification Toast -->
+    <div class="notification" id="notification"></div>
 
     <script src="data.js"></script>
     <script src="exchangeRates.js"></script>
