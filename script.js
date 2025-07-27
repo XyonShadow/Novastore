@@ -2354,8 +2354,9 @@ function checkout() {
     checkoutBtn.disabled = false;
 }
 
-/*************************** Thank you Page *************************/     
-const orderId = params.get("orderId") || localStorage.getItem("lastOrderId");
+/*************************** Thank you Page *************************/
+const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
+const orderId = params.get("orderId");
 
 document.getElementById("orderIdDisplay").textContent = orderId || "Unavailable";
 
@@ -2380,3 +2381,25 @@ window.addEventListener('load', function() {
         showNotification('📦 Your order is now being processed!');
     }, 1500);
 });
+
+const order = orderHistory.find(o => o.orderId === orderId);
+
+function formatDate(date){
+    return date.toLocaleString("en-GB", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+if (order && order.createdAt) {
+    const date = new Date(order.createdAt);
+    const formatted = formatDate(date);
+
+    document.getElementById("orderTime").textContent = formatted;
+} else {
+    document.getElementById("orderTime").textContent = "Unavailable";
+}
