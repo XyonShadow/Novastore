@@ -2376,6 +2376,94 @@ function formatDate(date){
     });
 }
 
+// Captures the receipt preview element, converts it to PDF and downloads the receipt as a PDF file
+function downloadReceiptPDF() {
+    const receipt = document.getElementById('receiptPreview');
+    if (!receipt) {
+        showNotification('No receipt available to download');
+    return;
+    }
+
+    // Check if libraries are loaded
+    if (!window.html2canvas) {
+        showNotification('html2canvas library not loaded. Please refresh the page.');
+        return;
+    }
+
+    if (!window.jspdf) {
+        showNotification('jsPDF library not loaded. Please refresh the page.');
+        return;
+    }
+
+    const downloadBtn = document.querySelector('.receipt-btn-primary');
+    if (downloadBtn) {
+        downloadBtn.textContent = 'Generating...';
+        downloadBtn.disabled = true;
+    }
+
+    // Uses html2canvas to render the receipt
+    html2canvas(receipt, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        allowTaint: false,
+        width: 400,
+        height: null
+    }).then(canvas => {
+        // uses jsPDF to create A5 PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', [148, 210]); // A5 size
+
+        const imgData = canvas.toDataURL('image/pgn'); // jpeg file
+        const imgWidth = 140; // Fit to A5 width
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+        pdf.save(window.receiptData.filename);
+
+        showNotification('Receipt downloaded successfully!');
+        document.getElementById('receiptModal').remove();
+    }).catch(err => {
+        console.error('PDF generation failed:', err);
+        showNotification('Failed to generate PDF. Please try again.');
+    }).finally(() => {
+        if (downloadBtn) {
+            downloadBtn.textContent = 'Download PDF';
+            downloadBtn.disabled = false;
+        }
+    });
+}
+
+// Open modal with loaded data and download receipt button
+function openReceiptModal() {
+    if (!window.receiptData) {
+        showNotification('Receipt data not loaded. Please try again.');
+        return;
+    }
+
+    const existingModal = document.getElementById('receiptModal');
+    if (existingModal) existingModal.remove();
+
+    const modalHtml = `
+        <div id="receiptModal" class="receipt-modal">
+            <div class="receipt-modal-content">
+                <button onclick="document.getElementById('receiptModal').remove()" class="receipt-close-btn">×</button>
+                
+                <div id="receiptPreview">
+                    ${window.receiptData.html}
+                </div>
+                
+                <div class="receipt-buttons">
+                    <button onclick="downloadReceiptPDF()" class="receipt-btn receipt-btn-primary">Download PDF</button>
+                    <button onclick="document.getElementById('receiptModal').remove()" class="receipt-btn receipt-btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
 function initOrderPage(){
     const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
     const orderId = params.get("orderId");
@@ -2404,5 +2492,15 @@ function initOrderPage(){
         }, 1500);
 
         window.loadOrderDetails(orderId);
+    });
+
+    // Download receipt when button is clicked
+    document.querySelector('.download-btn').addEventListener('click', ()=>{
+        if (!window.receiptData) {
+            showNotification('No receipt available to download');
+            return;
+        }
+        // to open the receipt moda;
+        openReceiptModal();
     });
 }

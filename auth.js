@@ -221,11 +221,85 @@ function sendCheckoutToFirestore() {
 // Make it accessible globally so script.js can trigger it
 window.sendCheckoutToFirestore = sendCheckoutToFirestore;
 
+/**
+ * Creates and stores receipt data globally for later use
+ * Generates HTML receipt from order details 
+ * @param {Object} order - Order object containing items array
+ * @param {string} orderId - Unique order identifier
+ * @param {string} timeId - Order creation timestamp
+ * @param {number} total - Total order amount
+ * @param {string} currency - Currency code (usd, eur, ngn, gbp)
+ */
+// Generates HTML receipt from order details and stores in window.receiptData
+function createReceiptData(order, orderId, timeId, total, currency) {
+  const currencyMap = {
+    'usd': '$', 'eur': '€', 'ngn': '₦', 'gbp': '£'
+  };
+  const symbol = currencyMap[currency.toLowerCase()] || '₦';
+
+  const receiptHTML = `
+    <div class="receipt-container">
+      <div class="receipt-header">
+        <h1 class="receipt-title">NovaStore</h1>
+        <p class="receipt-subtitle">Order Receipt</p>
+        <p class="receipt-info">Order #${orderId}</p>
+        <p class="receipt-info">Date: ${timeId}</p>
+      </div>
+
+      <div class="receipt-items-header">
+        <span>Item</span>
+        <span>Amount</span>
+      </div>
+
+      <div class="receipt-items-section">
+        ${order.items.map(item => {
+          const itemTotal = item.price * item.quantity;
+          return `
+            <div class="receipt-item">
+              <div class="receipt-item-row">
+                <div class="receipt-item-details">
+                  <div class="receipt-item-name">${item.name}</div>
+                  ${item.variants ? `<div class="receipt-item-variants">${Object.values(item.variants).join(' / ')}</div>` : ''}
+                  <div class="receipt-item-qty">Qty: ${item.quantity} × ${symbol}${item.price.toLocaleString()}</div>
+                </div>
+                <div class="receipt-item-amount">
+                  ${symbol}${itemTotal.toLocaleString()}
+                </div>
+              </div>
+              <div class="receipt-item-divider"></div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="receipt-total-section">
+        <div class="receipt-total-row">
+          <span>TOTAL:</span>
+          <span>${symbol}${total.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <div class="receipt-footer">
+        <p>Thank you for shopping with NovaStore!</p>
+        <p>Questions? Contact prncemk11@gmail.com</p>
+      </div>
+    </div>
+  `;
+
+  window.receiptData = {
+    html: receiptHTML,
+    orderId: orderId,
+    filename: `NovaStore_Receipt_${orderId}.pdf`
+  };
+}
+
 /*
  * Loads an order by ID and displays it in the given container IDs
  * @param {string} orderId - The Firestore order ID
  * @param {object} options - DOM element IDs to target
- */
+*/
+
+// to load Order Details
 async function loadOrderDetails(orderId, options = {}) {
   const {
     productsContainerId = "orderedProducts",
@@ -233,7 +307,9 @@ async function loadOrderDetails(orderId, options = {}) {
     timeId = "orderTime"
   } = options;
 
-  if (!document.getElementById(productsContainerId)) return console.warn("Missing container element");
+  if (!document.getElementById(productsContainerId)) {
+    return console.warn("Missing container element");
+  }
 
   const orderRef = doc(db, "orders", orderId);
 
@@ -251,18 +327,19 @@ async function loadOrderDetails(orderId, options = {}) {
 
     const container = document.getElementById(productsContainerId);
     container.innerHTML = "";
-    
-    let icon = 'fa-naira-sign';
-    
+
+    // Currency symbols for display
+    const currencySymbols = {
+      'usd': '$',
+      'eur': '€',
+      'ngn': '₦', 
+      'gbp': '£'
+    };
+
     items.forEach(item => {
       const { name, quantity, price, variants, currency } = item;
-      const Icons = {
-        usd: 'fa-dollar-sign',
-        eur: 'fa-euro-sign',
-        ngn: 'fa-naira-sign',
-        gbp: 'fa-pound-sign'
-      };
-      let icon = Icons[currency] || 'fa-naira-sign';
+      
+      const symbol = currencySymbols[currency] || '₦';
       const itemTotal = price * quantity;
       total += itemTotal;
 
@@ -271,21 +348,28 @@ async function loadOrderDetails(orderId, options = {}) {
       itemDiv.innerHTML = `
         <div style="flex: 1">
           <strong style="color: var(--text-main);">${name}</strong><br>
-          <small style="color: var(--text-muted);">${variants?`${Object.values(variants).join("/")}`:''}</small><br>
-          <small style="color: var(--text-accent);">Qty: ${quantity} × <i class='fa ${icon}'></i>${price.toLocaleString()}</small>
+          <small style="color: var(--text-muted);">${variants ? `${Object.values(variants).join("/")}` : ''}</small><br>
+          <small style="color: var(--text-accent);">Qty: ${quantity} × ${symbol}${price.toLocaleString()}</small>
         </div>
       `;
-      
+
       container.appendChild(itemDiv);
     });
 
-    document.getElementById(totalId).innerHTML = `<i class='fa ${icon}'></i>${total.toLocaleString()}`;
-      
+    // Display total
+    const firstCurrency = items[0]?.currency || 'ngn';
+    const totalSymbol = currencySymbols[firstCurrency] || '₦';
+    document.getElementById(totalId).innerHTML = `${totalSymbol}${total.toLocaleString()}`;
+
+    // Display time
+    let timeValue = '';
     if (order.createdAt?.toDate) {
-      const time = order.createdAt.toDate().toLocaleString();
-      document.getElementById(timeId).textContent = time;
+      timeValue = order.createdAt.toDate().toLocaleString();
+      document.getElementById(timeId).textContent = timeValue;
     }
 
+    // Create receipt data
+    createReceiptData(order, orderId, timeValue, total, firstCurrency);
   } catch (err) {
     document.getElementById(productsContainerId).textContent = "Error loading order. Please try again.";
     console.error("Failed to fetch order:", err);

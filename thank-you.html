@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -175,7 +177,7 @@
                 <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-main); margin-bottom: 15px;">
                     <span>Total: <span id="orderTotal">Loading...</span></span>
                 </div>
-                <button class="btn" onclick="downloadReceipt()">📄 Download Receipt</button>
+                <button class="btn download-btn"><i class="ri-article-line"></i> Download Receipt</button>
             </div>
         </section>
 
