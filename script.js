@@ -2355,14 +2355,6 @@ function checkout() {
 }
 
 /*************************** Thank you Page *************************/
-const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
-const orderId = params.get("orderId");
-
-document.getElementById("orderIdDisplay").textContent = orderId || "Unavailable";
-
-// Clean up single-use backup
-localStorage.removeItem("lastOrderId");
-
 // Show notification toast message
 function showNotification(message) {
     const notification = document.getElementById('notification');
@@ -2372,20 +2364,6 @@ function showNotification(message) {
         notification.classList.remove('show');
     }, 3000);
 }
-
-// Animate timeline on load
-window.addEventListener('load', function() {
-    setTimeout(() => {
-        const steps = document.querySelectorAll('.timeline-step');
-        steps[1].classList.remove('pending');
-        showNotification('📦 Your order is now being processed!');
-    }, 1500);
-
-    window.loadOrderDetails(orderId);
-
-});
-
-const order = orderHistory.find(o => o.orderId === orderId);
 
 function formatDate(date){
     return date.toLocaleString("en-GB", {
@@ -2398,11 +2376,33 @@ function formatDate(date){
     });
 }
 
-if (order && order.createdAt) {
-    const date = new Date(order.createdAt);
-    const formatted = formatDate(date);
+function initOrderPage(){
+    const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
+    const orderId = params.get("orderId");
+    const order = orderHistory.find(o => o.orderId === orderId);
 
-    document.getElementById("orderTime").textContent = formatted;
-} else {
-    document.getElementById("orderTime").textContent = "Unavailable";
+    document.getElementById("orderIdDisplay").textContent = orderId || "Unavailable";
+
+    // Clean up single-use backup
+    localStorage.removeItem("lastOrderId");
+
+    if (order && order.createdAt) {
+        const date = new Date(order.createdAt);
+        const formatted = formatDate(date);
+
+        document.getElementById("orderTime").textContent = formatted;
+    } else {
+        document.getElementById("orderTime").textContent = "Unavailable";
+    }
+
+    // Animate timeline on load
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            const steps = document.querySelectorAll('.timeline-step');
+            steps[1].classList.remove('pending');
+            showNotification('📦 Your order is now being processed!');
+        }, 1500);
+
+        window.loadOrderDetails(orderId);
+    });
 }
