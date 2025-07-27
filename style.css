@@ -3087,3 +3087,67 @@ footer .footer-icons a:hover {
     font-size: 14px;
     margin-bottom: 15px;
 }
+
+.delivery-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 0;
+    position: relative;
+}
+
+.timeline-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.timeline-step::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-step.pending::before {
+    background: var(--text-muted);
+}
+
+.timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 60%;
+    right: -40%;
+    height: 2px;
+    background: var(--primary-color);
+    z-index: 1;
+}
+
+.timeline-step.pending:not(:last-child)::after {
+    background: var(--text-muted);
+}
+
+.notification {
+    position: fixed;
+    bottom: 3%;
+    right: 20px;
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 15px 20px;
+    border-radius: 8px;
+    transform: translateX(400px);
+    transition: var(--transition);
+    z-index: 10000;
+    box-shadow: 0 4px 20px var(--background-shadow);
+}
+
+.notification.show {
+    transform: translateX(0);
+}

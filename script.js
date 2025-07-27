@@ -2361,3 +2361,22 @@ document.getElementById("orderIdDisplay").textContent = orderId || "Unavailable"
 
 // Clean up single-use backup
 localStorage.removeItem("lastOrderId");
+
+// Show notification toast message
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Animate timeline on load
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        const steps = document.querySelectorAll('.timeline-step');
+        steps[1].classList.remove('pending');
+        showNotification('📦 Your order is now being processed!');
+    }, 1500);
+});
