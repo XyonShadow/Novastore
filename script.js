@@ -2062,19 +2062,50 @@ function generateRandomReviews(count = 6) {
     ];
 
     const reviews = [];
+    let commentPool = [];
+
     for (let i = 0; i < count; i++) {
+        // If all comments have been used, reshuffle the sampleComments to start a new non-repeating cycle
+        if (commentPool.length === 0) {
+            commentPool = [...sampleComments].sort(() => 0.5 - Math.random());
+        }
+
+        const comment = commentPool.pop(); // Take one from the end (randomized)
         reviews.push({
             name: generateRandomName(),
             rating: Math.floor(Math.random() * 3) + 3, // 3–5 stars
-            comment: sampleComments[Math.floor(Math.random() * sampleComments.length)],
+            comment,
             date: getRandomDate()
         });
     }
+
     return reviews;
 }
 
 // for review generation to the page
-function generateReviews() {
+function generateReviews(mode) {
+    if(mode === 'order'){
+        const reviewCount = Math.floor(Math.random() * 4) + 3;
+        const allReviews = generateRandomReviews(reviewCount);
+        
+        const reviewsList = document.getElementById('reviewsList');
+        
+        allReviews.forEach(review => {
+            const reviewItem = document.createElement('div');
+            reviewItem.className = 'thankyou-review';
+            reviewItem.innerHTML = `
+                <div class="stars">${renderStars(review.rating)}</div>
+                <div class="review-header">
+                    <span class="reviewer-name">${review.name}</span>
+                    <span class="review-date">on ${review.date}</span>
+                </div>
+                
+                <p class="review-text">${review.comment}</p>
+            `;
+            reviewsList.appendChild(reviewItem);
+        });
+        return;
+    }
     const reviewCount = Math.floor(Math.random() * 25) + 5;
     const avgRating = (Math.random() * 1.5 + 3.5).toFixed(1);
     
@@ -2095,7 +2126,7 @@ function generateReviews() {
                 <span class="reviewer-name">${review.name}</span>
                 <span class="review-date">on ${review.date}</span>
             </div>
-            <div class="review-stars">
+            <div class="stars">
                 ${renderStars(review.rating)}
             </div>
             <p class="review-text">${review.comment}</p>
@@ -2506,14 +2537,14 @@ function initOrderPage(){
 
     // Animate timeline on load
     window.addEventListener('load', function() {
+        window.loadOrderDetails(orderId);
+        window.loadOrderHistory();
+        
         setTimeout(() => {
             const steps = document.querySelectorAll('.timeline-step');
             steps[1].classList.remove('pending');
             showNotification('📦 Your order is now being processed!');
         }, 1500);
-
-        window.loadOrderDetails(orderId);
-        if(document.getElementById('orderHistoryList')) window.loadOrderHistory();
     });
 
     // Download receipt when button is clicked
@@ -2528,4 +2559,7 @@ function initOrderPage(){
 
     // Insert suggested items
     renderRelatedProducts('order');
+
+    // insert reviews and ratings
+    generateReviews('order');
 }
