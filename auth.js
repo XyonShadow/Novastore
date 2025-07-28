@@ -453,35 +453,36 @@ window.loadOrderHistory = (containerId = "orderHistoryList") => {
 async function submitReviewForOrder(orderId, rating, comment) {
   const user = auth.currentUser;
   const userId = user.uid;
+
   try {
-    const orderRef = doc(db, 'orders', orderId);
-    const orderSnap = await getDoc(orderRef);
+    const reviewData = {
+      orderId,
+      userId,
+      rating,
+      comment,
+      createdAt: serverTimestamp()
+    };
 
-    if (!orderSnap.exists()) {
-      showNotification('Order not found');
-      return;
-    }
-
-    const orderData = orderSnap.data();
-    const items = orderData.items || [];
-
-    const reviewPromises = items.map((item) => {
-      return addDoc(collection(db, 'reviews'), {
-        productId: item.id,
-        userId,
-        rating,
-        comment,
-        createdAt: serverTimestamp()
-      });
-    });
-
-    await Promise.all(reviewPromises);
-    showNotification('✅ Reviews submitted for all products in the order.');
+    await addDoc(collection(db, 'reviews'), reviewData);
   } catch (error) {
-    console.error('Error submitting reviews:', error);
-    showNotification('Error Submitting Reviews.');
+    console.error('Error submitting review:', error);
+    showNotification('Error submitting review.');
   }
 }
 
 // Submit Review function on user verification
 window.submitReviewForOrder = submitReviewForOrder;
+
+// Fetch reviews filtered by orderId
+async function getReviewsForOrder(orderId) {
+  const reviewsRef = collection(db, 'reviews');
+  const q = query(reviewsRef, where('orderId', '==', orderId));
+  const snapshot = await getDocs(q);
+  const reviews = [];
+  snapshot.forEach(doc => {
+    reviews.push({ id: doc.id, ...doc.data() });
+  });
+  return reviews;
+}
+
+window.getReviewsForOrder = getReviewsForOrder;

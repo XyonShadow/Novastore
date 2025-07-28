@@ -1883,9 +1883,9 @@ function renderStars(rating) {
     let starsHTML = '';
     for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
-            starsHTML += '<i class="fas fa-star star"></i>';
+            starsHTML += '<span style="color:gold">★</span>';
         } else {
-            starsHTML += '<i class="far fa-star star"></i>';
+            starsHTML += '<span style="color:gold">☆</span>';
         }
     }
     return starsHTML;
@@ -2082,42 +2082,114 @@ function generateRandomReviews(count = 6) {
     return reviews;
 }
 
+function formatReviewDate(time) {
+    let date;
+
+    // If Firestore Timestamp, convert to Date
+    if (time && typeof time.toDate === 'function') {
+        date = time.toDate();
+    } else if (time instanceof Date) {
+        date = time;
+    } else {
+        return 'Invalid date';
+    }
+
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+
 // for review generation to the page
-function generateReviews(mode) {
+async function generateReviews(mode) {
+    const reviewsList = document.getElementById('reviewsList');
+    reviewsList.innerHTML = '';
+
     if(mode === 'order'){
-        const reviewCount = Math.floor(Math.random() * 4) + 3;
-        const allReviews = generateRandomReviews(reviewCount);
-        
-        const reviewsList = document.getElementById('reviewsList');
-        
-        allReviews.forEach(review => {
-            const reviewItem = document.createElement('div');
-            reviewItem.className = 'thankyou-review';
-            reviewItem.innerHTML = `
-                <div class="stars">${renderStars(review.rating)}</div>
-                <div class="review-header">
-                    <span class="reviewer-name">${review.name}</span>
-                    <span class="review-date">on ${review.date}</span>
-                </div>
-                
-                <p class="review-text">${review.comment}</p>
-            `;
-            reviewsList.appendChild(reviewItem);
-        });
+        const orderId = new URLSearchParams(window.location.search).get("orderId");
+        if (!orderId) {
+            showNotification("⚠️ No valid order ID provided to load order details.");
+            return;
+        }
+
+        try {
+            const realReviews = await window.getReviewsForOrder(orderId);
+            const count = 7;
+            const fakeCount = realReviews.length < 5? Math.max(0, count - realReviews.length):
+                Math.max(0, count - 4); 
+
+            const fakeReviews = generateRandomReviews(fakeCount);
+            // First show fake reviews
+            fakeReviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'thankyou-review';
+                reviewItem.innerHTML = `
+                    <div class="stars">${renderStars(review.rating)}</div>
+                    <div class="review-header">
+                        <span class="reviewer-name">${review.name}</span>
+                        <span class="review-date">on ${review.date}</span>
+                    </div>
+                    <p class="review-text">${review.comment}</p>
+                `;
+                reviewsList.appendChild(reviewItem);
+            });
+
+            // Take only the last 3 (most recent)
+            const topRealReviews = realReviews
+                .filter(r => r.createdAt) // exclude any missing timestamps
+                .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()) // sort the reviews in ascending order (oldest to newest) 
+                .slice(-4); // get the last 4
+
+            topRealReviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'thankyou-review';
+                reviewItem.innerHTML = `
+                    <div class="stars">${renderStars(review.rating)}</div>
+                    <div class="review-header">
+                        <span class="reviewer-name">${review.name || 'Anonymous'}</span>
+                        <span class="review-date">at ${formatReviewDate(review.createdAt)}</span>
+                    </div>
+                    <p class="review-text">${review.comment}</p>
+                `;
+                reviewsList.appendChild(reviewItem);
+            });
+
+        } catch (err) { // incase firestore doesn't load
+            console.error("Failed to load reviews:", err);
+            const reviewCount = Math.floor(Math.random() * 4) + 3;
+            const allReviews = generateRandomReviews(reviewCount);
+            
+            const reviewsList = document.getElementById('reviewsList');
+            
+            allReviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'thankyou-review';
+                reviewItem.innerHTML = `
+                    <div class="stars">${renderStars(review.rating)}</div>
+                    <div class="review-header">
+                        <span class="reviewer-name">${review.name}</span>
+                        <span class="review-date">on ${review.date}</span>
+                    </div>
+                    
+                    <p class="review-text">${review.comment}</p>
+                `;
+                reviewsList.appendChild(reviewItem);
+            });
+        }
+
         return;
     }
+
     const reviewCount = Math.floor(Math.random() * 25) + 5;
     const avgRating = (Math.random() * 1.5 + 3.5).toFixed(1);
-    
+
     document.getElementById('reviewsTitle').textContent = `${reviewCount} reviews`;
     document.getElementById('reviewStars').innerHTML = renderStars(Math.floor(avgRating));
     document.getElementById('reviewRating').textContent = avgRating;
-    
-    const reviewsList = document.getElementById('reviewsList');
-    
-    // Generate all reviews at once
+
     const allReviews = generateRandomReviews(reviewCount);
-    
     allReviews.forEach(review => {
         const reviewItem = document.createElement('div');
         reviewItem.className = 'review-item';
@@ -2126,9 +2198,7 @@ function generateReviews(mode) {
                 <span class="reviewer-name">${review.name}</span>
                 <span class="review-date">on ${review.date}</span>
             </div>
-            <div class="stars">
-                ${renderStars(review.rating)}
-            </div>
+            <div class="stars">${renderStars(review.rating)}</div>
             <p class="review-text">${review.comment}</p>
         `;
         reviewsList.appendChild(reviewItem);
@@ -2561,6 +2631,7 @@ function updatePayment(event) {
 
 // selected stars
 let selectedRating = 0;
+// Handle submitting review to firestore
 function submitReview(orderId) {
     if(!orderId){
         showNotification("⚠️ Sorry, we couldn't find your order.");
@@ -2586,7 +2657,22 @@ function submitReview(orderId) {
 
     window.submitReviewForOrder(orderId, selectedRating, message)
     .then(() => {
-        // Reset form after successful submission
+        // Append new review to reviewsList
+        const reviewsList = document.getElementById('reviewsList');
+        const reviewItem = document.createElement('div');
+        reviewItem.className = 'thankyou-review';
+        reviewItem.innerHTML = `
+            <div class="stars">${renderStars(selectedRating)}</div>
+            <div class="review-header">
+                <span class="reviewer-name">${'Anonymous'}</span>
+                <span class="review-date">at ${formatReviewDate(new Date())}</span>
+            </div>
+            <p class="review-text">${message}</p>
+        `;
+
+        reviewsList.appendChild(reviewItem);
+
+        // Reset after successful submission
         selectedRating = 0;
         document.getElementById('reviewMessage').value = '';
         document.querySelectorAll('#starRating span').forEach(s => s.classList.remove('filled'));
@@ -2623,9 +2709,12 @@ function initOrderPage(){
 
     // Animate timeline on load
     window.addEventListener('load', function() {
+        // insert reviews and ratings
+        generateReviews('order');
+
         window.loadOrderDetails(orderId);
         window.loadOrderHistory();
-        
+
         setTimeout(() => {
             const steps = document.querySelectorAll('.timeline-step');
             steps[1].classList.remove('pending');
@@ -2645,9 +2734,6 @@ function initOrderPage(){
 
     // Insert suggested items
     renderRelatedProducts('order');
-
-    // insert reviews and ratings
-    generateReviews('order');
 
     // Format card number input
     document.querySelector('input[placeholder="1234 5678 9012 3456"]').addEventListener('input', function(e) {
