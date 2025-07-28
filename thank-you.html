@@ -151,18 +151,22 @@
 
         <!-- Delivery Details -->
         <section>
-            <div style="display: flex; align-items: center; height: fit-content; gap: 1rem; width: 70%; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; height: fit-content; gap: 1rem; width: 100%; margin-bottom: 20px;">
                 <h2 style="margin: 0;">🚚 Delivery Details</h2>
-                <div class="shipping-banner" style="flex-grow: 1;">
+                <div class="shipping-banner" style="flex-grow: 1; max-width: 500px;">
                     <i class="fas fa-check-circle"></i>Free shipping special for you<span>Limited-time offer</span>
                 </div>
             </div>
             
             <div style="margin-bottom: 20px;">
-                <p style="color: var(--text-muted);"><strong style="color: var(--text-main);">Delivery Address:</strong><br>
-                John Demo<br>
-                123 Demo Street<br>
-                Demo City, DC 12345</p>
+                <p style="color: var(--text-muted);">
+                    <strong style="color: var(--text-main);">Delivery Address:</strong><br>
+                    <span id="delivery-name">John Demo</span><br>
+                    <span id="delivery-address">
+                        123 Demo Street<br>
+                        Demo City, DC 12345
+                    </span>
+                </p>
                 <p style="color: var(--text-muted); margin-top: 15px;"><strong style="color: var(--text-main);">Order placed on:</strong> <span id="orderTime">Today...</span></p>
             </div>
         </section>
@@ -216,6 +220,42 @@
                 <button class="btn btn-primary" onclick="submitReview()" style="margin-top: 10px;">Submit Review</button>
             </div>
         </section>
+
+        <!-- Update Payment Info -->
+        <section>
+            <h2>💳 Update Payment & Card Information</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Keep your payment methods up to date for faster future checkouts</p>
+            
+            <form class="payment-form" onsubmit="updatePayment(event)">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" spellcheck="false" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="text" spellcheck="false" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                    <label>Cardholder Name</label>
+                    <input spellcheck="false" id="deliveryNameInput" type="text" placeholder="John Demo">
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" spellcheck="false" placeholder="123" maxlength="4">
+                </div>
+                <div class="form-group full-width">
+                    <label>Billing Address</label>
+                    <input spellcheck="false" id="billingAddressInput" type="text" placeholder="123 Demo Street, Demo City, DC 12345"> 
+                </div>
+                <div class="full-width">
+                    <button type="submit" class="btn btn-primary" style="margin: 10px 0;">💾 Update Payment Info</button>
+                </div>
+            </form>
+            <p style="color: var(--text-muted); font-size: 10px; margin-top: 10px; margin-left: 10px;">
+                <i class="ri-error-warning-line"></i> For demonstration purposes only. All data entered here is not stored securely and should not include any real card numbers, addresses, or private information.
+            </p>
+        </section>
+
 
         <!--------------------------== Footer Section ==-------------------------->
         <div class="footer">

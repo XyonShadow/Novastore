@@ -56,6 +56,7 @@ html.loading body {
     --bg-primary: #12121c;
     --bg-secondary: #1f1f2d;
     --card-bg: #1f1f2d;
+    --background-light: rgba(102, 117, 172, 0.1);
     --background-shadow: rgba(0, 0, 0, 0.2);
     --dark-bg-shadow: rgba(0, 0, 0, 0.7);
     --selector-bg: #0d6efd22;
@@ -3156,8 +3157,8 @@ section {
     border-bottom: 1px solid var(--background-light);
 }
 
-section:last-child {
-    border-bottom: none;
+section:last-of-type {
+    padding-bottom: 100px;
 }
 
 section h2 {
@@ -3423,6 +3424,7 @@ background: #545b62;
 
 }
 
+/* You may also like section */
 .suggested-products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -3443,6 +3445,7 @@ background: #545b62;
     margin: 0 auto 15px;
 }
 
+/* Ratings and review section */
 .feedback-section {
     margin: 20px 0;
 }
@@ -3479,4 +3482,57 @@ background: #545b62;
 .review-textarea::placeholder {
     font-weight: normal;
     color: var(--text-muted);
+}
+
+/* Update payment section */
+.payment-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid var(--background-light);
+    border-radius: 6px;
+    margin-top: 5px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.form-group input:-webkit-autofill {
+    background-color: var(--card-bg) !important;
+    border-radius: 6px !important;
+    color: var(--text-main) !important;
+    caret-color: var(--text-main) !important;
+    -webkit-text-fill-color: var(--text-main) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
+    border: 1px solid var(--background-light) !important;
+    transition: background-color 9999s ease-in-out 0s !important;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.full-width {
+    grid-column: 1 / -1;
 }

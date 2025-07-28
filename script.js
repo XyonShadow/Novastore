@@ -2516,6 +2516,49 @@ function openReceiptModal() {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
+// update delivery section with saved name and address
+function renderDeliveryInfo(){
+    const stored = localStorage.getItem('delivery-details');
+    const details = stored ? JSON.parse(stored) : null;
+
+    const fullName = document.getElementById("deliveryNameInput").value.trim();
+    const address = document.getElementById("billingAddressInput").value.trim();
+
+    if (details) {
+        if(fullName.length > 0) document.getElementById('delivery-name').textContent = details.fullName;
+
+        const streetSplit = details.address.split(/Street/i);
+        if (address.trim().length > 0){
+            if (streetSplit.length === 2) {
+                const line1 = streetSplit[0].trim() + " Street";
+                const line2 = streetSplit[1].replace(/^,?\s*/, '');
+                
+                document.getElementById('delivery-address').innerHTML = `
+                    ${line1}<br>
+                    ${line2}
+                `;
+            } else {
+                document.getElementById('delivery-address').innerHTML = details.address;
+            }
+        }
+    } else {
+        // fallback if no localStorage set yet
+        document.getElementById('delivery-name').textContent = 'John Demo';
+        document.getElementById('delivery-address').innerHTML = `123 Demo Street<br>Demo City, DC 12345`;
+    }
+}
+
+// use inputed name and address
+function updatePayment(event) {
+    event.preventDefault(); //prevent reload
+    const fullName = document.getElementById("deliveryNameInput").value.trim();
+    const address = document.getElementById("billingAddressInput").value.trim();
+    localStorage.setItem('delivery-details', JSON.stringify({ fullName, address }));
+
+    renderDeliveryInfo();
+    showNotification('💳 Payment information updated successfully!');
+}
+
 function initOrderPage(){
     const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
     const orderId = params.get("orderId");
@@ -2525,6 +2568,7 @@ function initOrderPage(){
 
     // Clean up single-use backup
     localStorage.removeItem("lastOrderId");
+    renderDeliveryInfo();
 
     if (order && order.createdAt) {
         const date = new Date(order.createdAt);
@@ -2562,4 +2606,19 @@ function initOrderPage(){
 
     // insert reviews and ratings
     generateReviews('order');
+
+    // Format card number input
+    document.querySelector('input[placeholder="1234 5678 9012 3456"]').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
+        e.target.value = value;
+    });
+
+    // Format expiry date
+    document.querySelector('input[placeholder="MM/YY"]').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
 }
