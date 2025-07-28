@@ -39,7 +39,7 @@ if (signupForm) {
     const confirmPassword = document.getElementById("signupConfirmPassword").value.trim();
 
     if (password !== confirmPassword) {
-      return alert("Passwords do not match");
+      return showNotification("Passwords do not match");
     }
 
     try {
@@ -47,10 +47,11 @@ if (signupForm) {
       await updateProfile(userCred.user, { displayName: nickname });
       signupForm.reset();
       closeModals();
-      alert("Signup successful. Welcome " + nickname);
+      showNotification("Signup successful. Welcome " + nickname);
       window.location.href = "index.html";
     } catch (err) {
-      alert("Signup error: " + err.message);
+      showNotification("Signup error, please try again");
+      console.error("Signup error: " + err.message);
     }
   });
 }
@@ -72,11 +73,12 @@ if (loginForm) {
     try {
       await setPersistence(auth, persistence);
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      alert("Welcome back " + (userCred.user.displayName || userCred.user.email));
+      showNotification("Welcome back " + (userCred.user.displayName || userCred.user.email));
       loginForm.reset();
       closeModals();
     } catch (err) {
-      alert("Login error: " + err.message);
+      showNotification("Login error, please try again");
+      console.error("Login error: " + err.message);
     }
   });
 }
@@ -87,11 +89,14 @@ if (forgotPasswordLink) {
   forgotPasswordLink.addEventListener("click", () => {
     const email = document.getElementById("loginEmail").value.trim();
 
-    if (!email) return alert("Please enter your email first.");
+    if (!email) return showNotification("Please enter your email first.");
 
     sendPasswordResetEmail(auth, email)
-      .then(() => alert("Password reset email sent. Check your inbox."))
-      .catch((err) => alert("Reset error: " + err.message));
+      .then(() => showNotification("Password reset email sent. Check your inbox."))
+      .catch((err) => {
+        showNotification('Reset error, please try again');
+        console.error("Reset error: " + err.message)
+      });
   });
 }
 
@@ -99,11 +104,11 @@ if (forgotPasswordLink) {
 document.getElementById("logout-btn").addEventListener("click", (e) => {
   signOut(auth)
     .then(() => {
-      alert("User logged out");
-      window.location.href = "index.html";
+      showNotification("User logged out");
     })
     .catch((error) => {
-      alert("Logout error:", error);
+      showNotification('Logout error, please try again');
+      showNotification("Logout error:", error);
     });
 });
 
@@ -146,12 +151,12 @@ function sendCheckoutToFirestore() {
   const user = auth.currentUser;
 
   if (!user) {
-    alert("Login required to complete checkout");
+    showNotification("Login required to complete checkout");
     return;
   }
 
   if (!items || items.length === 0) {
-    alert("No items to checkout");
+    showNotification("No items to checkout");
     return;
   }
 
@@ -194,7 +199,7 @@ function sendCheckoutToFirestore() {
   
     localStorage.setItem("userOrderIds", JSON.stringify(orderHistory));
 
-    alert("Order submitted!");
+    showNotification("Order submitted!");
     window.checkedOutItems.forEach(selected => {
       const index = cart.findIndex(item => item.id === selected.id);
       // animate items going out
@@ -219,7 +224,7 @@ function sendCheckoutToFirestore() {
   })
   .catch(err => {
     console.error("Error submitting order:", err);
-    alert("Failed to submit order.");
+    showNotification("Failed to submit order.");
   });
 }
 

@@ -1074,7 +1074,7 @@ function addToCart(id, btnElement = null, event) {
         updateCartStorage();
         updateCartCount();
 
-        console.log(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
+        showNotification(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
         if (btnElement) btnElement.innerHTML = 'Added ✓';
     } else {
         // Just increase quantity
@@ -1082,7 +1082,7 @@ function addToCart(id, btnElement = null, event) {
         updateCartStorage();
         updateCartCount();
 
-        console.log(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
+        showNotification(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
         if (btnElement) btnElement.innerHTML = 'Updated ✓';
     }
 
@@ -1422,7 +1422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(()=>{
         if(document.documentElement.classList.contains('loading')){
             document.documentElement.classList.remove('loading');
-            console.log('Html did not complete loading (offline?)');
+            showNotification('Html did not complete loading (offline?)');
         }
     }, 5000); // Prevent UI from getting stuck
 });
@@ -1788,8 +1788,6 @@ function initMobileSearch() {
             setTemporaryPlaceholder(`No results for "${query}"`);
             results.style.display = 'none';
         }
-
-        console.log('Mobile search results:', getSearchMatches(query));
     }
 
     // Event listeners
@@ -2458,7 +2456,7 @@ function checkout() {
     checkoutBtn.disabled = true;
     const selectedItems = cart.filter(item => item.selected);
     if (selectedItems.length === 0) {
-        alert('Please select at least one item to checkout.');
+        showNotification('Please select at least one item to checkout.');
         checkoutBtn.disabled = false;
         return;
     }
@@ -2471,21 +2469,40 @@ function checkout() {
             window.sendCheckoutToFirestore(); // calls the function defined in auth.js
         }
     } else {
-        alert("Please log in first");
+        showNotification("Please log in first");
     }
     checkoutBtn.disabled = false;
 }
 
 /*************************** Thank you Page *************************/
 // Show notification toast message
+const notification = document.getElementById('notification');
+const notificationQueue = [];
+let isShowing = false;
+
 function showNotification(message) {
-    const notification = document.getElementById('notification');
+    notificationQueue.push(message);
+    if (!isShowing) displayNextNotification();
+}
+
+function displayNextNotification() {
+    if (notificationQueue.length === 0) {
+        isShowing = false;
+        return;
+    }
+
+    isShowing = true;
+    const message = notificationQueue.shift();
+
     notification.textContent = message;
     notification.classList.add('show');
+
     setTimeout(() => {
         notification.classList.remove('show');
+        setTimeout(displayNextNotification, 100); // small delay before next notification
     }, 3000);
 }
+
 
 function formatDate(date){
     return date.toLocaleString("en-GB", {
@@ -2736,8 +2753,10 @@ function initOrderPage(){
         // Animate timeline on load
         setTimeout(() => {
             const steps = document.querySelectorAll('.timeline-step');
-            steps[1].classList.remove('pending');
-            showNotification('📦 Your order is now being processed!');
+            if(orderId){
+                steps[1].classList.remove('pending');
+                showNotification('📦 Your order is now being processed!');
+            }
         }, 1500);
     });
 
