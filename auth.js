@@ -18,6 +18,11 @@ import {
   doc,
   getDoc,
   updateDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
@@ -221,15 +226,6 @@ function sendCheckoutToFirestore() {
 // Make it accessible globally so script.js can trigger it
 window.sendCheckoutToFirestore = sendCheckoutToFirestore;
 
-/**
- * Creates and stores receipt data globally for later use
- * Generates HTML receipt from order details 
- * @param {Object} order - Order object containing items array
- * @param {string} orderId - Unique order identifier
- * @param {string} timeId - Order creation timestamp
- * @param {number} total - Total order amount
- * @param {string} currency - Currency code (usd, eur, ngn, gbp)
- */
 // Generates HTML receipt from order details and stores in window.receiptData
 function createReceiptData(order, orderId, timeId, total, currency) {
   const currencyMap = {
@@ -293,13 +289,7 @@ function createReceiptData(order, orderId, timeId, total, currency) {
   };
 }
 
-/*
- * Loads an order by ID and displays it in the given container IDs
- * @param {string} orderId - The Firestore order ID
- * @param {object} options - DOM element IDs to target
-*/
-
-// to load Order Details
+// Loads an order by ID and displays it in the given container IDs
 async function loadOrderDetails(orderId, options = {}) {
   const {
     productsContainerId = "orderedProducts",
@@ -376,5 +366,79 @@ async function loadOrderDetails(orderId, options = {}) {
   }
 }
 
+// Loads and displays the latest 3 orders for the current user
+async function loadOrderHistory(userId, containerId = "orderHistoryList") {
+  const container = document.getElementById(containerId);
+  if (!container) return console.warn("Missing order history container");
+
+  container.innerHTML = "<p style='font-weight: 600;'>Loading your orders...</p>";
+
+  try {
+    const q = query(
+      collection(db, "orders"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(3)
+    );
+
+    const querySnapshot = await getDocs(q);
+    container.innerHTML = "";
+
+    if (querySnapshot.empty) {
+      container.innerHTML = "<p>You haven't placed any orders yet.</p>";
+      return;
+    }
+
+    querySnapshot.forEach(docSnap => {
+      const order = docSnap.data();
+      const orderId = docSnap.id;
+      const items = order.items || [];
+      const firstItem = items[0];
+      const name = firstItem?.name || "Unnamed Product";
+      const initials = name
+        .split(" ")
+        .map(word => word[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
+      const displayId = order.orderId || `#${orderId.slice(0, 8)}`;
+      const deliveryDate = order.createdAt?.toDate().toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      const div = document.createElement("div");
+      div.className = "order-item";
+      div.innerHTML = `
+        <div class="item-image">${initials}</div>
+        <div style="flex: 1;">
+          <strong style="color: var(--text-main);">${name}</strong> - Order ${displayId}<br>
+          <small style="color: var(--text-muted);">Delivered on ${deliveryDate}</small>
+        </div>
+        <button class="btn btn-secondary">Leave a review</button>
+      `;
+
+      container.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error("Error loading order history:", err);
+    container.innerHTML = "<p>Failed to load order history. Please try again later.</p>";
+  }
+}
+
 // Expose to non-module scripts
 window.loadOrderDetails = loadOrderDetails;
+
+// Load on user verification
+window.loadOrderHistory = (containerId = "orderHistoryList") => {
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      loadOrderHistory(user.uid, containerId);
+    } else {
+      showNotification("User not logged in");
+    }
+  });
+};

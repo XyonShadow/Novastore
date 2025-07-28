@@ -2492,6 +2492,7 @@ function initOrderPage(){
         }, 1500);
 
         window.loadOrderDetails(orderId);
+        if(document.getElementById('orderHistoryList')) window.loadOrderHistory();
     });
 
     // Download receipt when button is clicked
