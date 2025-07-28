@@ -2114,15 +2114,13 @@ function renderRelatedProducts(mode = 'product') {
             .filter(p => !cartIds.includes(p.id)) // exclude cart items
             .sort(() => Math.random() - 0.5)
             .slice(0, 16); // Get 16 items
+    }else if (mode === 'order') {
+        const cartIds = cart.map(item => item.id);
 
-        relatedProducts.forEach(related => {
-            cart.forEach(cartItem => {
-                if (related.id === cartItem.id) {
-                    console.warn(`MATCH FOUND ❌: Product ID ${related.id} is in both cart and relatedProducts`);
-                }
-            });
-        });
-
+        relatedProducts = products
+            .filter(p => !cartIds.includes(p.id)) // exclude cart items
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3); // Get 3 items
     }else{
         relatedProducts = products
         .filter(p => p.id !== currentProduct.id) //ensure its not the current product
@@ -2133,6 +2131,29 @@ function renderRelatedProducts(mode = 'product') {
     const grid = document.getElementById('relatedProductsGrid');
     grid.innerHTML = ''; // clears previously related products
     
+    if(mode === 'order'){
+        relatedProducts.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-item';
+            card.setAttribute('data-id', p.id);
+
+            card.innerHTML = `
+                <img src="./Assets/car1.jpg" alt="${p.name}" class="item-image" />
+                <strong style="color: var(--text-main);">${p.name}</strong><br>
+                <small class="product-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</small><br>
+                <button class="btn btn-secondary"style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">Add to Cart</button>
+            `;
+            
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('add-to-cart-btn')) {
+                    goTo(p.category, p.id, 'product.html');
+                }
+            });
+            
+            grid.appendChild(card);
+        });
+        return;
+    }
     relatedProducts.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -2504,4 +2525,7 @@ function initOrderPage(){
         // to open the receipt moda;
         openReceiptModal();
     });
+
+    // Insert suggested items
+    renderRelatedProducts('order');
 }

@@ -3415,3 +3415,34 @@ background: #545b62;
 .receipt-footer p {
     margin: 5px 0;
 }
+
+.btn-secondary {
+    background: var(--accent-color);
+    color: var(--white);
+
+}
+
+.btn-secondary:hover {
+    background: var(--accent-accent);
+
+}
+
+.suggested-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.product-item {
+    text-align: center;
+    padding: 20px;
+    background: var(--background-light);
+    border-radius: 8px;
+}
+
+.product-item .item-image {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+}
