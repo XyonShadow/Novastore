@@ -2629,6 +2629,25 @@ function updatePayment(event) {
     showNotification('💳 Payment information updated successfully!');
 }
 
+// Smoothly scrolls the page to the element with the specified ID with an offset
+function scrollToId(id, offset = 0) {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - offset;
+
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+    });
+    if(id === 'reviewMessage'){
+        setTimeout(() => {
+            document.getElementById('reviewMessage').focus();
+        }, 950); // to let it scroll first
+    }
+}
+
 // selected stars
 let selectedRating = 0;
 // Handle submitting review to firestore
@@ -2707,7 +2726,6 @@ function initOrderPage(){
         document.getElementById("orderTime").textContent = "Unavailable";
     }
 
-    // Animate timeline on load
     window.addEventListener('load', function() {
         // insert reviews and ratings
         generateReviews('order');
@@ -2715,6 +2733,7 @@ function initOrderPage(){
         window.loadOrderDetails(orderId);
         window.loadOrderHistory();
 
+        // Animate timeline on load
         setTimeout(() => {
             const steps = document.querySelectorAll('.timeline-step');
             steps[1].classList.remove('pending');

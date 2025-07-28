@@ -423,7 +423,7 @@ async function loadOrderHistory(userId, containerId = "orderHistoryList") {
           <strong style="color: var(--text-main);">${name}</strong> - Order #${displayId}<br>
           <small style="color: var(--text-muted);">Delivered on ${deliveryDate}</small>
         </div>
-        <button class="btn btn-secondary">Leave a review</button>
+        <button class="btn btn-secondary" onclick="scrollToId('reviewMessage', 250)">Leave a review</button>
       `;
 
       container.appendChild(div);
