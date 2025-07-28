@@ -2559,6 +2559,48 @@ function updatePayment(event) {
     showNotification('💳 Payment information updated successfully!');
 }
 
+// selected stars
+let selectedRating = 0;
+function submitReview(orderId) {
+    if(!orderId){
+        showNotification("⚠️ Sorry, we couldn't find your order.");
+        return
+    }
+
+     if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
+        showNotification('Log in to leave a review');
+        return;   
+    }
+    
+    const message = document.getElementById('reviewMessage').value.trim();
+
+    if (selectedRating === 0 || message.length === 0) {
+        showNotification("Please provide a star rating and a review message.");
+    return;
+    }
+
+    const btn = document.getElementById('submitReviewBtn');
+    btn.disabled = true;
+    btn.style.cursor = 'not-allowed';
+    btn.textContent = 'Submitting...';
+
+    window.submitReviewForOrder(orderId, selectedRating, message)
+    .then(() => {
+        // Reset form after successful submission
+        selectedRating = 0;
+        document.getElementById('reviewMessage').value = '';
+        document.querySelectorAll('#starRating span').forEach(s => s.classList.remove('filled'));
+    })
+    .catch(() => {
+        showNotification('Something went wrong while submitting your review.');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.style.cursor = 'pointer';
+        btn.textContent = 'Submit Review';
+    });
+}
+
 function initOrderPage(){
     const orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
     const orderId = params.get("orderId");
@@ -2620,5 +2662,23 @@ function initOrderPage(){
             value = value.substring(0, 2) + '/' + value.substring(2, 4);
         }
         e.target.value = value;
+    });
+
+    // handle star rating
+    document.querySelectorAll('#starRating span').forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.getAttribute('data-star'));
+
+            document.querySelectorAll('#starRating span').forEach(s => {
+                const value = parseInt(s.getAttribute('data-star'));
+                s.classList.toggle('filled', value <= selectedRating);
+                s.textContent = '★';
+            });
+        });
+    });
+
+    // handle submit review
+    document.getElementById('submitReviewBtn').addEventListener('click', ()=>{
+        submitReview(orderId);
     });
 }

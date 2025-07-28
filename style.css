@@ -3141,7 +3141,7 @@ footer .footer-icons a:hover {
     color: var(--white);
     padding: 15px 20px;
     border-radius: 8px;
-    transform: translateX(400px);
+    transform: translateX(480px);
     transition: var(--transition);
     z-index: 10000;
     box-shadow: 0 4px 20px var(--background-shadow);
@@ -3433,6 +3433,7 @@ background: #545b62;
 }
 
 .product-item {
+    cursor: pointer;
     text-align: center;
     padding: 20px;
     background: var(--background-light);
@@ -3535,4 +3536,24 @@ background: #545b62;
 
 .full-width {
     grid-column: 1 / -1;
+}
+
+.star-rating {
+    display: flex;
+    font-size: 1.5rem;
+    gap: 8px;
+    width: fit-content;
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+    user-select: none;
+}
+
+.star-rating span {
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.star-rating span.filled {
+    color: gold;
 }

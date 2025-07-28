@@ -291,6 +291,12 @@ function createReceiptData(order, orderId, timeId, total, currency) {
 
 // Loads an order by ID and displays it in the given container IDs
 async function loadOrderDetails(orderId, options = {}) {
+  // add check for invalid or missing orderId
+  if (!orderId || typeof orderId !== "string" || orderId.trim() === "") {
+    showNotification("⚠️ No valid order ID provided to load order details.");
+    return;
+  }
+
   const {
     productsContainerId = "orderedProducts",
     totalId = "orderTotal",
@@ -414,7 +420,7 @@ async function loadOrderHistory(userId, containerId = "orderHistoryList") {
       div.innerHTML = `
         <div class="item-image">${initials}</div>
         <div style="flex: 1;">
-          <strong style="color: var(--text-main);">${name}</strong> - Order ${displayId}<br>
+          <strong style="color: var(--text-main);">${name}</strong> - Order #${displayId}<br>
           <small style="color: var(--text-muted);">Delivered on ${deliveryDate}</small>
         </div>
         <button class="btn btn-secondary">Leave a review</button>
@@ -432,7 +438,7 @@ async function loadOrderHistory(userId, containerId = "orderHistoryList") {
 // Expose to non-module scripts
 window.loadOrderDetails = loadOrderDetails;
 
-// Load on user verification
+// Load order histoy on user verification
 window.loadOrderHistory = (containerId = "orderHistoryList") => {
   onAuthStateChanged(auth, user => {
     if (user) {
@@ -442,3 +448,40 @@ window.loadOrderHistory = (containerId = "orderHistoryList") => {
     }
   });
 };
+
+// Submits a review for all products in the given order
+async function submitReviewForOrder(orderId, rating, comment) {
+  const user = auth.currentUser;
+  const userId = user.uid;
+  try {
+    const orderRef = doc(db, 'orders', orderId);
+    const orderSnap = await getDoc(orderRef);
+
+    if (!orderSnap.exists()) {
+      showNotification('Order not found');
+      return;
+    }
+
+    const orderData = orderSnap.data();
+    const items = orderData.items || [];
+
+    const reviewPromises = items.map((item) => {
+      return addDoc(collection(db, 'reviews'), {
+        productId: item.id,
+        userId,
+        rating,
+        comment,
+        createdAt: serverTimestamp()
+      });
+    });
+
+    await Promise.all(reviewPromises);
+    showNotification('✅ Reviews submitted for all products in the order.');
+  } catch (error) {
+    console.error('Error submitting reviews:', error);
+    showNotification('Error Submitting Reviews.');
+  }
+}
+
+// Submit Review function on user verification
+window.submitReviewForOrder = submitReviewForOrder;
