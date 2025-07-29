@@ -433,6 +433,10 @@ header {
         flex-grow: 1;
     }
 
+    .user-dropdown{
+        margin-left: auto;
+    }
+
     .searchIcon{
         display: inline-flex;
     }
@@ -1774,16 +1778,17 @@ footer .footer-icons a:hover {
     background-color: var(--primary-hover);
 }
 
-/* --------------------------== Contact Section ==-------------------------- */
+/* -------------------------- Modals -------------------------- */
 .overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
+    background: var(--dark-bg-shadow);
+    backdrop-filter: blur(5px);
     z-index: 9998;
     opacity: 1;
     pointer-events: all;
+    transition: var(--transition);
 }
 
 .overlay.hidden {
@@ -1791,78 +1796,13 @@ footer .footer-icons a:hover {
     pointer-events: none;
 }
 
-.contact{
-    position: fixed;
-    top: 50%; left: 50%;
-    background: #1f1f3b;
-    padding: 2rem;
-    border-radius: 10px;
-    z-index: 9999;
-    width: 50%;
-    box-shadow: 0 0 20px var(--dark-bg-shadow);
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    transition: transform 0.5s, opacity 1s, width 0.3s;
-}
-
-.contact .contact-box{
-    position: relative;
-    border-radius: 1rem;
-    background-color: #2a2e35;
-    padding: 2rem 0 0 3rem;
-    color: #f1f1f1;
-}
-
-.modal-close-btn {
-    position: absolute;
-    background: none;
-    top: -1rem;
-    right: -1rem;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    cursor: pointer;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    transition: color 0.2s ease;
-    z-index: 10;
-}
-
-.modal-close-btn:hover {
-    color: var(--primary-color);
-}
-
 .contact .contact-box form .details{
     display: flex;
+    gap: 20px;
 }
+
 .contact .contact-box form input{
     margin-bottom: 25px;
-}
-.contact .contact-box form input::placeholder, textarea::placeholder{
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-.contact .contact-box form input, .contact .contact-box form textarea{
-    outline: none;
-    width: 90%;
-    padding: 0.9rem 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 400;
-    border-radius: 0.75rem;
-    background-color: #181a1f;
-    border: 1px solid #444;
-    color: #dcc;
-    caret-color: #dcc; 
-    box-shadow: 0 0 0 1px transparent;
-}
-.contact .contact-box form input:-webkit-autofill,
-.contact .contact-box form textarea:-webkit-autofill {
-    background-color: #181a1f !important;
-    color: #dcc !important;
-    -webkit-text-fill-color: #dcc !important;
-    -webkit-box-shadow: 0 0 0 1000px #181a1f inset !important;
 }
 
 .contact .contact-box form label{
@@ -1875,122 +1815,213 @@ footer .footer-icons a:hover {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
+
 .contact .contact-box form label span{
     font-size: 0.9rem;
-    color: #643904;
-}
-.contact .contact-box textarea{
-    margin-bottom: 0.6rem;
-    min-width: 200px;
-    min-height: 4.4rem;
-    max-height: 300px;
-    max-width: 43rem;
-}
-.contact .contact-box form .send{
-    display: inline-block;
-    background: #c97106;
-    border-radius: 2.5rem;
-    font-size: 19px;
-    color: #081b29;
-    letter-spacing: 1px;
-    text-decoration: none;
-    font-weight: 600;
-    box-shadow: 0 0 0 1px transparent;
-}
-.contact .contact-box form .send:hover{
-    cursor: pointer;
-    background: #e69b2e;
+    color: var(--primary-variation);
 }
 
-/* --------------------------== Login and Signup Modals ==-------------------------- */
-.login-modal {
+.contact .contact-box textarea{
+    margin-bottom: 0.6rem;
+    min-width: 400px;
+    max-width: 400px;
+    min-height: 120px;
+    max-height: 200px;
+}
+
+.login-modal, .contact {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
-    width: 50%;
-    padding: 30px;
-    border-radius: 16px;
-    background: #1f1f3b;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    color: #fff;
-    text-align: center;
-    font-family: 'Segoe UI', sans-serif;
-    transition: transform 0.5s, opacity 1s;
+    width: 480px;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 9999;
 }
 
 .login-modal.visible, .contact.visible{
     transform: translate(-50%, -50%) scale(1);
+    visibility: visible;
     opacity: 1;
 }
 
-.login-container{
+.login-container, .contact .contact-box {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     position: relative;
-    padding: 3rem;
-    border-radius: 8px;
-    background-color: #2a2e35;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin: auto;
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--background-light);
+    padding: 2.5rem;
+    width: 100%;
+    box-shadow: 0 20px 40px var(--background-shadow);
+    overflow: hidden;
+}
+
+.login-container::before, .contact .contact-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 0%,
+        rgba(201, 113, 6, 0.05) 25%,
+        rgba(10, 116, 218, 0.05) 50%,
+        rgba(233, 132, 9, 0.05) 75%,
+        transparent 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: 20px;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 50%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-btn:hover {
+    background: var(--hover-bg);
+    color: var(--bg-main);
+    transform: rotate(90deg) !important;
 }
 
 .login-container h2 {
-    margin-bottom: 1.5rem;
-    font-size: 28px;
+    color: var(--text-main);
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
 }
 
-.input-group {
-    display: flex;
-    justify-content: space-between;
-    background-color: #181a1f;
-    border: 1px solid #444;
+.login-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.login-container .input-group {
+    background: transparent;
     margin-bottom: 30px;
     border-radius: 0.75rem;
+    display: flex;
     align-items: center;
     position: relative;
 }
 
-.input-group input {
-    border: none;
+.login-container .input-group input, .contact .contact-box form input, .contact .contact-box form textarea {
     outline: none;
-    background: none;
+    background: var(--card-bg);
     width: 100%;
+    backdrop-filter: blur(10px);
+    background-color: var(--card-bg);
     padding: 0.9rem 1.5rem;
     font-size: 0.9rem;
     font-weight: 400;
-    color: #dcc;
-    caret-color: #dcc;
+    border: 1px solid #dddddd90;
+    border-radius: 12px;
+    color: var(--text-main);
+    transition: var(--transition);
 }
 
-.input-group input:-webkit-autofill {
-    background-color: #181a1f !important;
-    border-radius: 0.75rem !important;
-    color: #dcc !important;
-    -webkit-text-fill-color: #dcc !important;
-    -webkit-box-shadow: 0 0 0 1000px #181a1f inset !important;
-    border: none !important;
+.login-container .input-group input::placeholder, .contact .contact-box form input::placeholder, textarea::placeholder{
+    color: var(--text-main);
+    opacity: 0.3;
+    font-size: 0.9rem;
+}
+
+.login-container .input-group input:focus {
+    transform: translateY(-2px);
+}
+
+.login-container .input-group input:-webkit-autofill, 
+.contact .contact-box form input:-webkit-autofill, 
+.contact .contact-box form textarea:-webkit-autofill {
+    background-color: #0d0666 !important;
+    border-radius: 12px !important;
+    color: var(--text-main) !important;
+    caret-color: var(--text-main) !important;
+    -webkit-text-fill-color: var(--text-main) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--card-bg) inset !important;
+    border: 1px solid #dddddd31 !important;
     transition: background-color 9999s ease-in-out 0s !important;
 }
 
-.input-group .icon {
+.login-container .input-group .icon {
     position: absolute;
-    right: 0;
-    padding-right: 1rem;
+    right: 1rem;
+    color: var(--text-main);
     font-size: 1.2rem;
-    color: #fff;
-    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.login-container .input-group input:focus + .icon {
+    transform: translateY(-2px) scale(1.05);
 }
 
 .loginoptions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
-    margin-bottom: 20px;
-    color: #eee;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    z-index: 10;
+    position: relative;
+}
+
+.loginoptions label {
+    display: flex;
+    align-items: center;
+    color: var(--accent-accent);
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.loginoptions input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+    cursor: pointer;
 }
 
 .loginoptions a {
-    color: #ddd;
+    color: var(--accent-accent);
+    cursor: pointer;
+    transition: var(--transition);
     position: relative;
 }
 
@@ -1998,88 +2029,77 @@ footer .footer-icons a:hover {
     position: absolute;
     content: '';
     width: 0;
-    height: 1px;
-    bottom: 0;
+    height: 2px;
+    bottom: -2px;
     right: 0;
-    background-color: #fff;
+    background-color: var(--accent-accent);
     transition: width 0.5s;
 }
 
-.login-btn {
+.login-btn, .contact .contact-box form .send {
     width: 100%;
     padding: 12px;
     border: none;
     border-radius: 999px;
-    background: #fff;
-    color: #5b1fa6;
+    background: linear-gradient(235deg, var(--bg-primary), var(--card-bg));
+    color: var(--text-main);
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
+    margin-bottom: 20px;
 }
 
 .register-link {
-    font-size: 13px;
-    margin-top: 16px;
-    color: #eee;
+    text-align: center;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    z-index: 10;
 }
 
-.register-link a {
-    color: #fff;
+.register-link button {
+    background: transparent;
+    cursor: pointer;
+    border: none;
+    color: var(--accent-accent);
     font-weight: 600;
+    transition: var(--transition);
     position: relative;
 }
 
-.register-link a::after{
+.register-link button::after{
     position: absolute;
     content: '';
     width: 0;
     height: 2px;
     bottom: -2px;
     left: 0;
-    background-color: #fff;
+    background-color: var(--accent-accent);
     transition: width 0.5s;
 }
 
-.register-link a:hover::after, .loginoptions a:hover::after{
+.register-link button:hover::after, .loginoptions a:hover::after{
     width: 100%;
 }
 
-@media (max-width: 1200px) {
-    .contact, .login-modal{
-        width: 60%;
-    }
-    .contact .contact-box{
-        padding: 1rem;
-    }
-    .contact .contact-box form input{
-        margin-bottom: 1rem;
-    }   
+/* Loading animation */
+.loading {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent !important;
 }
 
-@media (max-width: 992px) {
-    .contact, .login-modal{
-        width: 70%;
-    }
+.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--text-main);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
-
-@media (max-width: 768px) {
-    .contact, .login-modal{
-        width: 85%;
-    }
-}
-
-@media (max-width: 576px) {
-    .contact, .login-modal{
-        width: 95%;
-    }
-}
-
-@media (max-width: 490px) {
-    .contact, .login-modal{
-        width: 100%;
-    }
-}
-
 
 /* --------------------------== Search Input and Suggestions ==-------------------------- */
 #suggestionBox {
