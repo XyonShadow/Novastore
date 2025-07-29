@@ -2452,7 +2452,7 @@ function updateSummary() {
     updateCurrencyIcons();
 }
 
-function checkout() {
+async function checkout() {
     checkoutBtn.disabled = true;
     const selectedItems = cart.filter(item => item.selected);
     if (selectedItems.length === 0) {
@@ -2462,7 +2462,8 @@ function checkout() {
     }
     const itemsQuantity = selectedItems.reduce((sum, item) => sum + item.quantity, 0);
     // check if the user is logged in first
-    if (window.isUserLoggedIn && window.isUserLoggedIn()) {
+    user = await window.waitForUserAuth();
+    if (user) {
         const confirmCheckout = confirm(`Proceeding to checkout with ${itemsQuantity} item${itemsQuantity>1?'s':''}?`);
         if(confirmCheckout){
             window.checkedOutItems = selectedItems;
@@ -2668,13 +2669,14 @@ function scrollToId(id, offset = 0) {
 // selected stars
 let selectedRating = 0;
 // Handle submitting review to firestore
-function submitReview(orderId) {
+async function submitReview(orderId) {
     if(!orderId){
         showNotification("⚠️ Sorry, we couldn't find your order.");
         return
     }
 
-    if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
+    user = await window.waitForUserAuth();
+    if(!user){
         showNotification('Log in to leave a review');
         return;   
     }
@@ -2809,7 +2811,8 @@ function initOrderPage(){
 
 /* For the order history page */
 async function loadUserOrders() {
-    if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
+    user = await window.waitForUserAuth();
+    if(!user){
         orderList.innerHTML = '<p>Log in and try again later</p>';
         return;
     }

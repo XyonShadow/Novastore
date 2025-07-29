@@ -114,7 +114,9 @@ document.getElementById("logout-btn").addEventListener("click", (e) => {
 
 // checks if user is logged in
 let authChecked = false;
+
 onAuthStateChanged(auth, (user) => {
+  window.currentUser = user;
   authChecked = true;
   if (user) {
     const nickname = user.displayName || "User";
@@ -142,8 +144,15 @@ setTimeout(() => {
   }
 }, 5000);
 
-// Expose user login check globally
-window.isUserLoggedIn = () => auth.currentUser !== null;
+// Waits for Firebase Auth to determine the current user and resolves with the user object
+window.waitForUserAuth = () =>{
+  return new Promise(resolve => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      unsubscribe(); // stop listening after first result
+      resolve(user);
+    });
+  });
+}
 
 // for checkout functionality
 function sendCheckoutToFirestore() {
