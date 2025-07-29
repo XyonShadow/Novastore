@@ -2832,11 +2832,17 @@ function renderOrders(orders) {
 
     // if no orders exist
     if (!Array.isArray(orders) || orders.length === 0) {
-        orderList.innerHTML = '<p>No orders found.</p><a href="cart.html">View all products</a>';
+        orderList.innerHTML = '<p>No orders found. <a style="text-decoration: underline;" href="cart.html">View all products</a></p>';
         showNotification("You haven't placed any Orders yet");
         return;
     }
 
+    // Sort orders by createdAt
+    orders.sort((a, b) => {
+        const aTime = a.createdAt?.seconds || 0;
+        const bTime = b.createdAt?.seconds || 0;
+        return bTime - aTime; // descending
+    });
     // Loop through each order and render a summary card
     orders.forEach(order => {
         const orderEl = document.createElement('div');
@@ -2845,15 +2851,44 @@ function renderOrders(orders) {
         // Format the Firestore timestamp to a readable date
         const date = new Date(order.createdAt?.seconds * 1000).toLocaleDateString();
 
+        const items = order.items || [];
+        
+        let totalPaid = 0;
+
+        items.forEach(item => {
+            console.log(item.price);
+            totalPaid += (item.price || 0) * (item.quantity || 1);
+            console.log(totalPaid);
+        });
+
+        const currency = items[0]?.currency || 'ngn';
+        const currencySymbols = {
+            usd: '$',
+            eur: '€',
+            ngn: '₦',
+            gbp: '£'
+        };
+        const symbol = currencySymbols[currency] || '₦';
+ 
         // Inject HTML structure into the order card
         orderEl.innerHTML = `
             <h3>Order #${order.orderId || order.id}</h3>
             <p><strong>Date:</strong> ${date}</p>
             <p><strong>Email:</strong> ${order.email}</p>
             <p><strong>Total Items:</strong> ${order.items.length}</p>
-            <button onclick="viewOrderDetails('${order.id}')">View Details</button>
+            <p><strong>Total Paid:</strong> ${symbol}${totalPaid.toLocaleString()}</p>
+            <button onclick="viewOrderDetails('${order.id}', 'orderDetailsSection-${order.id}')">View Details</button>
+            <div id="orderDetailsSection-${order.id}" class="order-details" style="margin-top: 10px;"></div>
         `;
 
         orderList.appendChild(orderEl);
+    });
+}
+
+// to view a specific order's details
+function viewOrderDetails(orderId, containerId) {
+    scrollToId(containerId, 120);
+    loadOrderDetails(orderId, {
+        productsContainerId: containerId
     });
 }

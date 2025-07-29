@@ -173,7 +173,8 @@ function sendCheckoutToFirestore() {
     id: item.id,
     name: item.name,
     quantity: item.quantity,
-    price: item.price,
+    price: item.discount>0?convertPrice(item.originalPrice - (item.originalPrice * item.discount) / 100):
+      convertPrice(item.price),
     variants: item.variants,
     currency: currentCurrency
   }));
@@ -369,13 +370,13 @@ async function loadOrderDetails(orderId, options = {}) {
     // Display total
     const firstCurrency = items[0]?.currency || 'ngn';
     const totalSymbol = currencySymbols[firstCurrency] || '₦';
-    document.getElementById(totalId).innerHTML = `${totalSymbol}${total.toLocaleString()}`;
+    if(document.getElementById(totalId)) document.getElementById(totalId).innerHTML = `${totalSymbol}${total.toLocaleString()}`;
 
     // Display time
     let timeValue = '';
     if (order.createdAt?.toDate) {
       timeValue = order.createdAt.toDate().toLocaleString();
-      document.getElementById(timeId).textContent = timeValue;
+      if(document.getElementById(timeId)) document.getElementById(timeId).textContent = timeValue;
     }
 
     // Create receipt data
