@@ -1006,21 +1006,23 @@ function handleCurrencyChange(){
 
     // update price text in the DOM
     products.forEach(product => {
+        const cartItem = cart.find(item => item.id === product.id);
+        const discount = cartItem?.discount || 0;
+
         const card = document.querySelector(`[data-id="${product.id}"]`);
         if (card) {
             const priceTag = card.querySelector('.product-price');
-            const discount = card.querySelector('.discounted-price');
-            const currentPrice = product.price - (product.price * product.discount) / 100;
+            const discountTag = card.querySelector('.discounted-price');
+            const currentPrice = product.price - (product.price * discount) / 100;
+            
             if (priceTag) {
                 priceTag.innerHTML = `
-                    <i class="currency-icon"></i>
-                    ${product.price.toLocaleString()}
+                    <i class="currency-icon"></i>${product.price.toLocaleString()}
                 `;
             }
-            if (discount) {
-                discount.innerHTML = `
-                    <i class="currency-icon"></i>
-                    ${currentPrice.toLocaleString()}
+            if (discountTag) {
+                discountTag.innerHTML = `
+                    <i class="currency-icon"></i>${currentPrice.toLocaleString()}
                 `;
             }
         }
@@ -2270,40 +2272,6 @@ function renderRelatedProducts(mode = 'product') {
 
 /*************************** Checkout Page *************************/
 const checkoutBtn = document.getElementById('checkoutBtn');
-const discountData = [
-    { discount: 26, selected: true, badges: ["Big sale"] },
-    { discount: 10, selected: true, badges: ["Almost sold out"] },
-    { discount: 79, selected: true, badges: ["Clearance deal"] },
-    { discount: 36, selected: true, badges: ["Only 19 left"] },
-];
-
-// Extend or fill discountData to match cart length
-for (let i = discountData.length; i < cart.length; i++) {
-    discountData.push({ discount: 0, selected: true, badges: ["Big Sale"] });
-}
-
-// Update cart directly
-cart.forEach((item, index) => {
-  const discountItem = discountData[index];
-
-  // Only assign if not already set
-  if (!item.hasOwnProperty('variants')) {
-    item.variants = [item.selectedColor, item.selectedModel];
-  }
-
-  if (!item.hasOwnProperty('selected')) {
-    item.selected = discountItem.selected;
-  }
-
-  if (!item.hasOwnProperty('badges')) {
-    item.badges = discountItem.badges;
-  }
-
-  // ensure quantity exists
-  if (!item.hasOwnProperty('quantity')) {
-    item.quantity = 1;
-  }
-});
 
 function increaseQuantity(index) {
     cart[index].quantity++;
