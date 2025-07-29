@@ -1328,35 +1328,28 @@ function openModal(modalId) {
 
 // Close modal
 function closeModals() {
-    // Check for unsent input in open modal only
-    const currentModal = [...modals].find(modal => modal.classList.contains('visible'));
-
-    if (currentModal) {
-        const hasInput = [...currentModal.querySelectorAll('input:not([type=submit]):not([type=checkbox]):not([type=hidden]), textarea')]
-        .some(el => el.value.trim() !== '');
-
-        if (hasInput) {
-            const confirmClose = confirm("You have unsent content. Close anyway?");
-            if (!confirmClose) return;
-        }
-    }
     overlay.classList.add('hidden');
     modals.forEach(m => m.classList.remove('visible'));
 }
 
 // Open Contact Modal
-openContactButtons.forEach(btn => {
-    btn.addEventListener('click', () => openModal('contactModal'));
-});
+openContactButtons.forEach(btn => btn.addEventListener('click', () => openModal('contactModal')));
 
 // Open Login & Signup Modal
-document.getElementById('openLoginModal')?.addEventListener('click', () => {
-    openModal('loginModal');
-});
+document.getElementById('openLoginModal')?.addEventListener('click', () => openModal('loginModal'));
+document.getElementById('openSignupModal')?.addEventListener('click', () => openModal('signupModal'));
 
-document.getElementById('openSignupModal')?.addEventListener('click', () => {
-    openModal('signupModal');
-});
+// Handle modal switching
+function switchToModal(modalId) {
+    closeModals(); // Hide any existing modal first
+    
+    setTimeout(() => {
+        openModal(modalId);
+    }, 200);
+}
+
+document.getElementById('switchToLogin').addEventListener('click', () => switchToModal('loginModal'));
+document.getElementById('switchToSignup').addEventListener('click', () => switchToModal('signupModal'));
 
 // Close Modal button
 modalCloseBtns.forEach(btn => btn.addEventListener('click', closeModals));
