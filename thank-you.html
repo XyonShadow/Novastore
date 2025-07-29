@@ -19,37 +19,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+    <!--------------------------== Header Section ==-------------------------->
+    <header>
+        <div class="logo">NovaStore</div>
+        <div class="search-box">
+            <div class="search-bar">
+                <i class="ri-search-line"></i>
+                <input name="itemSearch" id="searchInput" type="text" placeholder="Search items" autocomplete="off">
+                <div id="suggestionBox"></div>
+            </div>
+            <button class="search-btn">Search</button>
+        </div>
+
+        <div class="select-container user-dropdown" style="margin-left: auto;" tabindex="0">
+            <div class="select-trigger"><span class="sigh"><i class="fa-regular fa-user"></i> <span>Hi, <span id="userNickname">Guest</span>!</span></span></div>
+            <div class="options">
+                <button class="option" id="logout-btn">Log out</button>
+                <button id="openLoginModal" class="option">Log in</button>
+                <button id="openSignupModal" class="option">Sign up</button>
+            </div>
+        </div>
+        <div class="head-icons">
+            <a title="Return to store" href="index.html"><i class="ri-shopping-bag-line"></i></a>
+            <a title="View Products" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span></a>
+            <button data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
+            <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me"><i class="ri-mail-add-line"></i></button>
+        </div>
+        <div class="searchIcon" id="mobileSearchIcon"><i class="ri-search-line"></i></div>
+    </header>
 
     <div class="container">
-        <!--------------------------== Header Section ==-------------------------->
-        <header>
-            <div class="logo">NovaStore</div>
-            <div class="search-box">
-                <div class="search-bar">
-                    <i class="ri-search-line"></i>
-                    <input name="itemSearch" id="searchInput" type="text" placeholder="Search items" autocomplete="off">
-                    <div id="suggestionBox"></div>
-                </div>
-                <button class="search-btn">Search</button>
-            </div>
-
-            <div class="select-container user-dropdown" style="margin-left: auto;" tabindex="0">
-                <div class="select-trigger"><span class="sigh"><i class="fa-regular fa-user"></i> <span>Hi, <span id="userNickname">Guest</span>!</span></span></div>
-                <div class="options">
-                    <button class="option" id="logout-btn">Log out</button>
-                    <button id="openLoginModal" class="option">Log in</button>
-                    <button id="openSignupModal" class="option">Sign up</button>
-                </div>
-            </div>
-            <div class="head-icons">
-                <a title="Return to store" href="index.html"><i class="ri-shopping-bag-line"></i></a>
-                <a title="View Products" href="cart.html" class="go-to-cart-link"><i class="ri-shopping-cart-2-line"></i><span class="count-badge"></span></a>
-                <button data-theme-toggle title="Switch to dark mode"><i class="ri-moon-fill"></i></button>
-                <button class="contact-button" style="font-size: 1.2rem; display: flex; text-align: center;" title="Contact me"><i class="ri-mail-add-line"></i></button>
-            </div>
-            <div class="searchIcon" id="mobileSearchIcon"><i class="ri-search-line"></i></div>
-        </header>
-
         <!--------------------------== Mobile Search Section ==-------------------------->
         <div id="mobileSearchOverlay">
             <!-- Search Header -->
