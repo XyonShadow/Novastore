@@ -931,7 +931,7 @@ async function fetchRates() {
         // const res = await fetch(`https://v6.exchangerate-api.com/v6/bb966c4d6129c5d3224cee33/latest/${currentCurrency}`);
         // const data = await res.json();
         // conversionRates = data['conversion_rates'];
-        conversionRates = exchangeRates['rates'];
+        if (typeof exchangeRates !== 'undefined') conversionRates = exchangeRates['rates'];
         saveRatesToStorage(conversionRates);
     } catch (err) {
         console.error('Failed to fetch rates', err.message);
@@ -2674,7 +2674,7 @@ function submitReview(orderId) {
         return
     }
 
-     if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
+    if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
         showNotification('Log in to leave a review');
         return;   
     }
@@ -2804,5 +2804,53 @@ function initOrderPage(){
     // handle submit review
     document.getElementById('submitReviewBtn').addEventListener('click', ()=>{
         submitReview(orderId);
+    });
+}
+
+/* For the order history page */
+async function loadUserOrders() {
+    if(!(window.isUserLoggedIn && window.isUserLoggedIn())){
+        orderList.innerHTML = '<p>Log in and try again later</p>';
+        return;
+    }
+
+    // Calls the function to fetch orders
+    window.getUserOrders().then(renderOrders).catch(err => {
+        console.error("Failed to load user orders:", err);
+        showNotification("Error loading your orders. Please try again.");
+    });
+}
+
+// Renders order objects into the #orderList section
+function renderOrders(orders) {
+
+    const orderList = document.getElementById('orderList');
+    orderList.innerHTML = ''; // Clear existing content
+
+    // if no orders exist
+    if (!Array.isArray(orders) || orders.length === 0) {
+        orderList.innerHTML = '<p>No orders found.</p><a href="cart.html">View all products</a>';
+        showNotification("You haven't placed any Orders yet");
+        return;
+    }
+
+    // Loop through each order and render a summary card
+    orders.forEach(order => {
+        const orderEl = document.createElement('div');
+        orderEl.className = 'order-card';
+
+        // Format the Firestore timestamp to a readable date
+        const date = new Date(order.createdAt?.seconds * 1000).toLocaleDateString();
+
+        // Inject HTML structure into the order card
+        orderEl.innerHTML = `
+            <h3>Order #${order.orderId || order.id}</h3>
+            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>Email:</strong> ${order.email}</p>
+            <p><strong>Total Items:</strong> ${order.items.length}</p>
+            <button onclick="viewOrderDetails('${order.id}')">View Details</button>
+        `;
+
+        orderList.appendChild(orderEl);
     });
 }

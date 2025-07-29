@@ -89,6 +89,18 @@ a {
     cursor: pointer;
 }
 
+button{
+    transition: var(--transition);
+}
+
+button:hover{
+    transform: translateY(-2px) !important;
+}
+
+button:active {
+    transform: translateY(0) !important;
+}
+
 .container {
     width: 96%;
     min-height: 100%;
@@ -123,6 +135,7 @@ header {
     display: flex;
     text-align: center;
     align-items: center;
+    margin-left: auto;
     gap: 0.3rem;
 }
 
@@ -3558,4 +3571,128 @@ section h2 {
 
 .star-rating span.filled {
     color: gold;
+}
+
+/* Order history page */
+#orderHistory {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#orderHistory h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--background-light);
+}
+
+.order-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.order-card {
+    background: var(--card-bg);
+    border: 1px solid var(--background-light);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: var(--transition);
+    overflow: hidden;
+    opacity: 0;
+}
+
+.order-card:hover {
+    box-shadow: 0 8px 25px var(--background-shadow);
+    border-color: var(--primary-color);
+}
+
+.order-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    font-family: 'Courier New', Courier, Consolas, 'Roboto Mono', monospace;
+    background-color: var(--background-light);
+    padding: 0.5rem;
+    border-radius: 6px;
+    border-left: 3px solid #0a74da;
+}
+
+.order-card p {
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.order-card p strong {
+    color: var(--text-accent);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 90px;
+}
+
+.order-card button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-variation));
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.order-card button:hover {
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(201, 113, 6, 0.3);
+}
+
+@media (max-width: 768px) {
+    #orderHistory h2 {
+        font-size: 2rem;
+    }
+
+    .order-list {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .order-card {
+        padding: 1.25rem;
+    }
+}
+
+/* Loading animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.order-card:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+.order-card:nth-child(3n) {
+    animation-delay: 0.4s;
 }

@@ -490,4 +490,30 @@ async function getReviewsForOrder(orderId) {
   return reviews;
 }
 
+// Expose to non-module scripts
 window.getReviewsForOrder = getReviewsForOrder;
+
+// Fetches orders from Firestore for the currently logged-in user
+async function getUserOrders() {
+  const q = query(collection(db, "orders"), where("userId", "==", user.uid));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+}
+
+// Expose to script.js
+window.getUserOrders = () => {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        getUserOrders().then(resolve).catch(reject);
+      } else {
+        showNotification('Log in to view past orders');
+        reject("No user logged in");
+      }
+    });
+  });
+};

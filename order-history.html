@@ -123,6 +123,12 @@
             <a href="index.html">Home</a><i class="ri-arrow-right-s-line"></i> <span>Orders</span>
         </div>
 
+
+        <section id="orderHistory">
+            <h2>Your Orders</h2>
+            <div id="orderList" class="order-list"></div>
+        </section>
+
         <!--------------------------== Footer Section ==-------------------------->
         <div class="footer">
             <div>
@@ -254,5 +260,8 @@
     <script type="module" src="firebase.js"></script>
     <script type="module" src="auth.js"></script>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadUserOrders);
+    </script>
 </body>
 </html>
