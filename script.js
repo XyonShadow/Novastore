@@ -2681,10 +2681,7 @@ async function submitReview(orderId) {
     return;
     }
 
-    const btn = document.getElementById('submitReviewBtn');
-    btn.disabled = true;
-    btn.style.cursor = 'not-allowed';
-    btn.textContent = 'Submitting...';
+    setLoadingState("#submitReviewBtn", true);
 
     window.submitReviewForOrder(orderId, selectedRating, message)
     .then(() => {
@@ -2712,9 +2709,7 @@ async function submitReview(orderId) {
         showNotification('Something went wrong while submitting your review.');
     })
     .finally(() => {
-        btn.disabled = false;
-        btn.style.cursor = 'pointer';
-        btn.textContent = 'Submit Review';
+        setLoadingState("#submitReviewBtn", false);
     });
 }
 
@@ -2870,7 +2865,7 @@ function renderOrders(orders) {
             <p><strong>Email:</strong> ${order.email}</p>
             <p><strong>Total Items:</strong> ${order.items.length}</p>
             <p><strong>Total Paid:</strong> ${symbol}${totalPaid.toLocaleString()}</p>
-            <button onclick="viewOrderDetails('${order.id}', 'orderDetailsSection-${order.id}')">View Details</button>
+            <button id="showOrder-${order.id}" onclick="viewOrderDetails('${order.id}', 'orderDetailsSection-${order.id}')">View Details</button>
             <div id="orderDetailsSection-${order.id}" class="order-details" style="margin-top: 10px;"></div>
         `;
 
@@ -2879,9 +2874,43 @@ function renderOrders(orders) {
 }
 
 // to view a specific order's details
-function viewOrderDetails(orderId, containerId) {
-    scrollToId(containerId, 120);
-    loadOrderDetails(orderId, {
-        productsContainerId: containerId
-    });
+async function viewOrderDetails(orderId, containerId) {
+    setLoadingState(`#showOrder-${orderId}`, true);
+
+    try {
+        await loadOrderDetails(orderId, { productsContainerId: containerId });
+        scrollToId(containerId, 120);
+    } catch (err) {
+        console.error("Failed to load order details:", err);
+        showNotification("Could not load order details");
+    } finally {
+        setLoadingState(`#showOrder-${orderId}`, false);
+    }
+}
+
+//  Toggles a loading state on a button
+function setLoadingState(selector, isLoading, btnElement) {
+    let btn;
+
+    if (btnElement) {
+        btn = btnElement
+    } else if (selector.startsWith(".")) {
+        btn = document.querySelector(selector);
+    } else if (selector.startsWith("#")) {
+        btn = document.getElementById(selector.slice(1));
+    } else {
+        // Default to class if no prefix
+        btn = document.querySelector("." + selector);
+    }
+
+    if (!btn) return;
+
+    // adds a spinner and disables the button during loading
+    if (isLoading) {
+        btn.classList.add("loading");
+        btn.disabled = true;
+    } else {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+    }
 }

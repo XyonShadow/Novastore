@@ -26,89 +26,101 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-
 // SIGN UP
 const signupForm = document.getElementById("signupForm");
-if (signupForm) {
-  signupForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+signupForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setLoadingState(".login-btn", true);
 
-    const nickname = document.getElementById("signupNickname").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value.trim();
-    const confirmPassword = document.getElementById("signupConfirmPassword").value.trim();
+  const nickname = document.getElementById("signupNickname").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  const confirmPassword = document.getElementById("signupConfirmPassword").value.trim();
 
-    if (password !== confirmPassword) {
-      return showNotification("Passwords do not match");
-    }
+  if (password !== confirmPassword) {
+    setLoadingState(".login-btn", false);
+    return showNotification("Passwords do not match");
+  }
 
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCred.user, { displayName: nickname });
-      signupForm.reset();
-      closeModals();
-      showNotification("Signup successful. Welcome " + nickname);
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCred.user, { displayName: nickname });
+    signupForm.reset();
+    closeModals?.();
+    showNotification("Signup successful. Welcome " + nickname);
+    setTimeout(() => {
       window.location.href = "index.html";
-    } catch (err) {
-      showNotification("Signup error, please try again");
-      console.error("Signup error: " + err.message);
-    }
-  });
-}
+    }, 4500);
+  } catch (err) {
+    showNotification("Signup error, please try again");
+    console.error("Signup error: " + err.message);
+  } finally {
+    setLoadingState(".login-btn", false);
+  }
+});
 
 // LOGIN
 const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+loginForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setLoadingState(".login-btn", true);
 
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
-    const rememberMe = document.getElementById("rememberMe").checked;
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  const rememberMe = document.getElementById("rememberMe").checked;
 
-    const persistence = rememberMe
-      ? browserLocalPersistence
-      : browserSessionPersistence;
+  const persistence = rememberMe
+    ? browserLocalPersistence
+    : browserSessionPersistence;
 
-    try {
-      await setPersistence(auth, persistence);
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      showNotification("Welcome back " + (userCred.user.displayName || userCred.user.email));
-      loginForm.reset();
-      closeModals();
-    } catch (err) {
-      showNotification("Login error, please try again");
-      console.error("Login error: " + err.message);
-    }
-  });
-}
+  try {
+    await setPersistence(auth, persistence);
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    showNotification("Welcome back " + (userCred.user.displayName || userCred.user.email));
+    loginForm.reset();
+    closeModals?.();
+  } catch (err) {
+    showNotification("Login error, please try again");
+    console.error("Login error: " + err.message);
+  } finally {
+    setLoadingState(".login-btn", false);
+  }
+});
 
 // FORGOT PASSWORD
-const forgotPasswordLink = document.getElementById("forgotPasswordLink");
-if (forgotPasswordLink) {
-  forgotPasswordLink.addEventListener("click", () => {
-    const email = document.getElementById("loginEmail").value.trim();
+const forgotPassword = document.getElementById("forgotPassword");
+forgotPassword?.addEventListener("click", () => {
+  const email = document.getElementById("loginEmail").value.trim();
 
-    if (!email) return showNotification("Please enter your email first.");
+  if (!email) {
+    showNotification("Please enter your email first.");
+    return;
+  }
 
-    sendPasswordResetEmail(auth, email)
-      .then(() => showNotification("Password reset email sent. Check your inbox."))
-      .catch((err) => {
-        showNotification('Reset error, please try again');
-        console.error("Reset error: " + err.message)
-      });
-  });
-}
+  setLoadingState(".login-btn", true);
 
-//LOG OUT
-document.getElementById("logout-btn").addEventListener("click", (e) => {
+  sendPasswordResetEmail(auth, email)
+    .then(() => {
+      showNotification("Password reset email sent. Check your inbox.");
+    })
+    .catch((err) => {
+      showNotification("Reset error, please try again");
+      console.error("Reset error: " + err.message);
+    })
+    .finally(() => {
+      setLoadingState(".login-btn", false);
+    });
+});
+
+// LOG OUT
+document.getElementById("logout-btn")?.addEventListener("click", (e) => {
   signOut(auth)
     .then(() => {
       showNotification("User logged out");
     })
     .catch((error) => {
       showNotification('Logout error, please try again');
-      showNotification("Logout error:", error);
+      console.error("Logout error:", error);
     });
 });
 
@@ -159,13 +171,17 @@ function sendCheckoutToFirestore() {
   const items = window.checkedOutItems;
   const user = auth.currentUser;
 
+  setLoadingState(".checkout-btn", true); // Start loading
+
   if (!user) {
     showNotification("Login required to complete checkout");
+    setLoadingState(".checkout-btn", false);
     return;
   }
 
   if (!items || items.length === 0) {
     showNotification("No items to checkout");
+    setLoadingState(".checkout-btn", false);
     return;
   }
 
@@ -173,8 +189,9 @@ function sendCheckoutToFirestore() {
     id: item.id,
     name: item.name,
     quantity: item.quantity,
-    price: item.discount>0?convertPrice(item.originalPrice - (item.originalPrice * item.discount) / 100):
-      convertPrice(item.price),
+    price: item.discount > 0
+      ? convertPrice(item.originalPrice - (item.originalPrice * item.discount) / 100)
+      : convertPrice(item.price),
     variants: item.variants,
     currency: currentCurrency
   }));
@@ -185,28 +202,19 @@ function sendCheckoutToFirestore() {
     items: orderData,
     createdAt: serverTimestamp()
   })
-  // TODO: ADD LOADING FOR DELAYS
   .then(async (orderRef) => {
-
     const orderId = orderRef.id;
 
     // Save orderId inside the document
-    await updateDoc(doc(db, "orders", orderId), {
-      orderId: orderId
-    });
+    await updateDoc(doc(db, "orders", orderId), { orderId });
 
-    // Save to userOrderIds array
     const orderSnap = await getDoc(doc(db, "orders", orderId));
     const orderData = orderSnap.data();
     const createdAt = orderData.createdAt?.toDate().toISOString() || new Date().toISOString();
 
     // Save to localStorage with timestamp
     let orderHistory = JSON.parse(localStorage.getItem("userOrderIds")) || [];
-    orderHistory.push({
-      orderId,
-      createdAt
-    });
-  
+    orderHistory.push({ orderId, createdAt });
     localStorage.setItem("userOrderIds", JSON.stringify(orderHistory));
 
     showNotification("Order submitted!");
@@ -215,9 +223,10 @@ function sendCheckoutToFirestore() {
       // animate items going out
       if (index !== -1) {
         const itemElement = document.getElementById('cartItems').getElementsByClassName('cart-product')[index];
-        itemElement.classList.add('slide-out');
+        itemElement?.classList.add('slide-out');
       }
     });
+  
     window.checkedOutItems = []; // clear items after sending
 
     // re render and update
@@ -229,12 +238,15 @@ function sendCheckoutToFirestore() {
       // Redirect to thank-you page with order ID
       window.location.href = `thank-you.html?orderId=${orderId}`;
     }, 500);
-    console.log("Checkout Items from script.js:", window.checkedOutItems);
 
+    console.log("Checkout Items from script.js:", window.checkedOutItems);
   })
   .catch(err => {
     console.error("Error submitting order:", err);
     showNotification("Failed to submit order.");
+  })
+  .finally(() => {
+    setLoadingState(".checkout-btn", false);
   });
 }
 
