@@ -2799,17 +2799,23 @@ function initOrderPage(){
 
 /* For the order history page */
 async function loadUserOrders() {
+    const orderList = document.getElementById('orderList');
+    if(orderList) orderList.innerHTML = '<p style="display: flex; align-items:center; gap:30px"center"><strong> Loading your orders...</strong><span class="loading"></span></p>';
+
     user = await window.waitForUserAuth();
     if(!user){
         orderList.innerHTML = '<p>Log in and try again later</p>';
         return;
     }
 
-    // Calls the function to fetch orders
-    window.getUserOrders().then(renderOrders).catch(err => {
+    try {
+        const orders = await window.getUserOrders(); // fetches orders
+        renderOrders(orders); // renders with the fetched orders
+    } catch (err) {
         console.error("Failed to load user orders:", err);
+        orderList.innerHTML = '<p>Error loading your orders. Please try again later.</p>';
         showNotification("Error loading your orders. Please try again.");
-    });
+    }
 }
 
 // Renders order objects into the #orderList section
@@ -2820,7 +2826,7 @@ function renderOrders(orders) {
 
     // if no orders exist
     if (!Array.isArray(orders) || orders.length === 0) {
-        orderList.innerHTML = '<p>No orders found. <a style="text-decoration: underline;" href="cart.html">View all products</a></p>';
+        orderList.innerHTML = '<p>No orders found. <a style="text-decoration: underline;" href="cart.html">Place an Order Now</a></p>';
         showNotification("You haven't placed any Orders yet");
         return;
     }

@@ -136,12 +136,14 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("openLoginModal").style.display = "none";
     document.getElementById("openSignupModal").style.display = "none";
     document.getElementById("logout-btn").style.display = "block";
+    document.getElementById("viewOrdersLink").style.display = "block";
   } else {
     // User is signed out
     document.getElementById("userNickname").textContent = 'Guest';
     document.getElementById("openLoginModal").style.display = "block";
     document.getElementById("openSignupModal").style.display = "block";
     document.getElementById('logout-btn').style.display = 'none'
+    document.getElementById("viewOrdersLink").style.display = "none";
   }
 
   // Wait for auth to resolve before revealing UI
