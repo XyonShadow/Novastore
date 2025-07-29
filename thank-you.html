@@ -218,7 +218,7 @@
                     <span data-star="5">☆</span>
                 </div>
                 <textarea id="reviewMessage" class="review-textarea" placeholder="Share your experience with these products..." required></textarea>
-                <button class="btn btn-primary" id="submitReviewBtn" style="margin-top: 10px;">Submit Review</button>
+                <button class="btn" id="submitReviewBtn" style="margin-top: 10px;">Submit Review</button>
             </div>
         </section>
 
@@ -249,7 +249,7 @@
                     <input spellcheck="false" id="billingAddressInput" type="text" placeholder="123 Demo Street, Demo City, DC 12345"> 
                 </div>
                 <div class="full-width">
-                    <button type="submit" class="btn btn-primary" style="margin: 10px 0;">💾 Update Payment Info</button>
+                    <button type="submit" class="btn" style="margin: 10px 0;">💾 Update Payment Info</button>
                 </div>
             </form>
             <p style="color: var(--text-muted); font-size: 10px; margin-top: 10px; margin-left: 10px;">
@@ -319,7 +319,7 @@
                 
                 <label for="yourMessage">Message<span>*</span></label>
                 <textarea name="" id="yourMessage" cols="10" rows="7" placeholder="How we can help you?" required></textarea>
-                <input type="submit" value="Submit" class="send">
+                <button type="submit" class="send">Send</button>
             </form>
         </div>
     </div>
@@ -344,11 +344,11 @@
 
                 <div class="loginoptions">
                     <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-                    <a id="forgotPasswordLink">Forgot password?</a>
+                    <button type="button" id="forgotPassword">Forgot Password?</button>
                 </div>
 
                 <button type="submit" class="login-btn">Login</button>
-                <p class="register-link">Don't have an account? <a>Register</a></p>
+                <p class="register-link">Don't have an account? <button type="button" id="switchToSignup">Register</button></p>
             </form>
         </div>
     </div>
@@ -357,6 +357,9 @@
     <div class="overlay hidden"></div>
     <div class="login-modal modal" id="signupModal">
         <div class="login-container">
+            <button class="modal-close-btn" title="Close Contact Form">
+                <i class="ri-close-line"></i>
+            </button>
             <h2>Register</h2>
             <form id="signupForm">
                 <div class="input-group">
@@ -377,7 +380,7 @@
                 </div>
 
                 <button type="submit" class="login-btn">Create Account</button>
-                <p class="register-link">Already have an account? <a>Login</a></p>
+                <p class="register-link">Already have an account? <button type="button" id="switchToLogin">Login</button></p>
             </form>
         </div>
     </div>

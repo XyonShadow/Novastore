@@ -190,7 +190,7 @@
                 
                 <label for="yourMessage">Message<span>*</span></label>
                 <textarea name="" id="yourMessage" cols="10" rows="7" placeholder="How we can help you?" required></textarea>
-                <input type="submit" value="Submit" class="send">
+                <button type="submit" class="send">Send</button>
             </form>
         </div>
     </div>
@@ -215,11 +215,11 @@
 
                 <div class="loginoptions">
                     <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-                    <a id="forgotPasswordLink">Forgot password?</a>
+                    <button type="button" id="forgotPassword">Forgot Password?</button>
                 </div>
 
                 <button type="submit" class="login-btn">Login</button>
-                <p class="register-link">Don't have an account? <a>Register</a></p>
+                <p class="register-link">Don't have an account? <button type="button" id="switchToSignup">Register</button></p>
             </form>
         </div>
     </div>
@@ -228,6 +228,9 @@
     <div class="overlay hidden"></div>
     <div class="login-modal modal" id="signupModal">
         <div class="login-container">
+            <button class="modal-close-btn" title="Close Contact Form">
+                <i class="ri-close-line"></i>
+            </button>
             <h2>Register</h2>
             <form id="signupForm">
                 <div class="input-group">
@@ -248,7 +251,7 @@
                 </div>
 
                 <button type="submit" class="login-btn">Create Account</button>
-                <p class="register-link">Already have an account? <a>Login</a></p>
+                <p class="register-link">Already have an account? <button type="button" id="switchToLogin">Login</button></p>
             </form>
         </div>
     </div>
