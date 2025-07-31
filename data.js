@@ -1,4 +1,4 @@
-const products = [
+let products = [
   // Computers
   { id: 1, name: "Desktop PC Pro", price: 250000, category: "Computers", image: "images/computers/desktop.jpg" },
   { id: 2, name: "All-in-One Touch", price: 320000, category: "Computers", image: "images/computers/allinone.jpg" },
@@ -89,5 +89,25 @@ const products = [
   { id: 59, name: "Power Bank 20000mAh", price: 18000, category: "Power", image: "images/power/powerbank.jpg" },
   { id: 60, name: "Generator 3.5KVA", price: 230000, category: "Power", image: "images/power/generator.jpg" }
 ];
+
+// random promotions
+const promoOptions = [
+  { discount: 15, badges: ["Hot Deal"] },
+  { discount: 25, badges: ["Clearance"] },
+  { discount: 10, badges: ["Limited Stock"] },
+  { discount: 30, badges: ["Big Sale"] }
+];
+
+// Assign random promo once when defining the products
+products = products.map(product => {
+  const promo = promoOptions[Math.floor(Math.random() * promoOptions.length)];
+  return {
+    ...product,
+    discount: promo.discount,
+    badges: promo.badges,
+    selectedColor: 'Default',
+    selectedModel: 'Standard'
+  };
+});
 
 //TODO: IMPLEMENT BACKEND FETCHING

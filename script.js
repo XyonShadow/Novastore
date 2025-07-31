@@ -1006,15 +1006,12 @@ function handleCurrencyChange(){
 
     // update price text in the DOM
     products.forEach(product => {
-        const cartItem = cart.find(item => item.id === product.id);
-        const discount = cartItem?.discount || 0;
-
         const card = document.querySelector(`[data-id="${product.id}"]`);
         if (card) {
             const priceTag = card.querySelector('.product-price');
-            const discountTag = card.querySelector('.discounted-price');
-            const currentPrice = product.price - (product.price * discount) / 100;
-            
+            const discountTag = card.querySelector('.discounted-price')
+            const currentPrice = product.price * (1 - product.discount / 100);
+
             if (priceTag) {
                 priceTag.innerHTML = `
                     <i class="currency-icon"></i>${product.price.toLocaleString()}
@@ -1026,14 +1023,24 @@ function handleCurrencyChange(){
                 `;
             }
         }
+        if(document.getElementById('currentPrice')) {
+            document.getElementById('currentPrice').innerHTML = `
+                <i class="currency-icon"></i>${currentProduct.price.toLocaleString()}
+            `;
+        }
+        if(document.getElementById('discountedPrice')) {
+            if (currentProduct.discount <= 0) {
+                document.getElementById('discountedPrice').style.display = 'none';
+            }
+            const currentPrice = currentProduct.price * (1 - currentProduct.discount / 100);
+            document.getElementById('discountedPrice').innerHTML = `
+                <i class="currency-icon"></i>${currentPrice.toLocaleString()}
+            `;
+        }
         updateCurrencyIcons();
     });
 
     if(window.location.href.includes('checkout.html')) updateSummary();
-    // Update price in products page
-    const originalPrice = Math.floor(currentProduct.price * 1.2);
-    if(document.getElementById('currentPrice')) document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
-    if(document.getElementById('originalPrice')) document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
     updateCurrencyIcons();
 }
 
@@ -1042,16 +1049,7 @@ function addToCart(id, btnElement = null, event) {
 
     const product = products.find(p => p.id === id); // find the product
     if (!product) return console.warn(`Product with ID ${id} not found`);
-
-    // random promotions
-    const promoOptions = [
-        { discount: 15, badges: ["Hot Deal"] },
-        { discount: 25, badges: ["Clearance"] },
-        { discount: 10, badges: ["Limited Stock"] },
-        { discount: 30, badges: ["Big Sale"] }
-    ];
-    const randomPromo = promoOptions[Math.floor(Math.random() * promoOptions.length)];
-
+   
     // Check if already in cart with same variants
     const existing = cart.find(p =>
         p.id === id &&
@@ -1063,12 +1061,8 @@ function addToCart(id, btnElement = null, event) {
         // Add product with selected options
         const productWithOptions = {
             ...product,
-            selectedColor,
-            selectedModel,
             variants: [selectedColor, selectedModel],
             selected: true,
-            discount: randomPromo.discount,
-            badges: randomPromo.badges,
             quantity
         };
 
@@ -1223,7 +1217,7 @@ if(cartPanel) {
     cartPanel.addEventListener('touchend', (e) => {
     const endX = e.changedTouches[0].clientX;
     if (startX - endX > 50) {
-        closeCart();
+        toggleCart();
     }
     });
 }
@@ -1264,7 +1258,7 @@ function renderCartItems() {
         cartInfo.addEventListener('click', () => {
             const productId = cartInfo.getAttribute('data-id');
             scrollToProductById(productId, 'glowhighlighted');
-            closeCart();
+            toggleCart();
         });
 
         const removeBtn = itemDiv.querySelector('.remove-cart-item');
@@ -1864,12 +1858,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const productId = parseInt(urlParams.get('product')) || 1;
 const currentProduct = products.find(p => p.id === productId) || products[0];
 
-let selectedColor = 'default';
-let selectedModel = 'standard';
+let selectedColor = 'Default';
+let selectedModel = 'Standard';
 let quantity = 1;
 
 // Color options
-const colors = ['Black', 'Blue', 'Red', 'Green', 'Purple', 'White'];
+const colors = ['Default', 'Blue', 'Red', 'Green', 'Purple', 'White'];
 const models = ['Standard', 'Pro', 'Max', 'Ultra', 'Premium'];
 
 function renderStars(rating) {
@@ -1939,9 +1933,10 @@ function initializeProduct() {
     document.getElementById('soldCount').textContent = `${soldCount} sold`;
     
     // Update price
-    const originalPrice = Math.floor(currentProduct.price * 1.2);
+    const discountedPrice = currentProduct.price * (1 - currentProduct.discount / 100);
+    document.getElementById('productDiscount').textContent  = currentProduct.discount;
     document.getElementById('currentPrice').innerHTML = `<i class="currency-icon"></i>${currentProduct.price.toLocaleString()}`
-    document.getElementById('originalPrice').innerHTML = `<i class="currency-icon"></i>${originalPrice.toLocaleString()}`;
+    document.getElementById('discountedPrice').innerHTML = `<i class="currency-icon"></i>${discountedPrice.toLocaleString()}`;
     
     // Generate thumbnails
     const thumbnailList = document.getElementById('thumbnailList');
@@ -2075,6 +2070,7 @@ function generateRandomReviews(count = 6) {
     return reviews;
 }
 
+// to format date to YYYY-MM-DD
 function formatReviewDate(time) {
     let date;
 
@@ -2093,7 +2089,6 @@ function formatReviewDate(time) {
 
     return `${yyyy}-${mm}-${dd}`;
 }
-
 
 // for review generation to the page
 async function generateReviews(mode) {
