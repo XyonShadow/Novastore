@@ -354,6 +354,18 @@
                 <button type="submit" class="login-btn">Login</button>
                 <p class="register-link">Don't have an account? <button type="button" id="switchToSignup">Register</button></p>
             </form>
+
+            <p class="help-link">
+                Having trouble logging in? <a href="login.html">Go to login page</a>
+            </p>
+            
+            <div class="divider"><span>or continue with</span></div>
+
+            <div class="social-login">
+            <button class="social-btn" id="googleLoginBtn">
+                <i class="ri-google-fill"></i> Google
+            </button>
+            </div>
         </div>
     </div>
 
@@ -365,27 +377,61 @@
                 <i class="ri-close-line"></i>
             </button>
             <h2>Register</h2>
+            
             <form id="signupForm">
                 <div class="input-group">
                     <input spellcheck="false" id="signupNickname" type="text" placeholder="Nickname" required />
                     <i class="ri-user-line icon"></i>
                 </div>
+                <div id="nicknameError" class="field-error"></div>
+
                 <div class="input-group">
                     <input spellcheck="false" id="signupEmail" type="text" placeholder="Email" required />
                     <i class="ri-mail-open-line icon"></i> 
                 </div>
+                <div id="emailError" class="field-error"></div>
+
                 <div class="input-group">
                     <input spellcheck="false" id="signupPassword" type="password" placeholder="Password" required />
                     <i class="ri-lock-line icon"></i>
                 </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <div class="strength-text">Password strength: <span id="strengthText">Enter password</span></div>
+                </div>
+                <div id="passwordError" class="field-error"></div>
+
                 <div class="input-group">
                     <input spellcheck="false" id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
                     <i class="ri-lock-2-line icon"></i>
                 </div>
+                <div id="confirmPasswordError" class="field-error"></div>
+
+                <div class="terms-checkbox">
+                    <input spellcheck="false" type="checkbox" id="agreeTerms" required />
+                    <label for="agreeTerms">
+                        I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+                <div id="termsError" class="field-error"></div>
 
                 <button type="submit" class="login-btn">Create Account</button>
                 <p class="register-link">Already have an account? <button type="button" id="switchToLogin">Login</button></p>
             </form>
+
+            <p class="help-link">
+                Having trouble logging in? <a href="register.html">Go to signup page</a>
+            </p>
+            
+            <div class="divider"><span>or sign up with</span></div>
+
+            <div class="social-login">
+                <button class="social-btn" id="googleLoginBtn">
+                    <i class="ri-google-fill"></i> Google
+                </button>
+            </div>
         </div>
     </div>
 
