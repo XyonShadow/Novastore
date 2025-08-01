@@ -7,7 +7,9 @@ import {
   sendPasswordResetEmail,
   setPersistence,
   browserLocalPersistence,
-  browserSessionPersistence
+  browserSessionPersistence,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 import { auth, db } from "./firebase.js";
@@ -26,42 +28,31 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// SIGN UP
-const signupForm = document.getElementById("signupForm");
-signupForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  setLoadingState(".login-btn", true);
+// Globals
+const excludedPages = ['login.html', 'register.html'];
+const isExcluded = excludedPages.some(page => window.location.href.includes(page));
 
-  const nickname = document.getElementById("signupNickname").value.trim();
-  const email = document.getElementById("signupEmail").value.trim();
-  const password = document.getElementById("signupPassword").value.trim();
-  const confirmPassword = document.getElementById("signupConfirmPassword").value.trim();
-
-  if (password !== confirmPassword) {
-    setLoadingState(".login-btn", false);
-    return showNotification("Passwords do not match");
-  }
-
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(userCred.user, { displayName: nickname });
-    signupForm.reset();
-    closeModals?.();
-    showNotification("Signup successful. Welcome " + nickname);
+// Redirect after login/signup
+function handleRedirect() {
+  if (isExcluded) {
     setTimeout(() => {
-      window.location.href = "index.html";
-    }, 4500);
-  } catch (err) {
-    showNotification("Signup error, please try again");
-    console.error("Signup error: " + err.message);
-  } finally {
-    setLoadingState(".login-btn", false);
+      const referrer = document.referrer;
+      const isSameOrigin = referrer && referrer.includes(window.location.origin);
+      const isAuthPage = referrer?.includes("login.html") || referrer?.includes("register.html");
+
+      if (isSameOrigin && !isAuthPage) {
+        window.history.back();
+      } else {
+        window.location.href = "index.html";
+      }
+    }, 1500);
+  } else {
+    closeModals?.();
   }
-});
+}
 
 // LOGIN
-const loginForm = document.getElementById("loginForm");
-loginForm?.addEventListener("submit", async (e) => {
+document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   setLoadingState(".login-btn", true);
 
@@ -69,90 +60,190 @@ loginForm?.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value.trim();
   const rememberMe = document.getElementById("rememberMe").checked;
 
-  const persistence = rememberMe
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
 
   try {
     await setPersistence(auth, persistence);
     const userCred = await signInWithEmailAndPassword(auth, email, password);
     showNotification("Welcome back " + (userCred.user.displayName || userCred.user.email));
     loginForm.reset();
-    closeModals?.();
+    handleRedirect();
   } catch (err) {
-    showNotification("Login error, please try again");
-    console.error("Login error: " + err.message);
+    showNotification("Login error: " + err.message);
   } finally {
     setLoadingState(".login-btn", false);
   }
 });
 
-// FORGOT PASSWORD
-const forgotPassword = document.getElementById("forgotPassword");
-forgotPassword?.addEventListener("click", () => {
-  const email = document.getElementById("loginEmail").value.trim();
+// GOOGLE LOGIN
+document.getElementById("googleLoginBtn")?.addEventListener("click", () => {
+  setLoadingState('.social-btn', true);
+  const provider = new GoogleAuthProvider();
 
-  if (!email) {
-    showNotification("Please enter your email first.");
-    return;
-  }
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      showNotification(`Welcome ${user.displayName || 'User'}`);
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      showNotification("Google login failed: " + error.message);
+    })
+    .finally(() => {
+      setLoadingState('.social-btn', false);
+    });
+});
+
+// LOGOUT
+document.getElementById("logout-btn")?.addEventListener("click", () => {
+  signOut(auth)
+    .then(() => showNotification("User logged out"))
+    .catch((err) => {
+      showNotification("Logout error: " + err.message);
+    });
+});
+
+// FORGOT PASSWORD
+document.getElementById("forgotPassword")?.addEventListener("click", () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  if (!email) return showNotification("Please enter your email first.");
 
   setLoadingState(".login-btn", true);
 
   sendPasswordResetEmail(auth, email)
-    .then(() => {
-      showNotification("Password reset email sent. Check your inbox.");
-    })
-    .catch((err) => {
-      showNotification("Reset error, please try again");
-      console.error("Reset error: " + err.message);
-    })
-    .finally(() => {
-      setLoadingState(".login-btn", false);
-    });
+    .then(() => showNotification("Password reset email sent."))
+    .catch((err) => showNotification("Reset error: " + err.message))
+    .finally(() => setLoadingState(".login-btn", false));
 });
 
-// LOG OUT
-document.getElementById("logout-btn")?.addEventListener("click", (e) => {
-  signOut(auth)
-    .then(() => {
-      showNotification("User logged out");
-    })
-    .catch((error) => {
-      showNotification('Logout error, please try again');
-      console.error("Logout error:", error);
-    });
+// VALIDATION UTILITIES
+const validators = {
+  nickname: (val) => /^[\w]{3,20}$/.test(val),
+  email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+  password: (val) => val.length >= 8,
+  confirmPassword: (val) => val === document.getElementById('signupPassword').value
+};
+
+function validateField(fieldId, errorId, validator, errorMessage) {
+  const field = document.getElementById(fieldId);
+  const errorDiv = document.getElementById(errorId);
+  const isValid = validator(field.value);
+
+  field.classList.toggle('input-error', !isValid);
+  field.classList.toggle('input-success', isValid);
+  errorDiv.textContent = !isValid ? errorMessage : "";
+  errorDiv.classList.toggle('visible', !isValid);
+
+  return isValid;
+}
+
+// PASSWORD STRENGTH
+function checkPasswordStrength(password) {
+  const strengthIndicator = document.getElementById('passwordStrength');
+  const strengthText = document.getElementById('strengthText');
+  if (!password) return strengthIndicator.style.display = 'none';
+
+  strengthIndicator.style.display = 'block';
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  const classes = ['strength-weak', 'strength-medium', 'strength-strong'];
+  strengthIndicator.classList.remove(...classes);
+
+  let level = score < 3 ? 'weak' : score < 5 ? 'medium' : 'strong';
+  strengthIndicator.classList.add(`strength-${level}`);
+  strengthText.innerHTML = `Password strength: <span>${level.charAt(0).toUpperCase() + level.slice(1)}</span>`;
+}
+
+// Real-Time Validation
+document.getElementById('signupNickname')?.addEventListener('input', () => {
+  validateField('signupNickname', 'nicknameError', validators.nickname, 'Nickname must be 3-20 characters')
 });
 
-// checks if user is logged in
-let authChecked = false;
+document.getElementById('signupEmail')?.addEventListener('input', () => {
+  validateField('signupEmail', 'emailError', validators.email, 'Enter a valid email')
+});
 
+document.getElementById('signupPassword')?.addEventListener('input', function () {
+  checkPasswordStrength(this.value);
+  validateField('signupPassword', 'passwordError', validators.password, 'Password too short');
+
+  const confirmPassword = document.getElementById('signupConfirmPassword');
+  if (confirmPassword.value) {
+    validateField('signupConfirmPassword', 'confirmPasswordError', validators.confirmPassword, 'Passwords do not match');
+  }
+});
+
+document.getElementById('signupConfirmPassword')?.addEventListener('input', () => {
+  validateField('signupConfirmPassword', 'confirmPasswordError', validators.confirmPassword, 'Passwords do not match')
+});
+
+// SIGNUP
+document.getElementById("signupForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setLoadingState(".login-btn", true);
+
+  const nickname = document.getElementById("signupNickname").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  const agreeTerms = document.getElementById("agreeTerms").checked;
+
+  let isValid =
+    validateField('signupNickname', 'nicknameError', validators.nickname, 'Nickname must be 3-20 characters, no spaces') &&
+    validateField('signupEmail', 'emailError', validators.email, 'Invalid email format') &&
+    validateField('signupPassword', 'passwordError', validators.password, 'Password must be at least 8 characters') &&
+    validateField('signupConfirmPassword', 'confirmPasswordError', validators.confirmPassword, 'Passwords do not match');
+
+  if (!agreeTerms) {
+    termsError.textContent = 'You must agree to the terms';
+    termsError.style.display = 'block';
+    isValid = false;
+  }
+
+  if (!isValid) {
+    showNotification('Fix errors above', 'error');
+    setLoadingState(".login-btn", false);
+    return;
+  }
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCred.user, { displayName: nickname });
+    showNotification("Signup successful. Welcome " + nickname);
+    signupForm.reset();
+    handleRedirect();
+  } catch (err) {
+    showNotification("Signup error: " + err.message);
+  } finally {
+    setLoadingState(".login-btn", false);
+  }
+});
+
+// Auth State Handler
+window.authChecked = false;
 onAuthStateChanged(auth, (user) => {
   window.currentUser = user;
   authChecked = true;
-  if (user) {
-    const nickname = user.displayName || "User";
-    document.getElementById("userNickname").textContent = nickname;
-    document.getElementById("openLoginModal").style.display = "none";
-    document.getElementById("openSignupModal").style.display = "none";
-    document.getElementById("logout-btn").style.display = "block";
-    document.getElementById("viewOrdersLink").style.display = "block";
-  } else {
-    // User is signed out
-    document.getElementById("userNickname").textContent = 'Guest';
-    document.getElementById("openLoginModal").style.display = "block";
-    document.getElementById("openSignupModal").style.display = "block";
-    document.getElementById('logout-btn').style.display = 'none'
-    document.getElementById("viewOrdersLink").style.display = "none";
+
+  if (!isExcluded) {
+    document.getElementById("userNickname").textContent = user?.displayName || "Guest";
+    document.getElementById("openLoginModal").style.display = user ? "none" : "block";
+    document.getElementById("openSignupModal").style.display = user ? "none" : "block";
+    document.getElementById("logout-btn").style.display = user ? "block" : "none";
+    document.getElementById("viewOrdersLink").style.display = user ? "block" : "none";
   }
 
-  // Wait for auth to resolve before revealing UI
-  document.documentElement.classList.remove('loading');
+  document.documentElement.classList.remove("loading");
 });
 
 // Prevent UI from getting stuck if Firebase auth fails
 setTimeout(() => {
-  if (!authChecked) {
+  if (!window.authChecked) {
     console.log("Firebase auth check did not complete.");
     document.documentElement.classList.remove('loading'); // prevent infinite loading
   }
