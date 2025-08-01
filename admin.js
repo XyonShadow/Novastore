@@ -1,6 +1,6 @@
 // admin.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 // Config from Firebase console
@@ -16,6 +16,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// Check if user is admin
+async function protectAdminPage() {
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const data = userDoc.data();
+
+        if (!userDoc.exists() || data.role !== "admin") {
+            window.location.href = "index.html";
+        }
+
+        if (data.role === "admin") document.documentElement.classList.remove('loading');
+    });
+}
+
+window.addEventListener("DOMContentLoaded", protectAdminPage);
 
 function formatTimestamp(timestamp) {
     if (!timestamp || !timestamp.toDate) return 'N/A';
