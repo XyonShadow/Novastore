@@ -32,8 +32,31 @@ import {
 const excludedPages = ['login.html', 'register.html'];
 const isExcluded = excludedPages.some(page => window.location.href.includes(page));
 
+// To check if user is admin
+async function checkUserRole(user) {
+  const userDocRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userDocRef);
+
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    return data.role === "admin";
+  } else {
+    return false;
+  }
+}
+
 // Redirect after login/signup
-function handleRedirect() {
+async function handleRedirect() {
+  const user = auth.currentUser;
+  if (user) {
+    const isAdmin = await checkUserRole(user);
+    if (isAdmin) {
+      console.log('im called')
+      window.location.href = "admin.html";
+      return;
+    }
+  }
+
   if (isExcluded) {
     setTimeout(() => {
       const referrer = document.referrer;
@@ -226,7 +249,7 @@ document.getElementById("signupForm")?.addEventListener("submit", async (e) => {
 
 // Auth State Handler
 window.authChecked = false;
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   window.currentUser = user;
   authChecked = true;
 
