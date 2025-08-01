@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - NovaStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <a href="#" class="back-btn" onclick="goBack()" title="Go Back">
+        <i class="ri-arrow-left-line"></i>
+    </a>
+    
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+    <div class="login-container">
+        <div class="logo">
+            <h1>Novastore</h1>
+            <p>Welcome back! Please sign in to your account</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input id="loginEmail" type="email" placeholder="Email" required />
+                <i class="ri-user-line icon"></i>
+            </div>
+            <div class="input-group">
+                <input id="loginPassword" type="password" placeholder="Password" required />
+                <i class="ri-lock-2-line icon"></i>
+            </div>
+
+            <div class="loginoptions">
+                <label>
+                    <input type="checkbox" id="rememberMe" /> Remember me
+                </label>
+                <button type="button" id="forgotPassword">Forgot Password?</button>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginButton">Login</button>
+            
+            <p class="register-link">
+                Don't have an account? <a href="register.html">Register</a>
+            </p>
+        </form>
+
+        <div class="divider"><span>or continue with</span></div>
+
+        <div class="social-login">
+            <button class="social-btn" id="googleLoginBtn">
+                <i class="ri-google-fill"></i> Google
+            </button>
+        </div>
+    </div>
+
+    <script src="registerform.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+</html>
