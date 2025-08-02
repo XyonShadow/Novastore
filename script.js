@@ -1,3 +1,60 @@
+// Animate title on load
+window.addEventListener("DOMContentLoaded", () => {
+    const intros = {
+        "NovaStore - Tech, Gadgets, Cars and More": "Browsing the future with",
+        "Login - NovaStore": "Unlock your NovaStore at",
+        "Register - NovaStore": "Start your journey with",
+        "Your Cart | NovaStore": "Packing your dreams at",
+        "Checkout | Novastore": "Almost there! Final step at",
+        "Order History | NovaStore": "Your past purchases at",
+        "Product | NovaStore": "Discover more on",
+        "Thank You for Your Order - NovaStore": "",
+    };
+
+    const originalTitle = document.title;
+    const intro = intros[originalTitle] || "Welcome to";
+    const scrollTitle = `${intro} ${originalTitle}   `;
+
+    const speed = Math.max(150, 600 - scrollTitle.length * 5);
+
+    function startScroll() {
+        let i = 0; // Position index for scrolling the title
+        let scrollCount = 0; // Track how many full scroll loops completed
+        let interval; // Reference to the timeout
+
+        // handles each step of the title scroll animation
+        function scrollStep() {
+            if (document.hidden) return; // If tab is not visible, pause the animation
+
+            // Rotate the title text by slicing
+            document.title = scrollTitle.slice(i) + scrollTitle.slice(0, i);
+            i = (i + 1) % scrollTitle.length;
+
+            // If one full scroll loop is completed, increment count
+            if (i === 0) scrollCount++;
+
+            // If scrollCount is less than 1, continue else restore the original title after scrolling
+            if (scrollCount < 1) {
+                interval = setTimeout(scrollStep, speed);
+            } else {
+                document.title = originalTitle;
+            }
+        }
+
+        scrollStep(); // start the scroll
+
+        // Listen for tab visibility changes
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden && scrollCount < 1) {
+                clearTimeout(interval);
+                scrollStep(); // Resume scrolling when tab becomes visible
+            }
+        });
+    }
+
+    startScroll();
+});
+
 const searchInput = document.getElementById('searchInput');
 const searchIcon = document.querySelector('.search-bar .ri-search-line');
 const searchBar = document.querySelector('.search-bar');
