@@ -262,7 +262,7 @@ header {
     top: calc(100% + 2.5px);
     left: 0;
     right: 0;
-    z-index: 30;
+    z-index: 300;
     cursor: default;
     opacity: 0;
     padding: 0.5rem;
@@ -347,7 +347,7 @@ header {
     background-size: 300% 300%;
 }
 
-.sigh{
+.sigh {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -355,8 +355,14 @@ header {
     font-size: 14px;
     white-space: nowrap;
 }
-.sigh i{
+
+.sigh i {
     font-size: 1rem;
+}
+
+.sigh > span{
+    display: flex;
+    align-items: center;
 }
 
 .user-dropdown .options{
@@ -402,6 +408,15 @@ header {
     font-size: 14px;
 }
 
+#userNickname {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-left: 4px;
+}
+
 #logout-btn{
     display: none;
 }
@@ -438,6 +453,11 @@ header {
 
     .user-dropdown{
         margin-left: auto;
+        margin: 0 -0.5rem;
+    }
+
+    #userNickname {
+        max-width: 60px;
     }
 
     .searchIcon{
@@ -2078,7 +2098,7 @@ footer .footer-icons a:hover {
 
 .strength-text {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .strength-weak .strength-fill { 
@@ -2149,7 +2169,7 @@ footer .footer-icons a:hover {
     text-align: center;
     margin: 1rem 0;
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-main);
 }
 
 .divider span::before {

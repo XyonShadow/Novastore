@@ -255,6 +255,7 @@ onAuthStateChanged(auth, async (user) => {
 
   if (!isExcluded) {
     document.getElementById("userNickname").textContent = user?.displayName || "Guest";
+    document.getElementById("userNickname").title = 'Hi, ' + user?.displayName || "Guest";
     document.getElementById("openLoginModal").style.display = user ? "none" : "block";
     document.getElementById("openSignupModal").style.display = user ? "none" : "block";
     document.getElementById("logout-btn").style.display = user ? "block" : "none";
