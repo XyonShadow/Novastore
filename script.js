@@ -291,8 +291,8 @@ function setCardHtml(container){
         const currentPrice = p.price * (1 - (p.discount || 0) / 100);
         return `
             <div class="product-card card" data-id="${p.id}" onclick="goTo('${p.category}', '${p.id}')">
-                <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
-                <h4 class="product-title">${p.name}</h4>
+                <img src="./Assets/car1.jpg" alt="${p.name}"/>
+                <h4>${p.name}</h4>
                 
                 <div class="card-info">
                     <p>Discover the latest in ${p.category}</p>
@@ -302,7 +302,7 @@ function setCardHtml(container){
                 <div class="price-container">
                     ${p.discount ? `
                         <span class="discounted-price current-price"><i class="currency-icon"></i>${currentPrice.toLocaleString()}</span>
-                        <span class="product-price original-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</span>
+                        <span class="product-price main-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</span>
                     ` : `
                         <span class="product-price current-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</span>
                     `}
@@ -880,14 +880,14 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             const currentPrice = product.price * (1 - (product.discount || 0) / 100);
 
             card.innerHTML = `
-                <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
-                <h4 class="product-title">
+                <img src="./Assets/car1.jpg" alt="${product.name}"/>
+                <h4>
                     ${product.name} ${isInCart ? '<span class="cart-badge">In Cart</span>' : ''}
                 </h4>
                 <div class="price-container">
                     ${product.discount > 0 ? `
                         <span class="discounted-price current-price"><i class="currency-icon"></i> ${currentPrice.toLocaleString()}</span>
-                        <span class="product-price original-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>
+                        <span class="product-price main-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>
                     ` : `
                         <span class="product-price current-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>
                     `}
@@ -901,7 +901,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
                     <span class="rating-count">${product.reviewCount || 0}</span>
                 </div>
                 <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
-                    🛒 Add To Cart
+                    <i class="fa-solid fa-cart-plus"></i> Add To Cart
                 </button>
             `;
         } else {
@@ -910,11 +910,11 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             const currentPrice = product.price * (1 - product.discount / 100);
 
             card.innerHTML = `
-                <img src='./Assets/car1.jpg' alt="${product.name}" class="product-image" />
-                <h4 class="product-title">${product.name}</h4>
+                <img src='./Assets/car1.jpg' alt="${product.name}"/>
+                <h4>${product.name}</h4>
                 <div class="price-container">
                     ${product.discount>0?`<span class="discounted-price current-price"><i class="currency-icon"></i> ${currentPrice.toLocaleString()}</span>
-                    <span class="product-price original-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>`:
+                    <span class="product-price main-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>`:
                     `<span class="product-price current-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>`}
                     ${product.unitsSold ? `<span class="units-sold">${product.unitsSold} sold</span>` : ''}
                 </div>
@@ -926,7 +926,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
                     <span class="rating-count">${product.reviewCount || 0}</span>
                 </div>
                 <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
-                    🛒 Add To Cart
+                    <i class="fa-solid fa-cart-plus"></i> Add To Cart
                 </button>
             `;
         }
@@ -1204,12 +1204,10 @@ function addToCart(id, btnElement = null, event) {
 
     // UI feedback for the button
     if (btnElement) {
-        btnElement.style.background = '#28a745';
         btnElement.disabled = true;
 
         setTimeout(() => {
-            btnElement.innerHTML = 'Add to Cart';
-            btnElement.style.background = 'var(--accent-color)';
+            btnElement.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add To Cart';
             btnElement.disabled = false;
             // Re-render cart if on checkout page
             if (window.location.href.includes('checkout.html')) {
@@ -2350,12 +2348,12 @@ function renderRelatedProducts(mode = 'product') {
 
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${p.name}" class="item-image" />
-                <strong class="product-title" style="color: var(--text-main);">${p.name}</strong>
+                <strong style="color: var(--text-main);">${p.name}</strong>
                 
                 <div class="price-container" style="margin: 5px 0;">
                     ${p.discount ? `
                         <span class="discounted-price current-price"><i class="currency-icon"></i> ${convertPrice(currentPrice).toLocaleString()}</span>
-                        <span class="product-price original-price"><i class="currency-icon"></i> ${convertPrice(p.originalPrice).toLocaleString()}</span>
+                        <span class="product-price main-price"><i class="currency-icon"></i> ${convertPrice(p.originalPrice).toLocaleString()}</span>
                     ` : `
                         <span class="product-price current-price"><i class="currency-icon"></i> ${convertPrice(p.originalPrice).toLocaleString()}</span>
                     `}
@@ -2370,7 +2368,7 @@ function renderRelatedProducts(mode = 'product') {
                 </div>
 
                 <button class="btn btn-secondary add-to-cart-detail" style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">
-                    🛒 Add to Cart
+                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
                 </button>
             `;
             
@@ -2391,13 +2389,13 @@ function renderRelatedProducts(mode = 'product') {
 
         card.innerHTML = `
             <div class="product-card-info" data-id="${p.id}">
-                <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
-                <h4 class="product-title">${p.name}</h4>
+                <img src="./Assets/car1.jpg" alt="${p.name}"/>
+                <h4>${p.name}</h4>
 
                 <div class="price-container">
                     ${p.discount ? `
                         <span class="discounted-price current-price"><i class="currency-icon"></i>${convertPrice(currentPrice).toLocaleString()}</span>
-                        <span class="product-price original-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</span>
+                        <span class="product-price main-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</span>
                     ` : `
                         <span class="product-price current-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</span>
                     `}
@@ -2412,7 +2410,7 @@ function renderRelatedProducts(mode = 'product') {
                 </div>
 
                 <button class="add-to-cart-detail" onclick="addToCart(${p.id}, this, event)">
-                    🛒 Add to Cart
+                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
                 </button>
             </div>
         `;
