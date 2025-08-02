@@ -98,16 +98,33 @@ const promoOptions = [
   { discount: 30, badges: ["Big Sale"] }
 ];
 
-// Assign random promo once when defining the products
-products = products.map(product => {
-  const promo = promoOptions[Math.floor(Math.random() * promoOptions.length)];
-  return {
-    ...product,
-    discount: promo.discount,
-    badges: promo.badges,
-    selectedColor: 'Default',
-    selectedModel: 'Standard'
-  };
-});
+// If demo data hasn't been set in this (browser) session, generate and store it
+if (!sessionStorage.getItem("demoProducts")) {
+  const demoProducts = products.map(product => {
+    const promo = promoOptions[Math.floor(Math.random() * promoOptions.length)];
+    
+    // Generate demo data
+    const unitsSold = Math.floor(Math.random() * 500) + 10; // 10 to 509
+    const rating = +(Math.random() * 2 + 3).toFixed(1);     // 3 to 5
+    const reviewCount = Math.floor(rating * 2 + Math.random() * 8); // 8 to 18
+
+    return {
+      ...product,
+      discount: promo.discount,
+      badges: promo.badges,
+      selectedColor: 'Default',
+      selectedModel: 'Standard',
+      unitsSold,
+      rating,
+      reviewCount
+    };
+  });
+
+  // Store the changed product data in sessionStorage for reuse
+  sessionStorage.setItem("demoProducts", JSON.stringify(demoProducts));
+}
+
+// Load the stored demo product data for consistent rendering
+products = JSON.parse(sessionStorage.getItem("demoProducts"));
 
 //TODO: IMPLEMENT BACKEND FETCHING
