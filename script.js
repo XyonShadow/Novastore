@@ -291,7 +291,7 @@ function setCardHtml(container){
         const currentPrice = p.price * (1 - (p.discount || 0) / 100);
         return `
             <div class="product-card card" data-id="${p.id}" onclick="goTo('${p.category}', '${p.id}')">
-                <img src="./Assets/car1.jpg" alt="${p.name}"/>
+                <img src="${p.image}" alt="${p.name}"/>
                 <h4>${p.name}</h4>
                 
                 <div class="card-info">
@@ -880,7 +880,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             const currentPrice = product.price * (1 - (product.discount || 0) / 100);
 
             card.innerHTML = `
-                <img src="./Assets/car1.jpg" alt="${product.name}"/>
+                <img src="${product.image}" alt="${product.name}"/>
                 <h4>
                     ${product.name} ${isInCart ? '<span class="cart-badge">In Cart</span>' : ''}
                 </h4>
@@ -910,7 +910,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
             const currentPrice = product.price * (1 - product.discount / 100);
 
             card.innerHTML = `
-                <img src='./Assets/car1.jpg' alt="${product.name}"/>
+                <img src='${product.image}' alt="${product.name}"/>
                 <h4>${product.name}</h4>
                 <div class="price-container">
                     ${product.discount>0?`<span class="discounted-price current-price"><i class="currency-icon"></i> ${currentPrice.toLocaleString()}</span>
@@ -1362,7 +1362,7 @@ function renderCartItems() {
 
         itemDiv.innerHTML = `
             <div title="Check Product" class="cart-info" data-id="${p.id}">
-            <img src="./Assets/car1.jpg" alt="${p.name}" class="cart-item-image" />
+            <img src="${p.image}" alt="${p.name}"/>
             <p>${p.name}</p>
             </div>
             <p><i class="currency-icon"></i>${converted.toLocaleString()}</p>
@@ -2039,7 +2039,7 @@ function initializeProduct() {
     
     // Update product info
     document.getElementById('productTitle').textContent = currentProduct.name;
-    document.getElementById('mainImage').src = './Assets/car1.jpg';
+    document.getElementById('mainImage').src = currentProduct.image;
     document.getElementById('mainImage').alt = currentProduct.name;
     
     // Generate random rating and sales
@@ -2061,7 +2061,7 @@ function initializeProduct() {
     for (let i = 0; i < 4; i++) {
         const thumb = document.createElement('div');
         thumb.className = i === 0 ? 'thumbnail active' : 'thumbnail';
-        thumb.innerHTML = `<img src="./Assets/car1.jpg" alt="${currentProduct.name}">`;
+        thumb.innerHTML = `<img src="${currentProduct.image}" alt="${currentProduct.name}">`;
         thumb.addEventListener('click', () => {
             document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
@@ -2075,7 +2075,7 @@ function initializeProduct() {
         const option = document.createElement('div');
         option.className = index === 0 ? 'color-option active' : 'color-option';
         option.innerHTML = `
-            <img src="./Assets/car1.jpg" alt="${color}">
+            <img src="${currentProduct.image}" alt="${color}">
             <div class="color-name">${color}</div>
         `;
         option.addEventListener('click', () => {
@@ -2347,7 +2347,7 @@ function renderRelatedProducts(mode = 'product') {
             const currentPrice = p.originalPrice * (1 - (p.discount || 0) / 100);
 
             card.innerHTML = `
-                <img src="./Assets/car1.jpg" alt="${p.name}" class="item-image" />
+                <img src="${p.image}" alt="${p.name}" class="item-image" />
                 <strong style="color: var(--text-main);">${p.name}</strong>
                 
                 <div class="price-container" style="margin: 5px 0;">
@@ -2389,7 +2389,7 @@ function renderRelatedProducts(mode = 'product') {
 
         card.innerHTML = `
             <div class="product-card-info" data-id="${p.id}">
-                <img src="./Assets/car1.jpg" alt="${p.name}"/>
+                <img src="${p.image}" alt="${p.name}"/>
                 <h4>${p.name}</h4>
 
                 <div class="price-container">
@@ -2456,7 +2456,7 @@ function renderCartProducts(){
         cartItem.innerHTML = `
             <input type="checkbox" class="item-checkbox" ${item.selected ? 'checked' : ''} 
                     onchange="toggleItemSelection(${index})">
-            <img src="./Assets/car1.jpg" alt="${item.name}" class="item-image" onClick="goTo('${item.category}', '${item.id}', 'product.html')">
+            <img src="${item.image}" alt="${item.name}" class="item-image" onClick="goTo('${item.category}', '${item.id}', 'product.html')">
             <div class="item-details">
                 <div>    
                     <div onClick="goTo('${item.category}', '${item.id}', 'product.html')" class="item-name">${item.name}</div>
