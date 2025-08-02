@@ -287,17 +287,37 @@ document.addEventListener('click', (e) => {
 
 // set html of a product card for a container
 function setCardHtml(container){
-    return container.map(p => `
+    return container.map(p => {
+        const currentPrice = p.price * (1 - (p.discount || 0) / 100);
+        return `
             <div class="product-card card" data-id="${p.id}" onclick="goTo('${p.category}', '${p.id}')">
                 <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
-                <h4>${p.name}</h4>
+                <h4 class="product-title">${p.name}</h4>
+                
                 <div class="card-info">
-                <p>Discover the latest in ${p.category}</p>
-                <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                    <p>Discover the latest in ${p.category}</p>
+                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
-                <h3 class="product-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</h3>
+
+                <div class="price-container">
+                    ${p.discount ? `
+                        <span class="discounted-price current-price"><i class="currency-icon"></i>${currentPrice.toLocaleString()}</span>
+                        <span class="product-price original-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</span>
+                    ` : `
+                        <span class="product-price current-price"><i class="currency-icon"></i>${p.price.toLocaleString()}</span>
+                    `}
+                    ${p.unitsSold ? `<span class="units-sold">${p.unitsSold} sold</span>` : ''}
+                </div>
+
+                <div class="rating-container">
+                    <div class="stars">
+                        ${generateStars(p.rating)}
+                    </div>
+                    <span class="rating-count">${p.reviewCount || 0}</span>
+                </div>
             </div>
-            `).join('');
+        `;
+    }).join('');
 }
 
 const shownProductIds = new Set(); // Global tracker
@@ -815,6 +835,18 @@ window.addEventListener('resize', () => {
     }
 });
 
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '<span class="star">★</span>';
+        } else {
+            stars += '<span class="star empty">★</span>';
+        }
+    }
+    return stars;
+}
+
 // Render product cards inside a given container
 function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = visibleCount) {
     // Convert prices of all products on load to correctly load from the local storage
@@ -845,27 +877,58 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
         
         if (mode === 'filtered') {
             card.setAttribute('onclick', `goTo('${product.category}', '${product.id}')`);
+            const currentPrice = product.price * (1 - (product.discount || 0) / 100);
+
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
-                <h4>${product.name} ${isInCart ? '<span class="cart-badge">In Cart</span>' : ''}</h4>
-                <div class="card-info">
-                    <p>Discover the latest electronic</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
+                <h4 class="product-title">
+                    ${product.name} ${isInCart ? '<span class="cart-badge">In Cart</span>' : ''}
+                </h4>
+                <div class="price-container">
+                    ${product.discount > 0 ? `
+                        <span class="discounted-price current-price"><i class="currency-icon"></i> ${currentPrice.toLocaleString()}</span>
+                        <span class="product-price original-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>
+                    ` : `
+                        <span class="product-price current-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>
+                    `}
+                    ${product.unitsSold ? `<span class="units-sold">${product.unitsSold} sold</span>` : ''}
                 </div>
-                <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
+                <div class="product-category">Found in ${product.category}</div>
+                <div class="rating-container">
+                    <div class="stars">
+                        ${generateStars(product.rating)}
+                    </div>
+                    <span class="rating-count">${product.reviewCount || 0}</span>
+                </div>
+                <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
+                    🛒 Add To Cart
+                </button>
             `;
         } else {
             card.className = 'product-card cart-card';
             card.setAttribute('onclick', `goTo('${product.category}', '${product.id}', 'product.html')`);
+            const currentPrice = product.price * (1 - product.discount / 100);
 
             card.innerHTML = `
-                <img src="./Assets/car1.jpg" alt="${product.name}" class="product-image" />
-                <h4>${product.name}</h4>
-                <h3 class="product-price"><i class="currency-icon"></i>${product.price.toLocaleString()}</h3>
-                <button class="add-to-cart-btn" onClick="addToCart(${product.id}, this, event)">Add To Cart</button>
+                <img src='./Assets/car1.jpg' alt="${product.name}" class="product-image" />
+                <h4 class="product-title">${product.name}</h4>
+                <div class="price-container">
+                    ${product.discount>0?`<span class="discounted-price current-price"><i class="currency-icon"></i> ${currentPrice.toLocaleString()}</span>
+                    <span class="product-price original-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>`:
+                    `<span class="product-price current-price"><i class="currency-icon"></i> ${product.price.toLocaleString()}</span>`}
+                    ${product.unitsSold ? `<span class="units-sold">${product.unitsSold} sold</span>` : ''}
+                </div>
+                <div class="product-category">New Arrival in ${product.category}</div>
+                <div class="rating-container">
+                    <div class="stars">
+                        ${generateStars(product.rating)}
+                    </div>
+                    <span class="rating-count">${product.reviewCount || 0}</span>
+                </div>
+                <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
+                    🛒 Add To Cart
+                </button>
             `;
-            
-            
         }
 
         group.appendChild(card);
@@ -2283,11 +2346,32 @@ function renderRelatedProducts(mode = 'product') {
             card.className = 'product-item';
             card.setAttribute('data-id', p.id);
 
+            const currentPrice = p.originalPrice * (1 - (p.discount || 0) / 100);
+
             card.innerHTML = `
                 <img src="./Assets/car1.jpg" alt="${p.name}" class="item-image" />
-                <strong style="color: var(--text-main);">${p.name}</strong><br>
-                <small class="product-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</small><br>
-                <button class="btn btn-secondary"style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">Add to Cart</button>
+                <strong class="product-title" style="color: var(--text-main);">${p.name}</strong>
+                
+                <div class="price-container" style="margin: 5px 0;">
+                    ${p.discount ? `
+                        <span class="discounted-price current-price"><i class="currency-icon"></i> ${convertPrice(currentPrice).toLocaleString()}</span>
+                        <span class="product-price original-price"><i class="currency-icon"></i> ${convertPrice(p.originalPrice).toLocaleString()}</span>
+                    ` : `
+                        <span class="product-price current-price"><i class="currency-icon"></i> ${convertPrice(p.originalPrice).toLocaleString()}</span>
+                    `}
+                    ${p.unitsSold ? `<span class="units-sold">${p.unitsSold} sold</span>` : ''}
+                </div>
+
+                <div class="rating-container">
+                    <div class="stars">
+                        ${generateStars(p.rating)}
+                    </div>
+                    <span class="rating-count">${p.reviewCount || 0}</span>
+                </div>
+
+                <button class="btn btn-secondary add-to-cart-detail" style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">
+                    🛒 Add to Cart
+                </button>
             `;
             
             card.addEventListener('click', (e) => {
@@ -2303,17 +2387,38 @@ function renderRelatedProducts(mode = 'product') {
     relatedProducts.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
+        const currentPrice = p.originalPrice * (1 - (p.discount || 0) / 100);
+
         card.innerHTML = `
             <div class="product-card-info" data-id="${p.id}">
                 <img src="./Assets/car1.jpg" alt="${p.name}" class="product-image" />
-                <h4>${p.name}</h4>
-                <h3 class="product-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</h3>
-                <button class="add-to-cart-btn" onclick="addToCart(${p.id}, this, event)">Add to Cart</button>
+                <h4 class="product-title">${p.name}</h4>
+
+                <div class="price-container">
+                    ${p.discount ? `
+                        <span class="discounted-price current-price"><i class="currency-icon"></i>${convertPrice(currentPrice).toLocaleString()}</span>
+                        <span class="product-price original-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</span>
+                    ` : `
+                        <span class="product-price current-price"><i class="currency-icon"></i>${convertPrice(p.originalPrice).toLocaleString()}</span>
+                    `}
+                    ${p.unitsSold ? `<span class="units-sold">${p.unitsSold} sold</span>` : ''}
+                </div>
+
+                <div class="rating-container">
+                    <div class="stars">
+                        ${generateStars(p.rating)}
+                    </div>
+                    <span class="rating-count">${p.reviewCount || 0}</span>
+                </div>
+
+                <button class="add-to-cart-detail" onclick="addToCart(${p.id}, this, event)">
+                    🛒 Add to Cart
+                </button>
             </div>
         `;
         
         card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('add-to-cart-btn')) {
+            if (!e.target.classList.contains('add-to-cart-detail')) {
                 goTo(p.category, p.id, 'product.html');
             }
         });
