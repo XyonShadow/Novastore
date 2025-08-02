@@ -70,6 +70,42 @@ loadCartFromStorage(); // load cart from local storage first
 // get unique categories
 const categories = [...new Set(products.map(p => p.category))];
 
+// To add category card on index.html
+function renderCategories() {
+    const container = document.getElementById("categoryContainer");
+    if(!container) return;
+    container.innerHTML = "";
+
+    // Get 6 unique categories from the products array
+    const uniqueCategories = shuffleArray(categories.slice(0, 6));
+
+    uniqueCategories.forEach(category => {
+        // Get all products in this category
+        const categoryProducts = products.filter(p => p.category === category);
+
+        // Pick a random product from the category
+        const randomProduct = categoryProducts[Math.floor(Math.random() * categoryProducts.length)];
+
+        // Use its image
+        const image = randomProduct?.image || "Assets/car1.jpg";
+
+        const card = document.createElement("div");
+        card.className = "category card";
+        card.setAttribute("onclick", `goTo('${category}')`);
+
+        card.innerHTML = `
+            <img src="${image}" alt="${category}">
+            <div class="card-info">
+                <h4>${category}</h4>
+                <a href="#"><i class="ri-external-link-line"></i></a>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
 // add close button when search input is not empty
 function checkInput() {
     const existingBtn = searchBar.querySelector('.ri-close-circle-line');
@@ -567,6 +603,8 @@ function switchCategory(category, button, containerID){
 
 window.addEventListener('DOMContentLoaded', async () => {
     new ThemeManager();
+
+    renderCategories();
     
     // Refresh contents on load
     if (document.getElementById('vehicles'))
