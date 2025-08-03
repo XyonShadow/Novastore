@@ -582,7 +582,7 @@ let products = [
     image: "Assets/Products/hispec-electric-screwdriver.jpg"
   },
 
-  // Home and Personal Care
+  // Health and Personal Care
   {
     id: 65,
     name: "USB Rechargeable Facial Skincare Beauty Device",
@@ -671,6 +671,70 @@ let products = [
     price: 136484,
     category: "Health & Personal Care",
     image: "Assets/Products/bed-wedge-pillow.jpg"
+  },
+
+  // Home & Kitchen
+  {
+    id: 76,
+    name: "44pcs Silicone Kitchen Utensil Set with Non-Stick Wooden Handles",
+    description: "Complete set of spatulas, whisks, spoons, tongs, and more. Ideal for holidays and daily cooking. Heat-resistant and modern design.",
+    price: 88535,
+    category: "Home & Kitchen",
+    image: "Assets/Products/silicone-utensil-set.jpg"
+  },
+  
+  {
+    id: 77,
+    name: "3pcs Flannel Farmhouse Kitchen Mat Set - Vintage Knife & Fork Design",
+    description: "Durable and fade-resistant kitchen floor mats. 10mm thick polyester material, great for indoor spaces like porches, kitchens, and laundry rooms.",
+    price: 50945,
+    category: "Home & Kitchen",
+    image: "Assets/Products/kitchen-mat-set.jpg"
+  },
+  
+  {
+    id: 78,
+    name: "4-in-1 Foldable Broom and Dustpan Set",
+    description: "Includes dustpan, broom, and squeegee. Compact and foldable cleaning set for kitchen, bathroom, and bedroom floors.",
+    price: 39134,
+    category: "Home & Kitchen",
+    image: "Assets/Products/foldable-broom-dustpan.jpg"
+  },
+  
+  {
+    id: 79,
+    name: "2pcs Automatic Motion Sensor Trash Cans - Touchless Slim Design",
+    description: "Smart garbage bins with lids. Perfect for bathrooms, kitchens, and offices. Space-saving and odor-controlling.",
+    price: 97370,
+    category: "Home & Kitchen",
+    image: "Assets/Products/motion-sensor-trash-cans.jpg"
+  },
+  
+  {
+    id: 80,
+    name: "360-Degree Rotating Kitchen Organizer - 3 Layers",
+    description: "Spice rack with metal construction and high-capacity triple-layer design. Stores seasonings, oils, and more efficiently.",
+    price: 46309,
+    category: "Home & Kitchen",
+    image: "Assets/Products/rotating-kitchen-organizer.jpg"
+  },
+  
+  {
+    id: 81,
+    name: "14-in-1 Multifunctional Vegetable Chopper and Slicer",
+    description: "Kitchen slicer ideal for potatoes, tomatoes, and more. Compact and versatile for home or restaurant use. Plastic build.",
+    price: 203196,
+    category: "Home & Kitchen",
+    image: "Assets/Products/vegetable-chopper.jpg"
+  },
+
+  {
+    id: 82,
+    name: "BioloMix Professional 2200W Blender with Timer & Jar",
+    description: "Smart blender with 2L jar, 600ml portable cup, and pre-programmed settings. Smoothie crusher and food processor.",
+    price: 331942,
+    category: "Home & Kitchen",
+    image: "Assets/Products/biolomix-blender.jpg"
   }
 ];
 
