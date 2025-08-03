@@ -2669,13 +2669,14 @@ function formatDate(date){
 
 // Captures the receipt preview element, converts it to PDF and downloads the receipt as a PDF file
 function downloadReceiptPDF() {
+    // Get the receipt preview element from the DOM
     const receipt = document.getElementById('receiptPreview');
     if (!receipt) {
         showNotification('No receipt available to download');
-    return;
+        return;
     }
 
-    // Check if libraries are loaded
+    // Check if required libraries (html2canvas and jsPDF) are loaded
     if (!window.html2canvas) {
         showNotification('html2canvas library not loaded. Please refresh the page.');
         return;
@@ -2686,43 +2687,187 @@ function downloadReceiptPDF() {
         return;
     }
 
+    // Get download button and set loading state
     const downloadBtn = document.querySelector('.receipt-btn-primary');
-    if (downloadBtn) {
-        downloadBtn.textContent = 'Generating...';
-        downloadBtn.disabled = true;
+    setLoadingState('', true, downloadBtn);
+
+    // Detect current theme (light/dark) to use appropriate background color
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const backgroundColor = currentTheme === 'dark' ? '#1f1f2d' : '#ffffff';
+
+    // Clone the receipt container (not the scrollable wrapper) to avoid height constraints
+    const receiptContainer = receipt.querySelector('.receipt-container');
+    const receiptClone = receiptContainer.cloneNode(true); // Deep clone with all children
+    
+    // Create a wrapper div positioned off-screen for rendering
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+        position: absolute;
+        left: -9999px;          /* Hide off-screen */
+        top: 0;
+        width: 600px;           /* Fixed width for consistent PDF output */
+        background-color: ${backgroundColor};
+        padding: 0;
+        margin: 0;
+        overflow: visible;      /* Allow content to expand naturally */
+        height: auto;           /* Let content determine height */
+        max-height: none;       /* Remove any height restrictions */
+        min-height: auto;
+    `;
+    
+    // Style the cloned receipt to expand to full content height
+    receiptClone.style.cssText = `
+        width: 100%;
+        height: auto;           /* Auto height to show all content */
+        max-height: none;       /* Remove scroll constraints */
+        overflow: visible;      /* Show all content */
+        padding: 40px;
+        box-sizing: border-box;
+    `;
+    
+    // Add cloned receipt to wrapper and wrapper to DOM for measurement
+    wrapper.appendChild(receiptClone);
+    document.body.appendChild(wrapper);
+
+    // Wait for DOM to render and styles to apply before measuring
+    setTimeout(() => {
+        // Get the actual height of the content (use max to ensure we get full height)
+        const actualHeight = Math.max(wrapper.scrollHeight, wrapper.offsetHeight);
+        console.log('Content height:', actualHeight);
+
+        // html2canvas has limitations with very tall elements (~14000px+)
+        // Use chunking approach for long receipts, single capture for shorter ones
+        if (actualHeight > 14000) {
+            generateChunkedPDF(wrapper, actualHeight, backgroundColor);
+        } else {
+            generateSinglePDF(wrapper, actualHeight, backgroundColor);
+        }
+    }, 300); // 300ms delay ensures proper rendering
+
+    // Generate PDF from single html2canvas capture (for shorter receipts)
+    function generateSinglePDF(element, height, bgColor) {
+        html2canvas(element, {
+            scale: 1.5,                    // Image quality (1.5x for good quality vs performance)
+            backgroundColor: bgColor,       // Match theme background
+            useCORS: true,                 // Handle cross-origin images
+            allowTaint: false,             // Prevent security issues
+            width: 600,                    // Fixed width
+            height: height,                // Full content height
+            scrollX: 0,                    // No horizontal scroll
+            scrollY: 0,                    // Start from top
+            foreignObjectRendering: false, // Better compatibility with complex CSS
+            imageTimeout: 0,               // No timeout for image loading
+            removeContainer: false         // Keep container during capture
+        }).then(canvas => {
+            // Clean up the off-screen element
+            document.body.removeChild(element);
+            // Create PDF from the captured canvas
+            createPDFFromCanvas(canvas);
+        }).catch(handleError);
     }
 
-    // Uses html2canvas to render the receipt
-    html2canvas(receipt, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: false,
-        width: 400,
-        height: null
-    }).then(canvas => {
-        // uses jsPDF to create A5 PDF
+    // Generate multi-page PDF by capturing content in chunks (for very long receipts)
+    function generateChunkedPDF(element, totalHeight, bgColor) {
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', [148, 210]); // A5 size
+        const pdf = new jsPDF('p', 'mm', 'a4');     // Create A4 portrait PDF
+        const chunkHeight = 3000;                   // Size each chunk (html2canvas can handle this)
+        const chunks = Math.ceil(totalHeight / chunkHeight); // Calculate number of chunks needed
+        let currentChunk = 0;                       // Track current chunk being processed
 
-        const imgData = canvas.toDataURL('image/pgn'); // jpeg file
-        const imgWidth = 140; // Fit to A5 width
+        console.log(`Splitting into ${chunks} chunks`);
+
+        // Process each chunk sequentially to build multi-page PDF
+        function processChunk() {
+            // Calculate the Y position and height for current chunk
+            const startY = currentChunk * chunkHeight;
+            const endY = Math.min(startY + chunkHeight, totalHeight);
+            const actualChunkHeight = endY - startY;
+
+            // Capture this specific chunk of the content
+            html2canvas(element, {
+                scale: 1.5,
+                backgroundColor: bgColor,
+                useCORS: true,
+                allowTaint: false,
+                width: 600,
+                height: actualChunkHeight,
+                scrollX: 0,
+                scrollY: startY,              // Start capturing from this Y position
+                windowWidth: 600,
+                windowHeight: chunkHeight,
+                foreignObjectRendering: false
+            }).then(canvas => {
+                // Calculate PDF dimensions maintaining aspect ratio
+                const imgWidth = 190;  // A4 width minus margins (210-20)
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                // Add new page for each chunk except the first
+                if (currentChunk > 0) {
+                    pdf.addPage();
+                }
+
+                // Add the chunk image to current PDF page
+                const imgData = canvas.toDataURL('image/JPEG', 0.8); // 80% quality for smaller file
+                pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+
+                currentChunk++;
+
+                // Process next chunk or finish if all chunks are done
+                if (currentChunk < chunks) {
+                    setTimeout(processChunk, 100); // Small delay between chunks to prevent memory issues
+                } else {
+                    // All chunks processed - finalize PDF
+                    document.body.removeChild(element);
+                    pdf.save(window.receiptData.filename);
+                    showNotification('Receipt downloaded successfully!');
+                    document.getElementById('receiptModal').remove();
+                    setLoadingState('', false, downloadBtn);
+                }
+            }).catch(handleError);
+        }
+
+        processChunk(); // Start processing first chunk
+    }
+
+    // Create PDF from a single canvas (used by generateSinglePDF)
+    function createPDFFromCanvas(canvas) {
+        const { jsPDF } = window.jspdf;
+        
+        // Calculate image dimensions for PDF (maintain aspect ratio)
+        const imgWidth = 190;  // A4 width minus margins
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
+        
+        // Create PDF with height that fits content (minimum A4 height)
+        const pdfHeight = Math.max(297, imgHeight + 20);
+        const pdf = new jsPDF('p', 'mm', [210, pdfHeight]);
+        
+        // Convert canvas to JPEG and add to PDF
+        const imgData = canvas.toDataURL('image/JPEG', 0.8);
         pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+        
+        // Save the PDF file
         pdf.save(window.receiptData.filename);
-
+        
+        // Show success message and clean up
         showNotification('Receipt downloaded successfully!');
         document.getElementById('receiptModal').remove();
-    }).catch(err => {
+        setLoadingState('', false, downloadBtn);
+    }
+
+    // Handle errors during PDF generation
+    function handleError(err) {
         console.error('PDF generation failed:', err);
         showNotification('Failed to generate PDF. Please try again.');
-    }).finally(() => {
-        if (downloadBtn) {
-            downloadBtn.textContent = 'Download PDF';
-            downloadBtn.disabled = false;
+        
+        // Clean up any remaining off-screen elements
+        const wrapper = document.querySelector('div[style*="-9999px"]');
+        if (wrapper && document.body.contains(wrapper)) {
+            document.body.removeChild(wrapper);
         }
-    });
+        
+        // Reset button state
+        setLoadingState('', false, downloadBtn);
+    }
 }
 
 // Open modal with loaded data and download receipt button
@@ -2738,7 +2883,7 @@ function openReceiptModal() {
     const modalHtml = `
         <div id="receiptModal" class="receipt-modal">
             <div class="receipt-modal-content">
-                <button onclick="document.getElementById('receiptModal').remove()" class="receipt-close-btn">×</button>
+                <button onclick="document.getElementById('receiptModal').remove()" class="receipt-close-btn"><i class="ri-close-fill"></i></button>
                 
                 <div id="receiptPreview">
                     ${window.receiptData.html}
