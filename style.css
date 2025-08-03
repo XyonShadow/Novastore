@@ -1125,30 +1125,9 @@ header {
     color: var(--text-muted);
 }
 
-.card-info a {
-    width: 2.5rem;
-    height: 2.5rem;
-    top: -2.5rem;
-    right: 0;
-    position: absolute;
-    border-radius: 50%;
-    background: var(--primary-variation);
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    transform: scale(0);
-    transition: transform 0.4s ease;
-}
-
 .product-card:hover {
     cursor: pointer;
     border: none;
-}
-
-.card:hover a {
-    transform: scale(1);
 }
 
 .category-selector {

@@ -97,7 +97,6 @@ function renderCategories() {
             <img src="${image}" alt="${category}">
             <div class="card-info">
                 <h4>${category}</h4>
-                <a href="#"><i class="ri-external-link-line"></i></a>
             </div>
         `;
 
@@ -332,7 +331,6 @@ function setCardHtml(container){
                 
                 <div class="card-info">
                     <p>Discover the latest in ${p.category}</p>
-                    <a href="#"><i class="ri-arrow-right-up-long-line"></i></a>
                 </div>
 
                 <div class="price-container">
