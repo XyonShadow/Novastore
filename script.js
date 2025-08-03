@@ -2820,7 +2820,7 @@ function downloadReceiptPDF() {
                     document.body.removeChild(element);
                     pdf.save(window.receiptData.filename);
                     showNotification('Receipt downloaded successfully!');
-                    document.getElementById('receiptModal').remove();
+                    closeReceiptModal();
                     setLoadingState('', false, downloadBtn);
                 }
             }).catch(handleError);
@@ -2850,7 +2850,7 @@ function downloadReceiptPDF() {
         
         // Show success message and clean up
         showNotification('Receipt downloaded successfully!');
-        document.getElementById('receiptModal').remove();
+        closeReceiptModal();
         setLoadingState('', false, downloadBtn);
     }
 
@@ -2870,6 +2870,18 @@ function downloadReceiptPDF() {
     }
 }
 
+function closeReceiptModal() {
+    const modal = document.getElementById('receiptModal');
+    if (!modal) return;
+    
+    // Add closing class to trigger animation
+    modal.classList.add('modal-closing');
+    
+    setTimeout(() => {
+        modal.remove();
+    }, 250);
+}
+
 // Open modal with loaded data and download receipt button
 function openReceiptModal() {
     if (!window.receiptData) {
@@ -2883,7 +2895,7 @@ function openReceiptModal() {
     const modalHtml = `
         <div id="receiptModal" class="receipt-modal">
             <div class="receipt-modal-content">
-                <button onclick="document.getElementById('receiptModal').remove()" class="receipt-close-btn"><i class="ri-close-fill"></i></button>
+                <button onclick="closeReceiptModal()" class="receipt-close-btn"><i class="ri-close-fill"></i></button>
                 
                 <div id="receiptPreview">
                     ${window.receiptData.html}
@@ -2891,13 +2903,26 @@ function openReceiptModal() {
                 
                 <div class="receipt-buttons">
                     <button onclick="downloadReceiptPDF()" class="receipt-btn receipt-btn-primary">Download PDF</button>
-                    <button onclick="document.getElementById('receiptModal').remove()" class="receipt-btn receipt-btn-secondary">Close</button>
+                    <button onclick="closeReceiptModal()" class="receipt-btn receipt-btn-secondary">Close</button>
                 </div>
             </div>
         </div>
     `;
 
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // After modal is added to DOM, add the click-outside listener
+    setTimeout(() => {
+        const modal = document.getElementById('receiptModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                const modalContent = document.querySelector('.receipt-modal-content');
+                
+                // Check if the click target is NOT inside the modal content
+                if (!modalContent.contains(e.target)) closeReceiptModal();
+            });
+        }
+    }, 0); // setTimeout ensures DOM is updated
 }
 
 // update delivery section with saved name and address
