@@ -607,11 +607,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     renderCategories();
     
     // Refresh contents on load
-    if (document.getElementById('vehicles'))
-        changeCategoryContent('Cars', 'vehicles');
-
-    if (document.getElementById('electronics'))
-        changeCategoryContent('Printers', 'electronics');
+    document.querySelectorAll('.category-selector').forEach(selector => {
+        const firstBtn = selector.querySelector('button');
+        if (firstBtn) firstBtn.click(); // auto-activate the first button in each .category-selector
+    });
 
     if (document.getElementById('recommended'))
         changeCategoryContent('random', 'recommended');
@@ -710,7 +709,7 @@ if (moreButton) {
     moreButton.addEventListener('click', () => {
         spinIcon(moreButton.querySelector('i'));
         loadMoreCategory({
-        excluded: ['Cars', 'Buses', 'Bikes', 'Printers', 'Computers', 'Drones']
+        excluded: ['Home & Kitchen', 'Tools & DIY', 'Health & Personal Care', 'Tech & Gadgets', 'Computer & Accessories', 'Smart Home Gadget']
         });
     });
 }
