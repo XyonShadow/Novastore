@@ -616,7 +616,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('hot'))
         changeCategoryContent('random', 'hot');
 
-    updateCurrencyIcons();    
+    updateCurrencyIcons();
+    updateCartBadge();    
 
     // fetchRates from API
     await fetchRates();
@@ -827,6 +828,7 @@ function renderCategoryBlock(labelText, items, parent, mode, sliceFrom = 0, slic
     block.appendChild(label);
 
     renderProduct(items, block, mode, sliceFrom, sliceTo);
+    updateCartBadge();
     if(parent) parent.appendChild(block);
 }
 
@@ -937,6 +939,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
                 </div>
                 <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
                     <i class="fa-solid fa-cart-plus"></i> Add To Cart
+                    <span data-id="${product.id}" class="cart-detail-badge">1</span>
                 </button>
             `;
         } else {
@@ -962,6 +965,7 @@ function renderProduct(items, parent, mode = 'full', sliceFrom = 0, sliceTo = vi
                 </div>
                 <button class="add-to-cart-detail" onclick="addToCart(${product.id}, this, event)">
                     <i class="fa-solid fa-cart-plus"></i> Add To Cart
+                    <span data-id="${product.id}" class="cart-detail-badge">1</span>
                 </button>
             `;
         }
@@ -1230,6 +1234,7 @@ function addToCart(id, btnElement = null, event) {
         setTimeout(()=>{
             showNotification(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
             setLoadingState('', false, btnElement);
+            updateCartBadge();
 
             // Re-render cart if on checkout page
             if (window.location.href.includes('checkout.html')) {
@@ -1252,6 +1257,7 @@ function addToCart(id, btnElement = null, event) {
         setTimeout(()=>{
             showNotification(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
             setLoadingState('', false, btnElement);
+            updateCartBadge();
 
             // Re-render cart if on checkout page
             if (window.location.href.includes('checkout.html')) {
@@ -1279,6 +1285,21 @@ function updateCartCount() {
         homecartCounter.forEach(e => e.textContent = totalCount);
     }
 
+}
+
+function updateCartBadge() {
+    document.querySelectorAll('.cart-detail-badge').forEach(badge => {
+        const productId = badge.dataset.id;
+        const matching = cart.find(item => item.id == productId);
+
+        if (matching && matching.quantity > 0) {
+            console.log(matching.quantity)
+            badge.style.display = 'inline-block';
+            badge.textContent = matching.quantity;
+        } else {
+            badge.style.display = 'none';
+        }
+    });
 }
 
 function updateCartStorage(){
@@ -1315,6 +1336,7 @@ function updateCartBtn(id, btn) {
         cart.push(product);
         updateCartStorage();
         updateCartCount();
+        updateCartBadge();
 
         btn.textContent = 'Added to Cart ✅';
         btn.classList.remove('remove-from-cart');    
@@ -1330,6 +1352,7 @@ function updateCartBtn(id, btn) {
         cart = cart.filter(p => p.id !== id);
         updateCartStorage();
         updateCartCount();
+        updateCartBadge();
 
         btn.textContent = 'Removed ❌';
         btn.classList.remove('remove-from-cart');
@@ -2413,6 +2436,7 @@ function renderRelatedProducts(mode = 'product') {
 
                 <button class="btn btn-secondary add-to-cart-detail" style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">
                     <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    <span data-id="${product.id}" class="cart-detail-badge">1</span>
                 </button>
             `;
             
@@ -2455,6 +2479,7 @@ function renderRelatedProducts(mode = 'product') {
 
                 <button class="add-to-cart-detail" onclick="addToCart(${p.id}, this, event)">
                     <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    <span data-id="${p.id}" class="cart-detail-badge">1</span>
                 </button>
             </div>
         `;
@@ -2476,6 +2501,7 @@ function increaseQuantity(index) {
     cart[index].quantity++;
     updateCartStorage();
     updateCartCount();
+    updateCartBadge();
     renderCartProducts();
 }
 
@@ -2484,6 +2510,7 @@ function decreaseQuantity(index) {
         cart[index].quantity--;
         updateCartStorage();
         updateCartCount();
+        updateCartBadge();
         renderCartProducts();
     }
 }
