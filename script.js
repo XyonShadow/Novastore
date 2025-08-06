@@ -1210,7 +1210,7 @@ function addToCart(id, btnElement = null, event) {
 
     const product = products.find(p => p.id === id); // find the product
     if (!product) return console.warn(`Product with ID ${id} not found`);
-   
+
     // Check if already in cart with same variants
     const existing = cart.find(p =>
         p.id === id &&
@@ -1245,7 +1245,6 @@ function addToCart(id, btnElement = null, event) {
             // Update cart display if on product page
             if (window.location.href.includes('product.html')) {
                 updateCartQuantityDisplay();
-                renderRelatedProducts();
             }
         }, ((Math.random() * 970) + 1230));        
     } else {
@@ -1268,7 +1267,6 @@ function addToCart(id, btnElement = null, event) {
             // Update cart display if on product page
             if (window.location.href.includes('product.html')) {
                 updateCartQuantityDisplay();
-                renderRelatedProducts();
             }
         }, ((Math.random() * 970) + 1230));
     }
@@ -2667,6 +2665,7 @@ async function checkout() {
 const notification = document.getElementById('notification');
 const notificationQueue = [];
 let isShowing = false;
+let notificationTimeout;
 
 function showNotification(message) {
     notificationQueue.push(message);
@@ -2685,11 +2684,28 @@ function displayNextNotification() {
     notification.textContent = message;
     notification.classList.add('show');
 
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(displayNextNotification, 100); // small delay before next notification
+    // Start timeout to hide
+    notificationTimeout = setTimeout(() => {
+        hideNotification();
     }, 3000);
 }
+
+function hideNotification() {
+    clearTimeout(notificationTimeout); // Clear current timeout
+    notification.classList.remove('show');
+
+    void notification.offsetHeight;  // Force reflow
+
+    setTimeout(() => {
+        notification.textContent = '';
+        displayNextNotification(); // display next
+    }, 300);
+}
+
+// Click-to-skip
+notification.addEventListener('click', () => {
+    hideNotification();
+});
 
 
 function formatDate(date){
