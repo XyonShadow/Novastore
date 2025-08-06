@@ -3524,9 +3524,12 @@ footer .footer-icons a:hover {
     color: var(--white);
     padding: 15px 20px;
     border-radius: 8px;
-    transform: translateX(600px);
-    transition: var(--transition);
+    transform: translateX(120vw);
+    transition: transform 0.6s linear;
     z-index: 10000;
+    max-width: 90vw;
+    word-wrap: break-word;
+    white-space: normal;
     box-shadow: 0 4px 20px var(--background-shadow);
 }
 
