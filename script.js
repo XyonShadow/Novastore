@@ -1201,6 +1201,8 @@ function handleCurrencyChange(){
 
 function addToCart(id, btnElement = null, event) {
     event.stopPropagation(); // prevent triggering parent onclick
+    setLoadingState('', true, btnElement);
+    if(btnElement.classList.contains('add-to-cart-detail')) btnElement.classList.add('loading-detail');
 
     const product = products.find(p => p.id === id); // find the product
     if (!product) return console.warn(`Product with ID ${id} not found`);
@@ -1225,25 +1227,10 @@ function addToCart(id, btnElement = null, event) {
         updateCartStorage();
         updateCartCount();
 
-        showNotification(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
-        if (btnElement) btnElement.innerHTML = 'Added ✓';
-    } else {
-        // Just increase quantity
-        existing.quantity += quantity;
-        updateCartStorage();
-        updateCartCount();
+        setTimeout(()=>{
+            showNotification(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
+            setLoadingState('', false, btnElement);
 
-        showNotification(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
-        if (btnElement) btnElement.innerHTML = 'Updated ✓';
-    }
-
-    // UI feedback for the button
-    if (btnElement) {
-        btnElement.disabled = true;
-
-        setTimeout(() => {
-            btnElement.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add To Cart';
-            btnElement.disabled = false;
             // Re-render cart if on checkout page
             if (window.location.href.includes('checkout.html')) {
                 renderCartProducts();
@@ -1255,7 +1242,29 @@ function addToCart(id, btnElement = null, event) {
                 updateCartQuantityDisplay();
                 renderRelatedProducts();
             }
-        }, 2000);
+        }, ((Math.random() * 970) + 1230));        
+    } else {
+        // Just increase quantity
+        existing.quantity += quantity;
+        updateCartStorage();
+        updateCartCount();
+
+        setTimeout(()=>{
+            showNotification(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
+            setLoadingState('', false, btnElement);
+
+            // Re-render cart if on checkout page
+            if (window.location.href.includes('checkout.html')) {
+                renderCartProducts();
+                renderRelatedProducts('checkout');
+            }
+
+            // Update cart display if on product page
+            if (window.location.href.includes('product.html')) {
+                updateCartQuantityDisplay();
+                renderRelatedProducts();
+            }
+        }, ((Math.random() * 970) + 1230));
     }
 }
 
