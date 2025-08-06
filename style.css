@@ -454,8 +454,8 @@ header {
     }
 
     .user-dropdown{
-        margin-left: auto;
         margin: 0 -0.5rem;
+        margin-left: auto;
     }
 
     #userNickname {
@@ -1101,16 +1101,31 @@ header {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    width: auto;
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
+    min-width: 120px;
+    flex-shrink: 0;
+    align-self: flex-end;
+    position: relative;
 }
 
 .add-to-cart-detail:hover {
     background: var(--orange);
     color: white;
     transform: scale(1.05) !important;
+}
+
+.cart-detail-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: var(--orange);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    display: none;
+    z-index: 2;
+    animation: fadeIn 0.3s ease;
 }
 
 .card-info {
@@ -2420,6 +2435,14 @@ footer .footer-icons a:hover {
     border-top: 2px solid var(--text-main);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+.loading.loading-detail:hover{
+    background-color: transparent;
+}
+
+.loading.loading-detail::after{
+    border-top: 2px solid var(--orange);
 }
 
 /* --------------------------== Search Input and Suggestions ==-------------------------- */
@@ -3963,6 +3986,7 @@ section h2 {
     padding: 20px;
     background: var(--background-light);
     border-radius: 8px;
+    position: relative;
 }
 
 .product-item .item-image {
