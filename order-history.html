@@ -174,25 +174,27 @@
             <button class="modal-close-btn" title="Close Contact Form">
                 <i class="ri-close-line"></i>
             </button>
-            <form action="">
+            <form id="contact-form">
                 <div class="details">
                     <div>
                         <label for="fullName">Name<span>*</span></label>
-                        <input spellcheck="false" type="text" id="fullName" placeholder="Enter Name" required>
+                        <input spellcheck="false" name="Name" type="text" id="fullName" placeholder="Enter Name" required>
                     </div>
                     <div>
                         <label for="yourEmail">Email<span>*</span></label>
-                        <input spellcheck="false" type="email" id="yourEmail" placeholder="Enter Email" required>   
+                        <input spellcheck="false" name="Email" type="email" id="yourEmail" placeholder="Enter Email" required>   
                     </div>
                 </div>
                 
                 <label for="subject">Subject</label>
-                <input spellcheck="false" type="text" id="subject" placeholder="Enter Your Subject">
+                <input spellcheck="false" name="Subject" type="text" id="subject" placeholder="Enter Your Subject">
                 
                 <label for="yourMessage">Message<span>*</span></label>
-                <textarea name="" id="yourMessage" cols="10" rows="7" placeholder="How we can help you?" required></textarea>
+                <textarea name="Message" id="yourMessage" cols="10" rows="7" placeholder="How we can help you?" required></textarea>
                 <button type="submit" class="send">Send</button>
             </form>
+            
+            <div id="form-message"></div>
         </div>
     </div>
     
