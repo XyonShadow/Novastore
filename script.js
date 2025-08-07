@@ -1291,7 +1291,6 @@ function updateCartBadge() {
         const matching = cart.find(item => item.id == productId);
 
         if (matching && matching.quantity > 0) {
-            console.log(matching.quantity)
             badge.style.display = 'inline-block';
             badge.textContent = matching.quantity;
         } else {
@@ -3261,9 +3260,9 @@ function renderOrders(orders) {
         let totalPaid = 0;
 
         items.forEach(item => {
-            console.log(item.price);
+            console.log(item.name, ':', currentCurrency, item.price);
             totalPaid += (item.price || 0) * (item.quantity || 1);
-            console.log(totalPaid);
+            console.log('Total Amount Paid:', totalPaid);
         });
 
         const currency = items[0]?.currency || 'ngn';
@@ -3348,4 +3347,40 @@ backToTopBtn.addEventListener('click', () => {
         top: 0,
         behavior: 'smooth'
     });
+});
+
+// Handle form submission
+const form = document.getElementById('contact-form');
+const messageDiv = document.getElementById('form-message');
+const sendButton = form.querySelector('button[type="submit"]');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    try {
+        setLoadingState('', true, sendButton);
+        const res = await fetch('https://formsubmit.co/ajax/78552d8e7632400c1fa8c5d8aa8270f7', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+
+        if (res.ok) {
+            messageDiv.textContent = '✅ Message sent successfully!';
+            form.reset();
+        } else {
+            messageDiv.textContent = '❌ Something went wrong. Try again.';
+        }
+    } catch (err) {
+        messageDiv.textContent = '⚠️ Network error. Please check your connection.';
+    } finally {
+        setLoadingState('', false, sendButton);
+        setTimeout(() => {
+            messageDiv.textContent = '';
+        }, 4000);
+    }
 });
