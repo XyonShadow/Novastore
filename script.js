@@ -2273,6 +2273,34 @@ function formatReviewDate(time) {
     return `${yyyy}-${mm}-${dd}`;
 }
 
+// review dropdown button
+let reviewOpened = true;
+document.getElementById('toggle-reviews')?.addEventListener('click', () => {
+    reviewOpened = !reviewOpened;
+    document.getElementById('toggle-reviews').style.transform = reviewOpened ? 'rotate(0deg)' : 'rotate(180deg)';
+    updateReviews();
+});
+
+// Function to update reviews display based on reviewOpened state
+function updateReviews() {
+    const reviewItems = document.querySelectorAll('.thankyou-review, .review-item');
+    const maxVisible = reviewOpened ? reviewItems.length : 3;
+    
+    reviewItems.forEach((item, index) => {
+        if (index < maxVisible) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Update the review count display
+    const reviewsTitle = document.getElementById('reviewsTitle');
+    if (reviewsTitle) {
+        reviewsTitle.textContent = `${maxVisible} reviews`;
+    }
+}
+
 // for review generation to the page
 async function generateReviews(mode) {
     const reviewsList = document.getElementById('reviewsList');
@@ -2287,7 +2315,8 @@ async function generateReviews(mode) {
 
         try {
             const realReviews = await window.getReviewsForOrder(orderId);
-            const count = 7;
+            const maxCount = reviewOpened ? 7 : 3; // Limit to 3 when collapsed
+            const count = maxCount;
             const fakeCount = realReviews.length < 5? Math.max(0, count - realReviews.length):
                 Math.max(0, count - 4); 
 
@@ -2307,11 +2336,12 @@ async function generateReviews(mode) {
                 reviewsList.appendChild(reviewItem);
             });
 
-            // Take only the last 3 (most recent)
+            // Take only the last 4 (or fewer when collapsed)
+            const realReviewsToShow = reviewOpened ? 4 : Math.min(4, maxCount - fakeCount);
             const topRealReviews = realReviews
                 .filter(r => r.createdAt) // exclude any missing timestamps
                 .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis()) // sort the reviews in ascending order (oldest to newest) 
-                .slice(-4); // get the last 4
+                .slice(-realReviewsToShow); // get the appropriate number
 
             topRealReviews.forEach(review => {
                 const reviewItem = document.createElement('div');
@@ -2329,7 +2359,7 @@ async function generateReviews(mode) {
 
         } catch (err) { // incase firestore doesn't load
             console.error("Failed to load reviews:", err);
-            const reviewCount = Math.floor(Math.random() * 4) + 3;
+            const reviewCount = reviewOpened ? (Math.floor(Math.random() * 4) + 3) : 3;
             const allReviews = generateRandomReviews(reviewCount);
             
             const reviewsList = document.getElementById('reviewsList');
@@ -2353,7 +2383,8 @@ async function generateReviews(mode) {
         return;
     }
 
-    const reviewCount = Math.floor(Math.random() * 25) + 5;
+    // For non-order mode, also respect the reviewOpened state
+    const reviewCount = reviewOpened ? (Math.floor(Math.random() * 25) + 5) : 3;
     const avgRating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
     document.getElementById('reviewsTitle').textContent = `${reviewCount} reviews`;
@@ -3301,6 +3332,7 @@ function setLoadingState(selector, isLoading, btnElement) {
     }
 }
 
+// To scroll to top
 const backToTopBtn = document.getElementById('backToTopBtn');
 
 window.addEventListener('scroll', () => {
