@@ -1612,7 +1612,7 @@ footer .footer-icons a:hover {
 #open-cart {
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    right: 20px;
     background: var(--primary-color);
     color: white;
     border: none;
@@ -1621,13 +1621,46 @@ footer .footer-icons a:hover {
     font-weight: bold;
     border-radius: 8px;
     z-index: 1100;
-    transition: left 0.4s;
+    transition: right 0.4s;
 }
 
 #open-cart.hide {
     position: absolute;
     bottom: 0px;
-    left: -10px;
+    right: -10px;
+}
+
+/* Back to top button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 25px;
+    z-index: 997;
+    padding: 10px 14px;
+    background: transparent;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.back-to-top.cart{
+    bottom: 55px;
+    padding: 8px 12px;
+    
+}
+
+.back-to-top:hover{
+    background: var(--bg-light);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Overlay to cover panel */
@@ -1648,7 +1681,7 @@ footer .footer-icons a:hover {
 }
 
 #open-cart.active {
-    left: -200px;
+    right: -200px;
 }
 
 /* --------------------------== Cart list ==-------------------------- */
@@ -3519,12 +3552,12 @@ footer .footer-icons a:hover {
 .notification {
     position: fixed;
     bottom: 3%;
-    right: 20px;
+    left: 20px;
     background: var(--primary-color);
     color: var(--white);
     padding: 15px 20px;
     border-radius: 8px;
-    transform: translateX(120vw);
+    transform: translateX(-120vw);
     transition: transform 0.6s linear;
     z-index: 10000;
     max-width: 90vw;

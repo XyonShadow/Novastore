@@ -1229,11 +1229,11 @@ function addToCart(id, btnElement = null, event) {
 
         cart.push(productWithOptions);
         updateCartStorage();
-        updateCartCount();
 
         setTimeout(()=>{
             showNotification(`Added ${product.name} (${selectedColor}, ${selectedModel}) to cart`);
             setLoadingState('', false, btnElement);
+            updateCartCount();
             updateCartBadge();
 
             // Re-render cart if on checkout page
@@ -1251,11 +1251,11 @@ function addToCart(id, btnElement = null, event) {
         // Just increase quantity
         existing.quantity += quantity;
         updateCartStorage();
-        updateCartCount();
 
         setTimeout(()=>{
             showNotification(`Updated ${product.name} (${selectedColor}, ${selectedModel}) quantity in cart`);
             setLoadingState('', false, btnElement);
+            updateCartCount();
             updateCartBadge();
 
             // Re-render cart if on checkout page
@@ -3300,3 +3300,20 @@ function setLoadingState(selector, isLoading, btnElement) {
         btn.disabled = false;
     }
 }
+
+const backToTopBtn = document.getElementById('backToTopBtn');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        backToTopBtn.classList.add('show');
+    } else {
+        backToTopBtn.classList.remove('show');
+    }
+});
+
+backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
