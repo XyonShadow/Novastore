@@ -2464,7 +2464,7 @@ function renderRelatedProducts(mode = 'product') {
 
                 <button class="btn btn-secondary add-to-cart-detail" style="margin-top: 10px;" onclick="addToCart(${p.id}, this, event)">
                     <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                    <span data-id="${product.id}" class="cart-detail-badge">1</span>
+                    <span data-id="${p.id}" class="cart-detail-badge">1</span>
                 </button>
             `;
             

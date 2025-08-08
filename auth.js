@@ -209,7 +209,8 @@ document.getElementById('signupConfirmPassword')?.addEventListener('input', () =
 // SIGNUP
 document.getElementById("signupForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
-  setLoadingState(".login-btn", true);
+  const signUpBtn = document.getElementById("signupForm").querySelector('.login-btn');
+  setLoadingState('', true, signUpBtn);
 
   const nickname = document.getElementById("signupNickname").value.trim();
   const email = document.getElementById("signupEmail").value.trim();
@@ -243,7 +244,7 @@ document.getElementById("signupForm")?.addEventListener("submit", async (e) => {
   } catch (err) {
     showNotification("Signup error: " + err.message);
   } finally {
-    setLoadingState(".login-btn", false);
+    setLoadingState('', false, signUpBtn);
   }
 });
 
@@ -343,7 +344,7 @@ function sendCheckoutToFirestore() {
         itemElement?.classList.add('slide-out');
       }
     });
-  
+
     window.checkedOutItems = []; // clear items after sending
 
     // re render and update
