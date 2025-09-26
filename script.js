@@ -1424,7 +1424,7 @@ function renderCartItems() {
             <div class="cart-empty-state">
                 <i class="ri-shopping-cart-line"></i>
                 <p>Your cart is empty</p>
-                <a href="cart.html" class="btn">Start Shopping</a>
+                <button onclick="toggleCart()" class="btn">Start Shopping</button>
             </div>
         `;
         const totalContainer = document.getElementById('cart-total');
@@ -3429,5 +3429,57 @@ form.addEventListener('submit', async (e) => {
         setTimeout(() => {
             messageDiv.textContent = '';
         }, 4000);
+    }
+});
+
+// Notify for subscribers functionality
+const subscribeForm = document.getElementById('newsletterForm');
+const successMessage = document.getElementById('success-message');
+const subscribeBtn = document.getElementById('newsletter-btn');
+
+subscribeForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Dynamic message for your inbox
+    const messageField = document.createElement('input');
+    messageField.type = 'hidden';
+    messageField.name = '_message';
+    messageField.value = `A new Person has just subscribed to NovaStore`;
+    this.appendChild(messageField);
+
+    try {
+        // Set button loading state
+        setLoadingState('', true, subscribeBtn);
+
+        const formData = new FormData(this);
+
+        const res = await fetch('https://formsubmit.co/78552d8e7632400c1fa8c5d8aa8270f7', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (res.ok) {
+            successMessage.textContent = '✅ Subscribed successfully!';
+            successMessage.style.display = 'block';
+            this.reset();
+        } else {
+            successMessage.textContent = '❌ Something went wrong. Try again.';
+            successMessage.style.display = 'block';
+        }
+    } catch (err) {
+        successMessage.textContent = `Err: ${err}`;
+        successMessage.style.display = 'block';
+        console.error('Failed to send email:', err);
+    } finally {
+        setLoadingState('', false, subscribeBtn);
+        showNotification('Subscribed Successfully');
+
+        // Remove success message after 5 seconds
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 5000);
+
+        // Clean up dynamic field so duplicate submissions don't append more
+        this.removeChild(messageField);
     }
 });

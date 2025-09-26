@@ -229,11 +229,22 @@
                     
                     <div class="footer-newsletter">
                         <h4><i style="color: var(--accent-color);" class="ri-mail-open-fill"></i> Stay Updated</h4>
-                        <form class="newsletter-form">
+
+                        <form class="newsletter-form" id="newsletterForm" method="POST">
+                            <!-- FormSubmit settings -->
+                            <input type="hidden" name="_subject" value="Welcome to NovaStore Newsletter!">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="_autoresponse" value="Thanks for subscribing! You'll now receive NovaStore updates.">
+
+                            <!-- User email input -->
                             <label for="newsletter-email" class="sr-only">Email Address</label>
-                            <input type="email" id="newsletter-email" class="newsletter-input" placeholder="Enter your email">
-                            <button type="submit" class="newsletter-btn">Subscribe</button>
+                            <input type="email" name="email" id="newsletter-email" class="newsletter-input" placeholder="Enter your email" required>
+
+                            <button type="submit" id="newsletter-btn" class="newsletter-btn">Subscribe</button>
                         </form>
+
+                        <!-- Success message -->
+                        <p id="success-message" style="display:none; color:green; margin-top:10px;"></p>
                     </div>
                 </div>
 

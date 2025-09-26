@@ -1366,7 +1366,7 @@ header {
 .newsletter-input {
     flex: 1;
     padding: 0.75rem;
-    border: 1px solid var(--background-light);
+    border: 1px solid var(--text-muted);
     border-radius: 8px;
     background: var(--bg-secondary);
     color: var(--text-main);
@@ -3127,7 +3127,7 @@ footer p span {
 }
 
 .product-info {
-    padding-left: 1.5rem;
+    margin: auto;
 }
 
 .product-title {
