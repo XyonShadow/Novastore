@@ -1510,6 +1510,28 @@ if(footer) {
 observer.observe(footer);
 }
 
+// The particles in the footer
+const particleContainer = document.querySelector('.footer-particles');
+const particleCount = 70; // more particles for full coverage
+const particleColors = ['#c97106', '#031632'];
+
+for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('span');
+    const size = Math.random() * 4 + 2;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.top = `${Math.random() * 100}%`;
+
+    particle.style.background = `linear-gradient(45deg, ${particleColors[Math.floor(Math.random()*particleColors.length)]}, ${particleColors[Math.floor(Math.random()*particleColors.length)]})`;
+
+    particle.style.animationDuration = `${Math.random() * 8 + 6}s`;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+
+    particleContainer.appendChild(particle);
+}
+
 // Modals logic
 const openContactButtons = document.querySelectorAll('.contact-button');
 const overlay = document.querySelector('.overlay');
