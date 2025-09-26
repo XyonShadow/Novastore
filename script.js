@@ -2602,7 +2602,7 @@ function renderCartProducts(){
         cartItem.innerHTML = `
             <input type="checkbox" class="item-checkbox" ${item.selected ? 'checked' : ''} 
                     onchange="toggleItemSelection(${index})">
-            <img src="${item.image}" alt="${item.name}" class="item-image" onClick="goTo('${item.category}', '${item.id}', 'product.html')">
+            <img src="${item.image}" alt="${item.name}" class="cart-item-image" onClick="goTo('${item.category}', '${item.id}', 'product.html')">
             <div class="item-details">
                 <div>    
                     <div onClick="goTo('${item.category}', '${item.id}', 'product.html')" class="item-name">${item.name}</div>
