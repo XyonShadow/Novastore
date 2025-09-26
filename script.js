@@ -1196,6 +1196,14 @@ function handleCurrencyChange(){
                 <i class="currency-icon"></i>${currentPrice.toLocaleString()}
             `;
         }
+        if(document.querySelectorAll('.cart-item-price')) {
+            const currentPrice = currentProduct.price * (1 - currentProduct.discount / 100);
+            document.querySelectorAll('cart-item-price').forEach(element => { 
+                element.innerHTML = `
+                    <i class="currency-icon"></i>${currentPrice.toLocaleString()}
+                `;
+            })
+        };
         updateCurrencyIcons();
     });
 
@@ -1270,6 +1278,7 @@ function addToCart(id, btnElement = null, event) {
             }
         }, ((Math.random() * 970) + 1230));
     }
+    renderCartItems();
 }
 
 function updateCartCount() {
@@ -1404,66 +1413,82 @@ if(cartPanel) {
     });
 }
 
-// Render cart items in the cart panel
+// Render cart items in the cart panel to show what's in cart
 function renderCartItems() {
     const container = document.getElementById('cart-items');
-        container.innerHTML = '';
+    container.innerHTML = '';
 
+    // To handle empty cart
     if (cart.length === 0) {
-        container.innerHTML = '<p>Your cart is empty 💤</p>';
+        container.innerHTML = `
+            <div class="cart-empty-state">
+                <i class="ri-shopping-cart-line"></i>
+                <p>Your cart is empty</p>
+                <a href="cart.html" class="btn">Start Shopping</a>
+            </div>
+        `;
         const totalContainer = document.getElementById('cart-total');
         if (totalContainer) {
-            totalContainer.innerHTML = `<h3>Total: <i class="currency-icon"></i>0</h3>`;
+            totalContainer.innerHTML = `Total: <i class="currency-icon"></i>0`;
         }
-        updateCurrencyIcons(); // Update icons in cart as well
+        updateCurrencyIcons();
         return;
     }
 
-    cart.forEach(p => {
-        const converted = convertPrice(p.originalPrice, currentCurrency);
+    // Render items
+    cart.forEach(item => {
+        const converted = convertPrice(item.originalPrice);
+        const realPrice = converted * (1 - item.discount / 100);
+        const totalItemPrice = realPrice * item.quantity;
         const itemDiv = document.createElement('div');
         itemDiv.className = 'cart-item';
 
         itemDiv.innerHTML = `
-            <div title="Check Product" class="cart-info" data-id="${p.id}">
-            <img src="${p.image}" alt="${p.name}"/>
-            <p>${p.name}</p>
+            <div class="cart-info" title="View Product Details" data-id="${item.id}">
+                <img src="${item.image}" alt="${item.name}"/>
+                <div class="cart-item-details">
+                    <p>${item.name}</p>
+                    <div class="cart-item-meta">
+                        <span class="item-quantity">Qty: ${item.quantity}</span>
+                        <span class="cart-item-price"><i class="currency-icon"></i>${realPrice.toLocaleString()} each</span>
+                    </div>
+                </div>
             </div>
-            <p><i class="currency-icon"></i>${converted.toLocaleString()}</p>
-            <button class="remove-cart-item${isInCart(p.id) ? ' remove-from-cart' : ''}" data-id="${p.id}">
-            ${isInCart(p.id) ? 'Remove From Cart' : 'Add To Cart'}
-            </button>
+            <div class="cart-item-total">
+                <span><i class="currency-icon"></i>${totalItemPrice.toLocaleString()}</span>
+            </div>
         `;
 
+        // Click to view product details
         const cartInfo = itemDiv.querySelector('.cart-info');
-
         cartInfo.addEventListener('click', () => {
             const productId = cartInfo.getAttribute('data-id');
-            scrollToProductById(productId, 'glowhighlighted');
-            toggleCart();
-        });
-
-        const removeBtn = itemDiv.querySelector('.remove-cart-item');
-        removeBtn.addEventListener('click', () => {
-            updateCartBtn(p.id, removeBtn);
-            setTimeout(() => {
-                renderCartItems();
-                // If there are multiple product lists, update all matching buttons for the affected id in the product list
-                document.querySelectorAll(`.product-card[data-id='${p.id}'] .add-to-cart-btn`).forEach(btn => {
-                    setCartButtonState(btn, p.id);
-                });
-            }, 1000);
+            
+            // Navigate to product or scroll to it
+            if (window.location.pathname.includes('cart.html')) {
+                scrollToProductById(productId, 'glowhighlighted');
+                toggleCart(); // Close cart panel
+            } else {
+                window.location.href = `cart.html?highlight=${productId}`;
+            }
         });
 
         container.appendChild(itemDiv);
     });
     
-    const total = cart.length === 0 ? 0 : cart.reduce((sum, p) => sum + convertPrice(p.originalPrice, currentCurrency), 0);
+    // Calculate and display total
+    const itemsTotal = cart.reduce((sum, item) => sum + (item.originalPrice * item.quantity), 0);
+
+    const discount = cart.reduce((sum, item) => sum + ((item.originalPrice * item.discount / 100) * item.quantity), 0);
+
+    const currentTotal = convertPrice(itemsTotal - discount);
+
+    // Display total in DOM
     const totalContainer = document.getElementById('cart-total');
     if (totalContainer) {
-        totalContainer.innerHTML = `<h3>Total: <i class="currency-icon"></i>${total.toLocaleString()}</h3>`;
+        totalContainer.innerHTML = `Total: <i class="currency-icon"></i>${currentTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
-    
+
     updateCurrencyIcons();
 }
 
