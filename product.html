@@ -2,8 +2,7 @@
 <html class="loading" lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product | NovaStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 minimum-scale=1">    <title>Product | NovaStore</title>
     <script>
         (function () {
             const savedTheme = localStorage.getItem('theme');
@@ -28,10 +27,8 @@
             </div>
             <button class="search-btn">Search</button>
         </div>
-        <div>
-        </div>
         <div title="Select Currency" class="select-container currency-selector" data-type="currency" tabindex="0">
-            <div class="select-trigger"><span style="display: flex; gap: .5rem;"><i class="fa fa-naira-sign"></i>NGN</span><i class="ri-arrow-down-s-line"></i></div>
+            <div class="select-trigger"><span class="selector-text"><i class="fa fa-naira-sign"></i>NGN</span><i class="ri-arrow-down-s-line"></i></div>
             <div class="options">
                 <div class="option" data-value="usd">
                     <i class="fa fa-dollar-sign"></i> USD
