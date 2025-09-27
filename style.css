@@ -85,7 +85,7 @@ html.loading body {
 }
 
 body {
-    min-width: 385px;
+    min-width: 375px;
     width: 100%;
     min-height: 100vh;
     background: var(--bg-primary);
@@ -3563,7 +3563,14 @@ footer p span {
     gap: 2rem;
 }
 
+/* Enhanced Mobile Responsiveness for Product Section */
+
+/* Tablet and below - 768px and below */
 @media (max-width: 768px) {
+    .product-section {
+        padding: 1rem;
+    }
+
     .product-main {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -3572,25 +3579,560 @@ footer p span {
     .product-images {
         flex-direction: column;
         align-items: center;
+        gap: 1rem;
     }
 
-    .main-image{
-        max-width: 70%;
+    .main-image {
+        max-width: 100%;
+        order: 1;
     }
     
     .thumbnail-list {
         flex-direction: row;
         justify-content: center;
+        gap: 0.8rem;
+        order: 2;
+        flex-wrap: wrap;
+        max-width: 100%;
     }
 
-    .cart-quantities {
-        margin-top: 8px;
+    .thumbnail {
+        width: 3.5rem;
+        height: 3.5rem;
+        flex-shrink: 0;
     }
-    
-    .cart-quantity-item {
+
+    .product-info {
+        margin: 0;
+        text-align: left;
+    }
+
+    .product-title {
+        font-size: 1.3rem;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+
+    .price-section {
+        font-size: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #discountedPrice {
+        font-size: 1.8rem;
+    }
+
+    .original-price {
+        font-size: 1rem;
+        margin-left: 0.5rem;
+    }
+
+    .discount-badge {
+        margin-left: 0.5rem;
         font-size: 11px;
     }
 
+    /* Color options - make them wrap and larger for touch */
+    .color-options {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 2rem;
+    }
+
+    .color-option {
+        width: 2.8rem;
+        height: 2.8rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Model options - make them wrap */
+    .model-options {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .model-option {
+        min-height: 44px;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+    }
+
+    .variant-section {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .quantity-section {
+        align-items: flex-start;
+    }
+
+    .quantity-info {
+        width: 100%;
+        gap: 8px;
+    }
+
+    .quantity-controls {
+        border: 2px solid var(--bg-light);
+    }
+
+    .quantity-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+    }
+
+    .quantity-display {
+        width: 60px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .cart-quantities {
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .cart-quantity-item {
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+
+    .add-to-cart-btn {
+        padding: 16px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        min-height: 48px;
+    }
+
+    .features-list {
+        margin-top: 1.2rem;
+        padding-top: 1.2rem;
+    }
+
+    .feature-item {
+        font-size: 0.95rem;
+        gap: 0.8rem;
+    }
+
+    /* Reviews section mobile fixes */
+    .reviews-section {
+        padding: 1.5rem;
+    }
+
+    .reviews-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .reviews-title {
+        font-size: 1.3rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Related products mobile fixes */
+    .related-products {
+        padding: 1.5rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+}
+
+/* Small tablets and large phones - 600px and below */
+@media (max-width: 600px) {
+    .product-section {
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .breadcrumb {
+        padding: 8px 12px;
+        font-size: 12px;
+        margin-bottom: 0.8rem;
+    }
+
+    .breadcrumb i {
+        margin: 0 0.3rem;
+    }
+
+    .product-main {
+        gap: 1.2rem;
+    }
+
+    .main-image {
+        max-width: 85%;
+    }
+
+    .thumbnail-list {
+        gap: 0.6rem;
+    }
+
+    .thumbnail {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .rating-section {
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .stars {
+        gap: 1px;
+    }
+
+    .star {
+        font-size: 0.9rem;
+    }
+
+    .rating-text {
+        font-size: 0.9rem;
+    }
+
+    .price-section {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+    }
+
+    #discountedPrice {
+        font-size: 1.6rem;
+    }
+
+    .shipping-info {
+        padding: 8px;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .option-label {
+        font-size: 0.95rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .color-options {
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .color-option {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .model-options {
+        gap: 0.5rem;
+    }
+
+    .model-option {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .cart-quantities {
+        padding: 10px;
+    }
+
+    .cart-quantity-item {
+        padding: 6px 0;
+        font-size: 0.85rem;
+    }
+
+    .cart-quantity-label {
+        font-size: 0.9rem;
+    }
+
+    .features-list {
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    .feature-item {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .feature-icon {
+        font-size: 14px;
+    }
+
+    /* Reviews section */
+    .reviews-section {
+        padding: 1.2rem;
+    }
+
+    .review-dropdown-btn {
+        font-size: 1.3rem;
+        padding: 6px 8px;
+    }
+
+    .reviews-title {
+        font-size: 1.2rem;
+    }
+
+    .verified-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    /* Related products */
+    .related-products {
+        padding: 1.2rem;
+    }
+
+    .related-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.8rem;
+    }
+}
+
+/* Small phones - 480px and below */
+@media (max-width: 480px) {
+    .product-section {
+        padding: 0.6rem;
+    }
+
+    .breadcrumb {
+        padding: 6px 8px;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .product-main {
+        gap: 1rem;
+    }
+
+    .main-image {
+        max-width: 90%;
+    }
+
+    .thumbnail-list {
+        gap: 0.4rem;
+        justify-content: center;
+    }
+
+    .thumbnail {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 0.6rem;
+    }
+
+    .rating-section {
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .price-section {
+        justify-content: center;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    #discountedPrice {
+        font-size: 1.5rem;
+    }
+
+    .original-price {
+        font-size: 0.95rem;
+    }
+
+    .shipping-info {
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .options-section {
+        margin-bottom: 1.2rem;
+    }
+
+    .color-options {
+        justify-content: center;
+        margin-bottom: 1.2rem;
+    }
+
+    .model-options {
+        justify-content: center;
+    }
+
+    .variant-section {
+        gap: 1.2rem;
+    }
+
+    .quantity-section {
+        align-items: center;
+    }
+
+    .cart-quantities {
+        max-width: 280px;
+    }
+
+    .add-to-cart-btn {
+        padding: 18px;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .features-list {
+        text-align: center;
+    }
+
+    .feature-item {
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    /* Reviews section */
+    .reviews-section {
+        padding: 1rem;
+    }
+
+    .reviews-header {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    /* Related products */
+    .related-products {
+        padding: 1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+}
+
+/* Very small phones - 320px and below */
+@media (max-width: 320px) {
+    .product-section {
+        padding: 0.4rem;
+    }
+
+    .main-image {
+        max-width: 95%;
+    }
+
+    .thumbnail {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .product-title {
+        font-size: 1rem;
+    }
+
+    .price-section {
+        font-size: 1.1rem;
+    }
+
+    #discountedPrice {
+        font-size: 1.4rem;
+    }
+
+    .color-option {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .model-option {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .cart-quantities {
+        max-width: 100%;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+    }
+}
+
+/* Landscape orientation fixes for phones */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+    .product-main {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .product-images {
+        flex-direction: column;
+    }
+
+    .main-image {
+        max-width: 80%;
+    }
+
+    .thumbnail-list {
+        flex-direction: row;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .thumbnail {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .variant-section {
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .thumbnail {
+        border-width: 3px;
+    }
+
+    .thumbnail.active {
+        border-width: 3px;
+        transform: scale(1.05);
+    }
+
+    .color-option {
+        border-width: 3px;
+    }
+
+    .color-option.active {
+        border-width: 3px;
+        transform: scale(1.05);
+    }
+
+    .model-option {
+        min-height: 48px;
+        font-weight: 600;
+    }
+
+    .quantity-btn {
+        min-width: 48px;
+        min-height: 48px;
+    }
 }
 
 /* --------------------------== Checkout Page ==-------------------------- */
